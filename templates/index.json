@@ -1,0 +1,103 @@
+{
+  "name": "Homepage",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "⚡ FREE EXPRESS SHIPPING ON ORDERS OVER $75 • 100% FIT GUARANTEE"
+      }
+    },
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "tagline": "Y2K CYBER LUXURY • GEN-Z COMFORT",
+        "headline": "MOVE DIFFERENT.",
+        "subheading": "Engineered for everyday confidence. 3x softer than cotton MicroModal with zero ride-up contour physics.",
+        "btn_1_text": "Shop Men",
+        "btn_2_text": "Build 30% Off Bundle"
+      },
+      "blocks": {
+        "badge_1": { "type": "trust_badge", "settings": { "title": "Ultra Soft MicroModal", "icon": "feather" } },
+        "badge_2": { "type": "trust_badge", "settings": { "title": "Breathable Air-Mesh", "icon": "wind" } },
+        "badge_3": { "type": "trust_badge", "settings": { "title": "4-Way Hyper Stretch", "icon": "maximize-2" } },
+        "badge_4": { "type": "trust_badge", "settings": { "title": "Zero Ride-Up Guarantee", "icon": "shield-check" } }
+      },
+      "block_order": ["badge_1", "badge_2", "badge_3", "badge_4"]
+    },
+    "featured_collections": {
+      "type": "featured-collections",
+      "settings": {
+        "heading": "NEXT-GEN SILHOUETTES"
+      },
+      "blocks": {
+        "col_1": { "type": "collection_card", "settings": { "title": "CYBER TRUNKS", "tagline": "SIGNATURE FIT", "subtitle": "Mid-thigh contour cut with zero pinch." } },
+        "col_2": { "type": "collection_card", "settings": { "title": "LOOSE BOXERS", "tagline": "AIR-FLOW RELAXED", "subtitle": "Featherlight lounge boxers with anti-friction seams." } },
+        "col_3": { "type": "collection_card", "settings": { "title": "SPORT BRIEFS", "tagline": "AERODYNAMIC CUT", "subtitle": "High-leg dynamic freedom for athletic power." } },
+        "col_4": { "type": "collection_card", "settings": { "title": "CYBER PACKS", "tagline": "BEST VALUE", "subtitle": "Curated bundles with up to 50% savings." } }
+      },
+      "block_order": ["col_1", "col_2", "col_3", "col_4"]
+    },
+    "fabric_story": {
+      "type": "fabric-story",
+      "blocks": {
+        "chap_1": { "type": "chapter", "settings": { "title": "Cloud Soft MicroModal", "badge": "PROPRIETARY WEAVE", "stat_1_val": "2.0X", "stat_1_label": "Softer Than Cotton", "stat_2_val": "50%", "stat_2_label": "More Breathable" } },
+        "chap_2": { "type": "chapter", "settings": { "title": "4-Way Hyper Stretch", "badge": "MOTION BIOMETRICS", "stat_1_val": "360°", "stat_1_label": "Expansion Range", "stat_2_val": "99.4%", "stat_2_label": "Elastic Retention" } },
+        "chap_3": { "type": "chapter", "settings": { "title": "Sweat-Free Air Mesh", "badge": "THERMOREGULATION", "stat_1_val": "3X", "stat_1_label": "Faster Moisture Wick", "stat_2_val": "-2.5°C", "stat_2_label": "Cooling Effect" } },
+        "chap_4": { "type": "chapter", "settings": { "title": "Sustainable Eco-Craft", "badge": "CIRCULAR FUTURE", "stat_1_val": "99%", "stat_1_label": "Water Recycled", "stat_2_val": "100%", "stat_2_label": "OEKO-TEX Certified" } }
+      },
+      "block_order": ["chap_1", "chap_2", "chap_3", "chap_4"]
+    },
+    "bundle_builder": {
+      "type": "bundle-builder",
+      "settings": {
+        "title": "PACK & SAVE UP TO 50%"
+      }
+    },
+    "lifestyle": {
+      "type": "lifestyle-story",
+      "settings": {
+        "tagline": "UNFILTERED FREEDOM",
+        "quote": "We didn't just redesign underwear. We eliminated friction from modern living."
+      }
+    },
+    "marquee": {
+      "type": "marquee",
+      "settings": {}
+    },
+    "product_grid": {
+      "type": "product-grid",
+      "settings": {
+        "heading": "EXPLORE ALL DROPS",
+        "products_to_show": 6
+      }
+    },
+    "reviews": {
+      "type": "reviews-carousel",
+      "settings": {
+        "title": "10,000+ COMFORT REBELS"
+      },
+      "blocks": {
+        "rev_1": { "type": "review", "settings": { "author": "KAI S.", "location": "Verified Cyber Buyer • Tokyo", "quote": "Literally the softest pair I have ever put on. Feels weightless during 12-hour studio sessions." } },
+        "rev_2": { "type": "review", "settings": { "author": "MARCUS V.", "location": "Verified Athlete • Los Angeles", "quote": "The 4-way stretch is unmatched. I threw out every ordinary cotton pair I owned." } },
+        "rev_3": { "type": "review", "settings": { "author": "ELENA R.", "location": "Fashion Director • Berlin", "quote": "The aesthetics are insane, but the moisture wicking is the real magic. Zero sweat, zero chafing." } }
+      },
+      "block_order": ["rev_1", "rev_2", "rev_3"]
+    },
+    "instagram": {
+      "type": "instagram-feed",
+      "settings": {}
+    }
+  },
+  "order": [
+    "announcement",
+    "hero",
+    "featured_collections",
+    "fabric_story",
+    "bundle_builder",
+    "lifestyle",
+    "marquee",
+    "product_grid",
+    "reviews",
+    "instagram"
+  ]
+}

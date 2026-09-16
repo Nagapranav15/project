@@ -1,0 +1,19 @@
+{
+  "name": "Collection",
+  "sections": {
+    "banner": {
+      "type": "marquee",
+      "settings": {}
+    },
+    "grid": {
+      "type": "product-grid",
+      "settings": {
+        "heading": "CYBER DROPS & RELEASES"
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "grid"
+  ]
+}

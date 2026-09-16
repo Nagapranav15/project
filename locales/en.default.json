@@ -1,0 +1,20 @@
+{
+  "general": {
+    "cart": {
+      "view": "View Bag",
+      "checkout": "Proceed To Checkout",
+      "empty": "Your cyber bag is currently empty."
+    },
+    "search": {
+      "search": "Search Cyber Drops"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add To Cyber Bag",
+      "sold_out": "Drop Sold Out",
+      "on_sale": "Sale",
+      "quantity": "Quantity"
+    }
+  }
+}

@@ -1,0 +1,143 @@
+<section class="hero-section" id="hero">
+  <!-- Interactive Three.js WebGL Canvas -->
+  <div class="hero-3d-canvas-container" id="hero-3d-canvas"></div>
+
+  <div class="container hero-content">
+    {%- if section.settings.tagline != blank -%}
+      <div class="hero-tagline">
+        <span class="badge-neon">
+          <i data-lucide="zap" style="width:14px;height:14px;"></i>
+          {{ section.settings.tagline }}
+        </span>
+      </div>
+    {%- endif -%}
+
+    <h1 class="hero-title text-gradient-chrome">
+      {{ section.settings.headline | default: 'MOVE DIFFERENT.' }}
+    </h1>
+
+    <p class="hero-subtitle">
+      {{ section.settings.subheading | default: 'Engineered for everyday confidence. 3x softer than cotton MicroModal with zero ride-up contour physics.' }}
+    </p>
+
+    <div class="hero-buttons">
+      {%- if section.settings.btn_1_text != blank -%}
+        <a href="{{ section.settings.btn_1_link | default: '#shop' }}" class="btn btn-primary">
+          <span>{{ section.settings.btn_1_text }}</span>
+          <i data-lucide="arrow-right" style="width:18px;height:18px;"></i>
+        </a>
+      {%- endif -%}
+      {%- if section.settings.btn_2_text != blank -%}
+        <a href="{{ section.settings.btn_2_link | default: '#bundle-builder' }}" class="btn btn-secondary">
+          <span>{{ section.settings.btn_2_text }}</span>
+          <i data-lucide="sparkles" style="width:18px;height:18px; color:var(--cyan);"></i>
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="trust-badges-grid">
+      {%- for block in section.blocks -%}
+        <div class="trust-badge-item" {{ block.shopify_attributes }}>
+          <i data-lucide="{{ block.settings.icon | default: 'check' }}" style="width:16px;height:16px;"></i>
+          <span>{{ block.settings.title }}</span>
+        </div>
+      {%- else -%}
+        <div class="trust-badge-item">
+          <i data-lucide="feather" style="width:16px;height:16px;"></i>
+          <span>Ultra Soft MicroModal</span>
+        </div>
+        <div class="trust-badge-item">
+          <i data-lucide="wind" style="width:16px;height:16px;"></i>
+          <span>Breathable Air-Mesh</span>
+        </div>
+        <div class="trust-badge-item">
+          <i data-lucide="maximize-2" style="width:16px;height:16px;"></i>
+          <span>4-Way Hyper Stretch</span>
+        </div>
+        <div class="trust-badge-item">
+          <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+          <span>No Ride-Up Guarantee</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Fullscreen 3D",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline Badge",
+      "default": "Y2K CYBER LUXURY • GEN-Z COMFORT"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "MOVE DIFFERENT."
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Engineered for everyday confidence. 3x softer than cotton MicroModal with zero ride-up contour physics."
+    },
+    {
+      "type": "text",
+      "id": "btn_1_text",
+      "label": "Primary Button Text",
+      "default": "Shop Men"
+    },
+    {
+      "type": "url",
+      "id": "btn_1_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "btn_2_text",
+      "label": "Secondary Button Text",
+      "default": "Build 30% Off Bundle"
+    },
+    {
+      "type": "url",
+      "id": "btn_2_link",
+      "label": "Secondary Button Link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_badge",
+      "name": "Trust Badge",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Badge Text",
+          "default": "Ultra Soft"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Lucide Icon Name",
+          "default": "feather"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Fullscreen 3D",
+      "blocks": [
+        { "type": "trust_badge", "settings": { "title": "Ultra Soft MicroModal", "icon": "feather" } },
+        { "type": "trust_badge", "settings": { "title": "Breathable Air-Mesh", "icon": "wind" } },
+        { "type": "trust_badge", "settings": { "title": "4-Way Hyper Stretch", "icon": "maximize-2" } },
+        { "type": "trust_badge", "settings": { "title": "Zero Ride-Up Guarantee", "icon": "shield-check" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

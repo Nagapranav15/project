@@ -1,0 +1,125 @@
+<section class="bundle-builder-section" id="bundle-builder">
+  <div class="container">
+    <div class="section-header">
+      <span class="badge-neon" style="margin-bottom:1rem;">{{ section.settings.sub_title | default: 'CUSTOM BUNDLE CREATOR' }}</span>
+      <h2 class="section-title text-gradient-chrome">{{ section.settings.title | default: 'PACK & SAVE UP TO 50%' }}</h2>
+      <p class="section-desc">{{ section.settings.desc | default: 'Select your silhouettes, custom colorways, and watch them load into your cyber gift box.' }}</p>
+    </div>
+
+    <div class="bundle-box-wrapper">
+      <!-- Left: Interactive 3D Gift Box Stage -->
+      <div class="bundle-preview-stage">
+        <div class="bundle-savings-badge">
+          3-Pack • Save 30% ($25.20)
+        </div>
+
+        <div class="bundle-visual-box">
+          <div class="bundle-3d-box">
+            <i data-lucide="package" style="width:48px; height:48px; color:var(--neon-lime); margin-bottom:0.5rem;"></i>
+            <span style="font-family:var(--font-display); font-size:1.4rem; letter-spacing:0.1em; color:var(--white);">JUMPER VAULT</span>
+            <div class="bundle-item-slots">
+              <!-- Dynamically rendered by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="bundle-pricing-live">
+          <span class="bundle-price-current">$58.80</span>
+          <span class="bundle-price-original">$84.00</span>
+        </div>
+        <p style="font-size:0.75rem; color:var(--neon-lime); margin-top:0.4rem; letter-spacing:0.05em;">Includes Free Collector Cyber Box</p>
+
+        <button id="bundle-add-to-cart" class="btn btn-primary" style="width:100%; margin-top:2rem;">
+          <span>Add Bundle To Bag</span>
+          <i data-lucide="shopping-bag" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+      <!-- Right: 4 Interactive Step Groups -->
+      <div class="bundle-steps-flow">
+        <!-- Step 1: Category -->
+        <div class="bundle-step-group">
+          <h4><span class="step-indicator-num">1</span> Choose Category</h4>
+          <div class="bundle-options-row">
+            <button class="bundle-chip active" data-bundle-cat="Trunks">Cyber Trunks</button>
+            <button class="bundle-chip" data-bundle-cat="Boxers">Relaxed Boxers</button>
+            <button class="bundle-chip" data-bundle-cat="Briefs">Sport Briefs</button>
+            <button class="bundle-chip" data-bundle-cat="Bralette">Cyber Bralette</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Pack Size -->
+        <div class="bundle-step-group">
+          <h4><span class="step-indicator-num">2</span> Select Pack Tier</h4>
+          <div class="bundle-options-row">
+            <button class="bundle-chip active" data-bundle-pack="3" data-discount="0.30">
+              3-Pack <span style="color:var(--neon-lime); margin-left:4px;">(30% OFF)</span>
+            </button>
+            <button class="bundle-chip" data-bundle-pack="5" data-discount="0.40">
+              5-Pack <span style="color:var(--cyan); margin-left:4px;">(40% OFF)</span>
+            </button>
+            <button class="bundle-chip" data-bundle-pack="7" data-discount="0.50">
+              7-Pack <span style="color:var(--electric-purple); margin-left:4px;">(50% OFF)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Size -->
+        <div class="bundle-step-group">
+          <h4><span class="step-indicator-num">3</span> Choose Size</h4>
+          <div class="bundle-options-row">
+            <button class="bundle-chip" data-bundle-size="S">S (28-30)</button>
+            <button class="bundle-chip active" data-bundle-size="M">M (31-33)</button>
+            <button class="bundle-chip" data-bundle-size="L">L (34-36)</button>
+            <button class="bundle-chip" data-bundle-size="XL">XL (37-39)</button>
+            <button class="bundle-chip" data-bundle-size="2XL">2XL (40-42)</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Pick Color Swatches -->
+        <div class="bundle-step-group">
+          <h4><span class="step-indicator-num">4</span> Tap Colors to Fill Box</h4>
+          <div class="bundle-options-row" style="gap:1rem;">
+            <div class="color-swatch-chip active" data-bundle-color="#D6FF28" style="background:#D6FF28;" title="Neon Lime"></div>
+            <div class="color-swatch-chip active" data-bundle-color="#9A5CFF" style="background:#9A5CFF;" title="Electric Purple"></div>
+            <div class="color-swatch-chip active" data-bundle-color="#3BE7FF" style="background:#3BE7FF;" title="Cyan Shock"></div>
+            <div class="color-swatch-chip" data-bundle-color="#F5F7FA" style="background:#F5F7FA;" title="Pure White"></div>
+            <div class="color-swatch-chip" data-bundle-color="#0E1325" style="background:#0E1325; border:1px solid #444;" title="Stealth Obsidian"></div>
+            <div class="color-swatch-chip" data-bundle-color="#FF3B69" style="background:#FF3B69;" title="Cyber Coral"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bundle Builder",
+  "settings": [
+    {
+      "type": "text",
+      "id": "sub_title",
+      "label": "Sub Title",
+      "default": "CUSTOM BUNDLE CREATOR"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "PACK & SAVE UP TO 50%"
+    },
+    {
+      "type": "textarea",
+      "id": "desc",
+      "label": "Description",
+      "default": "Select your silhouettes, custom colorways, and watch them load into your cyber gift box."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle Builder"
+    }
+  ]
+}
+{% endschema %}

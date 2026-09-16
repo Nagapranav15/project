@@ -1,0 +1,64 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="{{ routes.root_url }}" class="brand-logo">
+      <span class="text-gradient-chrome">{{ section.settings.logo_text | default: 'JUMPER' }}</span>
+      <span class="brand-logo-badge">{{ section.settings.badge_text | default: 'CYBER 2.0' }}</span>
+    </a>
+
+    <nav>
+      <ul class="nav-desktop">
+        {%- for link in linklists[section.settings.menu].links -%}
+          <li>
+            <a href="{{ link.url }}" class="nav-link{% if link.active %} active{% endif %}">{{ link.title }}</a>
+          </li>
+        {%- else -%}
+          <li><a href="#hero" class="nav-link active">Home</a></li>
+          <li><a href="#collections" class="nav-link">Collections</a></li>
+          <li><a href="#fabric-story" class="nav-link">Fabric Tech</a></li>
+          <li><a href="#bundle-builder" class="nav-link">Bundle & Save</a></li>
+          <li><a href="#shop" class="nav-link">Catalog</a></li>
+          <li><a href="#reviews" class="nav-link">Reviews</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <button class="action-btn" aria-label="Search" onclick="window.themeCart?.showToast('Search active')">
+        <i data-lucide="search" style="width:18px;height:18px;"></i>
+      </button>
+      <button class="action-btn" aria-label="Wishlist" onclick="window.themeCart?.showToast('Wishlist opened')">
+        <i data-lucide="heart" style="width:18px;height:18px;"></i>
+      </button>
+      <button class="action-btn" aria-label="Cart" data-open-cart>
+        <i data-lucide="shopping-bag" style="width:18px;height:18px;"></i>
+        <span class="cart-counter">{{ cart.item_count }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo Text",
+      "default": "JUMPER"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge Text",
+      "default": "CYBER 2.0"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation Menu",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,105 @@
+<section class="collections-section" id="collections">
+  <div class="container">
+    <div class="section-header">
+      <span class="badge-neon badge-purple" style="margin-bottom:1rem;">{{ section.settings.sub_heading | default: 'COLLECTION SELECTOR' }}</span>
+      <h2 class="section-title text-gradient-chrome">{{ section.settings.heading | default: 'NEXT-GEN SILHOUETTES' }}</h2>
+      <p class="section-desc">{{ section.settings.description | default: 'Sculpted for frictionless motion with biometric comfort tailoring.' }}</p>
+    </div>
+
+    <div class="collections-grid">
+      {%- for block in section.blocks -%}
+        <div class="collection-card" onclick="location.href='{{ block.settings.collection.url | default: '#shop' }}'" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            {{ block.settings.image | image_url: width: 800 | image_tag: class: 'collection-bg-visual', loading: 'lazy' }}
+          {%- else -%}
+            <img src="{{ 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=700&q=80' }}" alt="Collection" class="collection-bg-visual">
+          {%- endif -%}
+          <div class="collection-overlay"></div>
+          <div class="collection-card-inner">
+            <div class="collection-info">
+              <span class="collection-category">{{ block.settings.tagline | default: 'SIGNATURE FIT' }}</span>
+              <h3 class="collection-title">{{ block.settings.title | default: block.settings.collection.title }}</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">{{ block.settings.subtitle }}</p>
+              <span class="collection-cta-link">
+                Explore Drop <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "sub_heading",
+      "label": "Sub Heading",
+      "default": "COLLECTION SELECTOR"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "NEXT-GEN SILHOUETTES"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Sculpted for frictionless motion with biometric comfort tailoring."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Card Title",
+          "default": "Cyber Trunks"
+        },
+        {
+          "type": "text",
+          "id": "tagline",
+          "label": "Tagline",
+          "default": "SIGNATURE FIT"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Mid-thigh precision contour cut with stay-put leg bands."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collections",
+      "blocks": [
+        { "type": "collection_card", "settings": { "title": "CYBER TRUNKS", "tagline": "SIGNATURE FIT", "subtitle": "Mid-thigh contour cut with zero pinch." } },
+        { "type": "collection_card", "settings": { "title": "LOOSE BOXERS", "tagline": "AIR-FLOW RELAXED", "subtitle": "Featherlight lounge boxers with anti-friction seams." } },
+        { "type": "collection_card", "settings": { "title": "SPORT BRIEFS", "tagline": "AERODYNAMIC CUT", "subtitle": "High-leg dynamic freedom for athletic power." } },
+        { "type": "collection_card", "settings": { "title": "CYBER PACKS", "tagline": "BEST VALUE", "subtitle": "Curated bundles with up to 50% savings." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

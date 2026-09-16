@@ -1,0 +1,12 @@
+{
+  "name": "Cart",
+  "sections": {
+    "cart_main": {
+      "type": "cart-drawer",
+      "settings": {}
+    }
+  },
+  "order": [
+    "cart_main"
+  ]
+}

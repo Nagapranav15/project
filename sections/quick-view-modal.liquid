@@ -1,0 +1,32 @@
+<div class="modal-backdrop" id="quick-view-modal">
+  <div class="modal-dialog">
+    <button class="modal-close-btn" aria-label="Close Modal">
+      <i data-lucide="x" style="width:18px;height:18px;"></i>
+    </button>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; padding:2.5rem; align-items:center;">
+      <div style="height:360px; border-radius:18px; overflow:hidden; background:#090C16; border:1px solid var(--surface-border);">
+        <img src="" alt="Quick Preview" class="qv-image" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:1.25rem;">
+        <span class="badge-neon">QUICK SELECTION</span>
+        <h3 class="qv-title text-gradient-chrome" style="font-size:1.8rem;">Product Title</h3>
+        <div class="qv-price" style="font-family:var(--font-display); font-size:2rem; color:var(--white);">$32.00</div>
+        <p class="qv-desc" style="font-size:0.9rem; color:var(--text-muted); line-height:1.6;"></p>
+        
+        <button id="qv-add-btn" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">
+          <span>Add To Cyber Bag</span>
+          <i data-lucide="shopping-bag" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Quick View Modal",
+  "settings": []
+}
+{% endschema %}

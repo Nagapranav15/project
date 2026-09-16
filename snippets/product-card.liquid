@@ -1,0 +1,64 @@
+{% comment %}
+  Renders a futuristic cyber product card
+  Accepts:
+  - product: {Object} Product Liquid object
+{% endcomment %}
+
+<div class="product-card" data-id="{{ product.id }}">
+  <div class="product-card-media">
+    {%- if product.tags contains 'bestseller' or forloop.first -%}
+      <span class="badge-neon product-card-badge">BESTSELLER</span>
+    {%- elsif product.tags contains 'new' -%}
+      <span class="badge-neon badge-purple product-card-badge">NEW DROP</span>
+    {%- endif -%}
+
+    <button class="product-card-wishlist" aria-label="Add to Wishlist" data-wishlist-id="{{ product.id }}">
+      <i data-lucide="heart" style="width:16px;height:16px;"></i>
+    </button>
+
+    {%- if product.featured_media -%}
+      {{ product.featured_media | image_url: width: 600 | image_tag: class: 'product-card-img', loading: 'lazy' }}
+      {%- if product.media[1] -%}
+        {{ product.media[1] | image_url: width: 600 | image_tag: class: 'product-card-img product-card-img-secondary', loading: 'lazy' }}
+      {%- endif -%}
+    {%- else -%}
+      <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80" alt="{{ product.title }}" class="product-card-img">
+    {%- endif -%}
+
+    <div class="product-card-quick-actions">
+      <button class="btn btn-secondary btn-pill" style="flex:1;" data-quick-view
+        data-product-title="{{ product.title | escape }}"
+        data-product-price="{{ product.price | money_without_currency }}"
+        data-product-image="{{ product.featured_media | image_url: width: 600 }}">
+        <i data-lucide="eye" style="width:14px;height:14px;"></i> Quick View
+      </button>
+      <button class="btn btn-primary btn-pill" style="flex:1;" data-quick-add
+        data-product-id="{{ product.id }}"
+        data-product-title="{{ product.title | escape }}"
+        data-product-price="{{ product.price | money_without_currency }}"
+        data-product-image="{{ product.featured_media | image_url: width: 600 }}">
+        + Add
+      </button>
+    </div>
+  </div>
+
+  <div class="product-card-content">
+    <div class="product-card-swatches">
+      <div class="mini-swatch active" style="background:#D6FF28;"></div>
+      <div class="mini-swatch" style="background:#9A5CFF;"></div>
+      <div class="mini-swatch" style="background:#3BE7FF;"></div>
+    </div>
+    <h3 class="product-card-title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">MicroModal 3x Stretch • Anti-Pinch</p>
+
+    <div class="product-card-bottom">
+      <div class="product-price">
+        {{ product.price | money }}
+        {%- if product.compare_at_price > product.price -%}
+          <span class="product-price-compare">{{ product.compare_at_price | money }}</span>
+        {%- endif -%}
+      </div>
+      <span style="font-size:0.75rem; color:var(--neon-lime); font-weight:700;">★ 4.9 (400+)</span>
+    </div>
+  </div>
+</div>

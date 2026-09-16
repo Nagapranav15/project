@@ -1,0 +1,140 @@
+<section class="shop-section" id="shop">
+  <div class="container">
+    <div class="section-header">
+      <span class="badge-neon badge-cyan" style="margin-bottom:1rem;">{{ section.settings.sub_heading | default: 'THE CATALOG' }}</span>
+      <h2 class="section-title text-gradient-chrome">{{ section.settings.heading | default: 'EXPLORE ALL DROPS' }}</h2>
+      <p class="section-desc">{{ section.settings.description | default: 'Filtered by premium silhouettes, high-voltage hues, and biometric fits.' }}</p>
+    </div>
+
+    <div class="shop-layout">
+      <!-- Floating Glass Sidebar Filters -->
+      <aside class="filters-sidebar">
+        <div class="filters-title">
+          <span>Filter Drops</span>
+          <i data-lucide="sliders-horizontal" style="width:16px;height:16px; color:var(--neon-lime);"></i>
+        </div>
+
+        <div class="filter-group">
+          <h4 class="filter-heading">Category</h4>
+          <div class="filter-options">
+            <label class="filter-checkbox-label">
+              <span><input type="checkbox" checked> Trunks</span>
+              <span style="color:var(--text-muted); font-size:0.75rem;">(12)</span>
+            </label>
+            <label class="filter-checkbox-label">
+              <span><input type="checkbox" checked> Boxers</span>
+              <span style="color:var(--text-muted); font-size:0.75rem;">(8)</span>
+            </label>
+            <label class="filter-checkbox-label">
+              <span><input type="checkbox" checked> Briefs</span>
+              <span style="color:var(--text-muted); font-size:0.75rem;">(6)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4 class="filter-heading">Size</h4>
+          <div class="filter-options">
+            <label class="filter-checkbox-label"><span><input type="checkbox"> S (28-30)</span></label>
+            <label class="filter-checkbox-label"><span><input type="checkbox" checked> M (31-33)</span></label>
+            <label class="filter-checkbox-label"><span><input type="checkbox" checked> L (34-36)</span></label>
+            <label class="filter-checkbox-label"><span><input type="checkbox"> XL (37-39)</span></label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4 class="filter-heading">Color Studio</h4>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <div class="mini-swatch active" style="background:#D6FF28;" title="Neon Lime"></div>
+            <div class="mini-swatch" style="background:#9A5CFF;" title="Electric Purple"></div>
+            <div class="mini-swatch" style="background:#3BE7FF;" title="Cyan"></div>
+            <div class="mini-swatch" style="background:#FF3B69;" title="Coral"></div>
+            <div class="mini-swatch" style="background:#0E1325; border:1px solid #444;" title="Obsidian"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products Grid -->
+      <main class="products-grid">
+        {%- if section.settings.collection != blank and collections[section.settings.collection].products.size > 0 -%}
+          {%- for product in collections[section.settings.collection].products limit: section.settings.products_to_show -%}
+            {% render 'product-card', product: product %}
+          {%- endfor -%}
+        {%- else -%}
+          <!-- Default sample cards if no collection loaded -->
+          {%- for i in (1..6) -%}
+            <div class="product-card">
+              <div class="product-card-media">
+                <span class="badge-neon product-card-badge">DROP 0{{ i }}</span>
+                <button class="product-card-wishlist" aria-label="Wishlist"><i data-lucide="heart" style="width:16px;height:16px;"></i></button>
+                <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80" alt="Product {{ i }}" class="product-card-img">
+                <div class="product-card-quick-actions">
+                  <button class="btn btn-primary btn-pill" style="width:100%;" data-quick-add
+                    data-product-id="prod-{{ i }}"
+                    data-product-title="NEO-TRUNK 0{{ i }} // Cyber Edition"
+                    data-product-price="32.00"
+                    data-product-image="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80">
+                    + Quick Add
+                  </button>
+                </div>
+              </div>
+              <div class="product-card-content">
+                <h3 class="product-card-title"><a href="#">NEO-TRUNK 0{{ i }} // Cyber Edition</a></h3>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">MicroModal 3x Stretch • Anti-Pinch</p>
+                <div class="product-card-bottom">
+                  <div class="product-price">$32.00</div>
+                  <span style="font-size:0.75rem; color:var(--neon-lime); font-weight:700;">★ 4.9 (420)</span>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </main>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product Grid",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 3,
+      "max": 18,
+      "step": 3,
+      "default": 6,
+      "label": "Products to Show"
+    },
+    {
+      "type": "text",
+      "id": "sub_heading",
+      "label": "Sub Heading",
+      "default": "THE CATALOG"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "EXPLORE ALL DROPS"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Filtered by premium silhouettes, high-voltage hues, and biometric fits."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Grid"
+    }
+  ]
+}
+{% endschema %}

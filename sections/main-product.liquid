@@ -1,0 +1,122 @@
+<section class="pdp-section" id="pdp-preview" data-product-id="{{ product.id }}">
+  <div class="container">
+    <div class="pdp-layout">
+      <!-- Gallery -->
+      <div class="pdp-gallery">
+        <div class="pdp-thumbs">
+          {%- for media in product.media -%}
+            <div class="pdp-thumb{% if forloop.first %} active{% endif %}">
+              {{ media | image_url: width: 200 | image_tag: loading: 'lazy' }}
+            </div>
+          {%- else -%}
+            <div class="pdp-thumb active"><img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=200&q=80" alt="Thumb"></div>
+            <div class="pdp-thumb"><img src="https://images.unsplash.com/photo-1507680434567-5739c80be1ac?auto=format&fit=crop&w=200&q=80" alt="Thumb"></div>
+          {%- endfor -%}
+        </div>
+
+        <div class="pdp-main-media">
+          {%- if product.featured_media -%}
+            {{ product.featured_media | image_url: width: 900 | image_tag: class: 'pdp-main-img' }}
+          {%- else -%}
+            <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=900&q=80" alt="Main Product" class="pdp-main-img">
+          {%- endif -%}
+          <div style="position:absolute; bottom:1.5rem; left:1.5rem; background:rgba(0,0,0,0.6); padding:0.4rem 0.8rem; border-radius:99px; backdrop-filter:blur(8px); font-size:0.75rem; color:var(--white); border:1px solid var(--surface-border);">
+            <i data-lucide="zoom-in" style="width:14px;height:14px; vertical-align:middle; color:var(--neon-lime);"></i> Scroll to Inspect Micro-Weave
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Details & Color Studio -->
+      <div class="pdp-details">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+            <span class="badge-neon">FLAGSHIP CYBER DROP</span>
+            <span style="color:var(--neon-lime); font-size:0.85rem; font-weight:700;">★ 4.98 (850+ Reviews)</span>
+          </div>
+          <h1 class="pdp-title text-gradient-chrome">{{ product.title | default: 'NEO-TRUNK 01 // CYBER EDITION' }}</h1>
+        </div>
+
+        <div class="pdp-price-row">
+          <span class="bundle-price-current">{{ product.price | default: 3200 | money }}</span>
+          {%- if product.compare_at_price > product.price -%}
+            <span class="bundle-price-original">{{ product.compare_at_price | money }}</span>
+            <span class="badge-neon badge-purple">Sale</span>
+          {%- endif -%}
+        </div>
+
+        <!-- Interactive Color Studio -->
+        <div class="pdp-color-studio">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--white);">
+              Colorway: <span class="pdp-selected-color-name" style="color:var(--neon-lime);">Cyber Lime</span>
+            </span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Dynamic Ambient Sync</span>
+          </div>
+          <div class="pdp-swatches-row">
+            <div class="color-swatch-chip active" data-color="#D6FF28" data-name="Cyber Lime" style="background:#D6FF28;"></div>
+            <div class="color-swatch-chip" data-color="#9A5CFF" data-name="Electric Purple" style="background:#9A5CFF;"></div>
+            <div class="color-swatch-chip" data-color="#3BE7FF" data-name="Cyan Shock" style="background:#3BE7FF;"></div>
+            <div class="color-swatch-chip" data-color="#FF3B69" data-name="Cyber Coral" style="background:#FF3B69;"></div>
+            <div class="color-swatch-chip" data-color="#0E1325" data-name="Stealth Obsidian" style="background:#0E1325; border:1px solid #555;"></div>
+          </div>
+        </div>
+
+        <!-- Size Selector -->
+        <div class="pdp-size-selector">
+          <div style="display:flex; justify-content:space-between;">
+            <span style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--white);">Select Size</span>
+            <a href="javascript:void(0)" onclick="window.themeCart.showToast('Size Guide: True to size. If between sizes, size up for comfort.')" style="color:var(--cyan); font-size:0.8rem; text-decoration:none;">Size Guide (Biometric)</a>
+          </div>
+          <div class="pdp-sizes-grid">
+            <button class="size-btn">S</button>
+            <button class="size-btn active">M</button>
+            <button class="size-btn">L</button>
+            <button class="size-btn">XL</button>
+            <button class="size-btn">2XL</button>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div style="display:flex; gap:1rem;">
+          <button class="btn btn-primary" style="flex:1;" onclick="window.themeCart.addItem({
+            id: '{{ product.id | default: 'pdp-flagship' }}',
+            title: '{{ product.title | default: 'NEO-TRUNK 01 // Cyber Edition' }}',
+            variant: 'Size: M / ' + (document.querySelector('.pdp-selected-color-name')?.textContent || 'Cyber Lime'),
+            price: {{ product.price | default: 3200 | divided_by: 100.0 }},
+            image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80'
+          })">
+            <span>Add To Cyber Bag</span>
+            <i data-lucide="shopping-bag" style="width:18px;height:18px;"></i>
+          </button>
+          <button class="btn btn-purple" onclick="window.themeCart.showToast('Proceeding to Express Cyber Checkout!')">
+            <span>1-Click Buy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sticky Purchase Bar -->
+<div class="sticky-purchase-bar">
+  <div class="container sticky-bar-inner">
+    <div style="display:flex; align-items:center; gap:1.25rem;">
+      <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=80&q=80" alt="Thumbnail" style="width:48px; height:48px; border-radius:8px; object-fit:cover;">
+      <div>
+        <h4 style="font-size:0.95rem;">{{ product.title | default: 'NEO-TRUNK 01 // CYBER EDITION' }}</h4>
+        <span style="font-family:var(--font-display); font-size:1.2rem; color:var(--neon-lime);">{{ product.price | default: 3200 | money }}</span>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-pill" data-open-cart>
+      <span>Instant Checkout</span>
+      <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+    </button>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Main Product Details",
+  "settings": []
+}
+{% endschema %}

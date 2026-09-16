@@ -1,0 +1,22 @@
+{
+  "name": "Product",
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {}
+    },
+    "fabric": {
+      "type": "fabric-story",
+      "settings": {}
+    },
+    "reviews": {
+      "type": "reviews-carousel",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "fabric",
+    "reviews"
+  ]
+}

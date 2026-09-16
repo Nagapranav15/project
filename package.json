@@ -1,0 +1,13 @@
+{
+  "name": "jumper-cyberwear-shopify",
+  "version": "1.0.0",
+  "description": "Futuristic Y2K Premium Animated Shopify 2.0 Theme & Web Application",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0"
+  }
+}

@@ -1,0 +1,122 @@
+<section class="fabric-story-section" id="fabric-story">
+  <div class="fabric-pin-container">
+    <div class="fabric-horizontal-track">
+      {%- for block in section.blocks -%}
+        <div class="fabric-chapter-card" {{ block.shopify_attributes }}>
+          <div>
+            <div class="chapter-number">{{ forloop.index | prepend: '0' }}</div>
+            <span class="badge-neon" style="margin-bottom:1rem;">{{ block.settings.badge | default: 'PROPRIETARY TECH' }}</span>
+            <h3 class="chapter-title text-gradient-chrome">{{ block.settings.title }}</h3>
+            <p class="chapter-desc">{{ block.settings.description }}</p>
+            <div class="chapter-stats-grid">
+              <div class="chapter-stat-item">
+                <h4>{{ block.settings.stat_1_val }}</h4>
+                <p>{{ block.settings.stat_1_label }}</p>
+              </div>
+              <div class="chapter-stat-item">
+                <h4>{{ block.settings.stat_2_val }}</h4>
+                <p>{{ block.settings.stat_2_label }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="chapter-visual-box">
+            {%- if forloop.first -%}
+              <canvas id="fabric-weave-canvas" class="chapter-visual-canvas"></canvas>
+            {%- else -%}
+              <div style="text-align:center; padding: 2rem;">
+                <i data-lucide="{{ block.settings.icon | default: 'zap' }}" style="width:64px; height:64px; color:var(--neon-lime); margin-bottom:1rem;"></i>
+                <h4 style="font-family:var(--font-display); font-size:1.8rem; color:var(--white);">{{ block.settings.feature_title }}</h4>
+                <p style="color:var(--text-muted); font-size:0.85rem;">{{ block.settings.feature_subtitle }}</p>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Fabric Horizontal Story",
+  "blocks": [
+    {
+      "type": "chapter",
+      "name": "Fabric Chapter",
+      "settings": [
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge",
+          "default": "PROPRIETARY WEAVE"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Chapter Title",
+          "default": "Cloud Soft MicroModal"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Extracted from sustainably harvested Austrian beechwood trees. Spun into micro-fibers 2x softer than organic cotton."
+        },
+        {
+          "type": "text",
+          "id": "stat_1_val",
+          "label": "Stat 1 Value",
+          "default": "2.0X"
+        },
+        {
+          "type": "text",
+          "id": "stat_1_label",
+          "label": "Stat 1 Label",
+          "default": "Softer Than Cotton"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_val",
+          "label": "Stat 2 Value",
+          "default": "50%"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_label",
+          "label": "Stat 2 Label",
+          "default": "More Breathable"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon Name",
+          "default": "feather"
+        },
+        {
+          "type": "text",
+          "id": "feature_title",
+          "label": "Feature Visual Title",
+          "default": "Zero Friction Weave"
+        },
+        {
+          "type": "text",
+          "id": "feature_subtitle",
+          "label": "Feature Visual Subtitle",
+          "default": "Featherlight density"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fabric Horizontal Story",
+      "blocks": [
+        { "type": "chapter", "settings": { "title": "Cloud Soft MicroModal", "badge": "PROPRIETARY WEAVE", "stat_1_val": "2.0X", "stat_1_label": "Softer Than Cotton", "stat_2_val": "50%", "stat_2_label": "More Breathable" } },
+        { "type": "chapter", "settings": { "title": "4-Way Hyper Stretch", "badge": "MOTION BIOMETRICS", "stat_1_val": "360°", "stat_1_label": "Expansion Range", "stat_2_val": "99.4%", "stat_2_label": "Elastic Retention" } },
+        { "type": "chapter", "settings": { "title": "Sweat-Free Air Mesh", "badge": "THERMOREGULATION", "stat_1_val": "3X", "stat_1_label": "Faster Moisture Wick", "stat_2_val": "-2.5°C", "stat_2_label": "Cooling Effect" } },
+        { "type": "chapter", "settings": { "title": "Sustainable Eco-Craft", "badge": "CIRCULAR FUTURE", "stat_1_val": "99%", "stat_1_label": "Water Recycled", "stat_2_val": "100%", "stat_2_label": "OEKO-TEX Certified" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

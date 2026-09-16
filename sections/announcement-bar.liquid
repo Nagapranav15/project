@@ -1,0 +1,24 @@
+<div class="announcement-bar" style="background:#05060A; border-bottom:1px solid var(--surface-border); padding:0.4rem 0; text-align:center; font-size:0.8rem; font-weight:700; letter-spacing:0.08em; color:var(--neon-lime);">
+  <div class="container">
+    <span>{{ section.settings.text | default: '⚡ FREE EXPRESS SHIPPING ON ORDERS OVER $75 • 100% FIT GUARANTEE' }}</span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Announcement Text",
+      "default": "⚡ FREE EXPRESS SHIPPING ON ORDERS OVER $75 • 100% FIT GUARANTEE"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar"
+    }
+  ]
+}
+{% endschema %}

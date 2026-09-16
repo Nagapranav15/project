@@ -1,0 +1,68 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Jumper Cyberwear",
+    "theme_version": "2.0.0",
+    "theme_author": "DeepMind Agentic Suite",
+    "theme_documentation_url": "https://jumpercyberwear.com/docs",
+    "theme_support_url": "https://jumpercyberwear.com/support"
+  },
+  {
+    "name": "Colors & Cyber Glows",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_bg",
+        "label": "Background Color",
+        "default": "#05060A"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Surface Color",
+        "default": "#0D1020"
+      },
+      {
+        "type": "color",
+        "id": "color_neon_lime",
+        "label": "Neon Lime Accent",
+        "default": "#D6FF28"
+      },
+      {
+        "type": "color",
+        "id": "color_electric_purple",
+        "label": "Electric Purple Accent",
+        "default": "#9A5CFF"
+      },
+      {
+        "type": "color",
+        "id": "color_cyan",
+        "label": "Cyan Accent",
+        "default": "#3BE7FF"
+      }
+    ]
+  },
+  {
+    "name": "Typography & Animations",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_custom_cursor",
+        "label": "Enable Custom Neon Cursor",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_smooth_scroll",
+        "label": "Enable Lenis Smooth Scroll",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_3d_hero",
+        "label": "Enable 3D Three.js WebGL Hero",
+        "default": true
+      }
+    ]
+  }
+]

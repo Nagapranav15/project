@@ -1,0 +1,14 @@
+{
+  "name": "Search",
+  "sections": {
+    "search_grid": {
+      "type": "product-grid",
+      "settings": {
+        "heading": "SEARCH RESULTS"
+      }
+    }
+  },
+  "order": [
+    "search_grid"
+  ]
+}
