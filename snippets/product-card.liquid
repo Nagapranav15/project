@@ -1,64 +1,88 @@
-{% comment %}
-  Renders a futuristic cyber product card
-  Accepts:
-  - product: {Object} Product Liquid object
-{% endcomment %}
-
-<div class="product-card" data-id="{{ product.id }}">
-  <div class="product-card-media">
-    {%- if product.tags contains 'bestseller' or forloop.first -%}
-      <span class="badge-neon product-card-badge">BESTSELLER</span>
-    {%- elsif product.tags contains 'new' -%}
-      <span class="badge-neon badge-purple product-card-badge">NEW DROP</span>
-    {%- endif -%}
-
-    <button class="product-card-wishlist" aria-label="Add to Wishlist" data-wishlist-id="{{ product.id }}">
-      <i data-lucide="heart" style="width:16px;height:16px;"></i>
-    </button>
-
-    {%- if product.featured_media -%}
-      {{ product.featured_media | image_url: width: 600 | image_tag: class: 'product-card-img', loading: 'lazy' }}
-      {%- if product.media[1] -%}
-        {{ product.media[1] | image_url: width: 600 | image_tag: class: 'product-card-img product-card-img-secondary', loading: 'lazy' }}
+{%- comment -%}
+  Product card. Paper card, one supporting-colour tab, Ink quick-add with Lime type.
+  Params:
+    product   – Shopify product (optional)
+    tab       – supporting colour token: yellow | cyan | orange | pink | purple
+    index     – position, used for stagger
+    demo      – pipe string "title|price|image|hover_image|print" when no product is assigned
+    eager     – boolean, load first image eagerly
+{%- endcomment -%}
+{%- liquid
+  assign tab_color = tab | default: 'cyan'
+  assign load = 'lazy'
+  if eager
+    assign load = 'eager'
+  endif
+  if product != blank
+    assign title = product.title
+    assign url = product.url
+    assign print_name = product.metafields.custom.print | default: product.type | default: 'New print'
+    assign first_image = product.featured_media.preview_image
+    assign second_image = product.media[1].preview_image
+  else
+    assign d = demo | split: '|'
+    assign title = d[0]
+    assign url = routes.all_products_collection_url
+    assign print_name = d[4]
+  endif
+-%}
+<article class="card reveal" style="--tab: var(--{{ tab_color }}); --i: {{ index | default: 0 }}" data-tilt>
+  <a class="card__media{% if second_image != blank or d[3] != blank %} card__media--swap{% endif %}" href="{{ url }}" aria-label="{{ title | escape }}" data-cursor-text="View">
+    {%- if product != blank -%}
+      {%- if first_image != blank -%}
+        {{ first_image | image_url: width: 900 | image_tag: loading: load, widths: '360, 540, 720, 900', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 40vw, 80vw', class: 'card__img card__img--main', alt: title }}
+      {%- else -%}
+        <img class="card__img card__img--main" src="{{ 'product-fan.jpg' | asset_url }}" alt="{{ title | escape }}" loading="{{ load }}">
+      {%- endif -%}
+      {%- if second_image != blank -%}
+        {{ second_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 990px) 25vw, 80vw', class: 'card__img card__img--alt', alt: '' }}
       {%- endif -%}
     {%- else -%}
-      <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80" alt="{{ product.title }}" class="product-card-img">
+      <img class="card__img card__img--main" src="{{ d[2] | asset_url }}" alt="{{ title | escape }}" loading="{{ load }}" decoding="async">
+      {%- if d[3] != blank -%}
+        <img class="card__img card__img--alt" src="{{ d[3] | asset_url }}" alt="" loading="lazy" decoding="async">
+      {%- endif -%}
     {%- endif -%}
 
-    <div class="product-card-quick-actions">
-      <button class="btn btn-secondary btn-pill" style="flex:1;" data-quick-view
-        data-product-title="{{ product.title | escape }}"
-        data-product-price="{{ product.price | money_without_currency }}"
-        data-product-image="{{ product.featured_media | image_url: width: 600 }}">
-        <i data-lucide="eye" style="width:14px;height:14px;"></i> Quick View
-      </button>
-      <button class="btn btn-primary btn-pill" style="flex:1;" data-quick-add
-        data-product-id="{{ product.id }}"
-        data-product-title="{{ product.title | escape }}"
-        data-product-price="{{ product.price | money_without_currency }}"
-        data-product-image="{{ product.featured_media | image_url: width: 600 }}">
-        + Add
-      </button>
+    {%- if product.available == false -%}
+      <span class="chip chip--ink card__chip">{{ 'products.sold_out' | t }}</span>
+    {%- elsif product.compare_at_price > product.price -%}
+      <span class="chip chip--pink card__chip">{{ 'products.sale' | t }}</span>
+    {%- elsif index == 0 -%}
+      <span class="chip chip--lime card__chip">{{ 'products.new_in' | t }}</span>
+    {%- endif -%}
+  </a>
+
+  <div class="card__tab"><span class="t-label">{{ print_name }}</span>{% render 'sparkle', class: 'card__spark' %}</div>
+
+  <div class="card__body">
+    <h3 class="card__title"><a href="{{ url }}">{{ title }}</a></h3>
+    <div class="card__price">
+      {%- if product != blank -%}
+        {% render 'price', product: product %}
+      {%- else -%}
+        <span class="price">{{ d[1] }}</span>
+      {%- endif -%}
     </div>
   </div>
 
-  <div class="product-card-content">
-    <div class="product-card-swatches">
-      <div class="mini-swatch active" style="background:#D6FF28;"></div>
-      <div class="mini-swatch" style="background:#9A5CFF;"></div>
-      <div class="mini-swatch" style="background:#3BE7FF;"></div>
-    </div>
-    <h3 class="product-card-title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
-    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">MicroModal 3x Stretch • Anti-Pinch</p>
-
-    <div class="product-card-bottom">
-      <div class="product-price">
-        {{ product.price | money }}
-        {%- if product.compare_at_price > product.price -%}
-          <span class="product-price-compare">{{ product.compare_at_price | money }}</span>
-        {%- endif -%}
+  <div class="card__quick">
+    <span class="t-label card__quick-label">{{ 'products.quick_add' | t }}</span>
+    {%- if product != blank -%}
+      {%- form 'product', product, class: 'card__sizes', data-product-form: '' -%}
+        {%- for variant in product.variants limit: 6 -%}
+          <button class="size-btn" type="submit" name="id" value="{{ variant.id }}"{% unless variant.available %} disabled{% endunless %} aria-label="{{ 'products.add_variant' | t: variant: variant.title | escape }}">
+            {{- variant.title | replace: 'Default Title', '+' | truncate: 4, '' -}}
+          </button>
+        {%- endfor -%}
+      {%- endform -%}
+    {%- else -%}
+      <div class="card__sizes">
+        {%- assign sizes = 'S,M,L,XL' | split: ',' -%}
+        {%- for s in sizes -%}
+          <button class="size-btn" type="button" data-demo-add data-title="{{ title | escape }}" data-price="{{ d[1] | escape }}" data-image="{{ d[2] | asset_url }}" data-size="{{ s }}">{{ s }}</button>
+        {%- endfor -%}
       </div>
-      <span style="font-size:0.75rem; color:var(--neon-lime); font-weight:700;">★ 4.9 (400+)</span>
-    </div>
+    {%- endif -%}
   </div>
-</div>
+</article>

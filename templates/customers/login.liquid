@@ -1,0 +1,30 @@
+<section class="auth scheme-lime">
+  <div class="auth__card window">
+    <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">login.exe</span></div>
+    <div class="window__body">
+      <h1 class="t-headline" id="login">{{ 'customer.login' | t }}</h1>
+      {%- form 'customer_login', class: 'form' -%}
+        {%- if form.errors -%}<div class="form-errors" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+        <div class="field"><label class="t-label" for="LoginEmail">{{ 'customer.email' | t }}</label><input id="LoginEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+        {%- if form.password_needed -%}
+          <div class="field"><label class="t-label" for="LoginPassword">{{ 'customer.password' | t }}</label><input id="LoginPassword" type="password" name="customer[password]" autocomplete="current-password" required></div>
+        {%- endif -%}
+        <button class="btn btn--block" type="submit">{{ 'customer.sign_in' | t }} {% render 'icon', icon: 'arrow' %}</button>
+      {%- endform -%}
+      <div class="auth__links">
+        <a href="{{ routes.account_register_url }}">{{ 'customer.create' | t }}</a>
+        <a href="#recover" onclick="document.getElementById('recover').hidden = false">{{ 'customer.forgot' | t }}</a>
+      </div>
+      <div id="recover" hidden>
+        {%- form 'recover_customer_password', class: 'form' -%}
+          {%- if form.posted_successfully? -%}<p class="form-success">{{ 'customer.recover_sent' | t }}</p>{%- endif -%}
+          <div class="field"><label class="t-label" for="RecoverEmail">{{ 'customer.email' | t }}</label><input id="RecoverEmail" type="email" name="email" autocomplete="email" required></div>
+          <button class="btn" type="submit">{{ 'customer.reset' | t }}</button>
+        {%- endform -%}
+      </div>
+      {%- if shop.checkout.guest_login -%}
+        {%- form 'guest_login' -%}<button class="link-arrow" type="submit">{{ 'customer.guest' | t }}</button>{%- endform -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>

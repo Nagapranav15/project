@@ -1,0 +1,38 @@
+<section class="page-hero scheme-lime">
+  <div class="container">
+    <p class="t-label section-head__label"><span class="num">✦</span> {{ 'customer.account' | t }}</p>
+    <h1 class="t-display page-hero__title">{{ 'customer.hey' | t: name: customer.first_name }}</h1>
+    {% render 'character', name: 'thumbs', class: 'page-hero__char' %}
+  </div>
+</section>
+<section class="section scheme-paper">
+  <div class="container cart-page__grid">
+    <div>
+      <h2 class="t-label" style="margin-bottom: 16px">{{ 'customer.orders' | t }}</h2>
+      {%- paginate customer.orders by 20 -%}
+        {%- if customer.orders.size > 0 -%}
+          <table class="account-table">
+            <thead><tr><th class="t-label">{{ 'customer.order' | t }}</th><th class="t-label">{{ 'customer.date' | t }}</th><th class="t-label">{{ 'customer.status' | t }}</th><th class="t-label">{{ 'customer.total' | t }}</th></tr></thead>
+            <tbody>
+              {%- for order in customer.orders -%}
+                <tr><td><a href="{{ order.customer_url }}" style="text-decoration: underline">{{ order.name }}</a></td><td>{{ order.created_at | date: '%d %b %Y' }}</td><td>{{ order.fulfillment_status_label }}</td><td>{{ order.total_price | money }}</td></tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        {%- else -%}
+          <p class="t-body">{{ 'customer.no_orders' | t }}</p>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+    <aside class="window">
+      <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">profile.exe</span></div>
+      <div class="window__body" style="padding: 24px; display: grid; gap: 12px">
+        <p class="t-subhead">{{ customer.name }}</p>
+        <p>{{ customer.email }}</p>
+        {%- if customer.default_address -%}<div class="t-body">{{ customer.default_address | format_address }}</div>{%- endif -%}
+        <a class="link-arrow" href="{{ routes.account_addresses_url }}">{{ 'customer.addresses' | t }} ({{ customer.addresses_count }})</a>
+        <a class="btn" href="{{ routes.account_logout_url }}">{{ 'customer.logout' | t }}</a>
+      </div>
+    </aside>
+  </div>
+</section>

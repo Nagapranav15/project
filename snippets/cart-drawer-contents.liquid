@@ -1,0 +1,63 @@
+{%- liquid
+  assign free_threshold = settings.free_shipping_threshold | times: 100
+  assign remaining = free_threshold | minus: cart.total_price
+  if free_threshold > 0
+    assign progress = cart.total_price | times: 100 | divided_by: free_threshold
+    if progress > 100
+      assign progress = 100
+    endif
+  endif
+-%}
+<div class="drawer__head">
+  <h2 class="t-headline" id="CartDrawerTitle">{{ 'cart.title' | t }}<sup class="drawer__count">{{ cart.item_count }}</sup></h2>
+  {%- if free_threshold > 0 -%}
+    <div class="ship-meter" style="--p: {{ progress | default: 0 }}%">
+      <p class="t-label">
+        {%- if remaining > 0 -%}{%- assign remaining_money = remaining | money -%}{{ 'cart.free_shipping_remaining' | t: amount: remaining_money }}{%- else -%}{{ 'cart.free_shipping_unlocked' | t }}{%- endif -%}
+      </p>
+      <div class="ship-meter__bar"><span></span></div>
+    </div>
+  {%- endif -%}
+</div>
+
+{%- if cart.item_count == 0 -%}
+  <div class="drawer__empty">
+    {% render 'character', name: 'lounge', class: 'drawer__char' %}
+    <p class="t-subhead">{{ 'cart.empty' | t }}</p>
+    <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue' | t }} {% render 'icon', icon: 'arrow' %}</a>
+  </div>
+{%- else -%}
+  <ul class="drawer__items" role="list">
+    {%- for item in cart.items -%}
+      <li class="line" data-line="{{ forloop.index }}">
+        <a class="line__media" href="{{ item.url }}">
+          {%- if item.image -%}{{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', alt: item.title }}{%- endif -%}
+        </a>
+        <div class="line__info">
+          <a class="line__title" href="{{ item.url }}">{{ item.product.title }}</a>
+          {%- unless item.product.has_only_default_variant -%}<p class="t-label line__variant">{{ item.variant.title }}</p>{%- endunless -%}
+          <div class="qty" data-qty>
+            <button type="button" class="qty__btn" data-qty-change="{{ item.quantity | minus: 1 }}" data-line-index="{{ forloop.index }}" aria-label="{{ 'cart.decrease' | t }}">{% render 'icon', icon: 'minus' %}</button>
+            <span class="qty__val">{{ item.quantity }}</span>
+            <button type="button" class="qty__btn" data-qty-change="{{ item.quantity | plus: 1 }}" data-line-index="{{ forloop.index }}" aria-label="{{ 'cart.increase' | t }}">{% render 'icon', icon: 'plus' %}</button>
+          </div>
+        </div>
+        <div class="line__end">
+          <span class="price">{{ item.final_line_price | money }}</span>
+          <button type="button" class="line__remove t-label" data-qty-change="0" data-line-index="{{ forloop.index }}">{{ 'cart.remove' | t }}</button>
+        </div>
+      </li>
+    {%- endfor -%}
+  </ul>
+  <div class="drawer__foot">
+    <div class="drawer__total">
+      <span class="t-label">{{ 'cart.subtotal' | t }}</span>
+      <span class="t-subhead">{{ cart.total_price | money_with_currency }}</span>
+    </div>
+    <p class="drawer__note">{{ 'cart.taxes_note' | t }}</p>
+    <form action="{{ routes.cart_url }}" method="post">
+      <button class="btn btn--block btn--lime-on-ink" type="submit" name="checkout">{{ 'cart.checkout' | t }} {% render 'icon', icon: 'arrow' %}</button>
+    </form>
+    <a class="drawer__view t-label" href="{{ routes.cart_url }}">{{ 'cart.view' | t }}</a>
+  </div>
+{%- endif -%}

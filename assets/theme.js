@@ -1,380 +1,330 @@
-/**
- * JUMPER // CYBERWEAR — MAIN THEME JS
- * AJAX Cart Engine, Wishlist, Quick View, Color Studio & Predictive Search
- */
+/* JUMPER — theme interactions. Vanilla JS, no dependencies. */
+(() => {
+  const J = window.Jumper || (window.Jumper = {});
+  J.routes = J.routes || { root: '/', cart: '/cart', cartAdd: '/cart/add', cartChange: '/cart/change' };
+  J.strings = J.strings || {};
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || J.motion === false;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const raf = (fn) => { let t = 0; return (...a) => { if (t) return; t = requestAnimationFrame(() => { t = 0; fn(...a); }); }; };
 
-class ThemeCart {
-  constructor() {
-    this.items = JSON.parse(localStorage.getItem('jumper_cart_items') || '[]');
-    this.drawer = document.querySelector('.cart-drawer');
-    this.backdrop = document.querySelector('.cart-drawer-backdrop');
-    this.itemsList = document.querySelector('.cart-items-list');
-    this.subtotalEl = document.querySelector('.cart-subtotal-price');
-    this.countBadges = document.querySelectorAll('.cart-counter');
-    this.freeShippingBar = document.querySelector('.free-shipping-fill');
-    this.freeShippingText = document.querySelector('.free-shipping-text');
-    this.freeShippingThreshold = 75.00;
-
-    this.init();
-  }
-
-  init() {
-    this.bindEvents();
-    this.render();
-
-    // Default pre-loaded sample items if cart is empty
-    if (this.items.length === 0) {
-      this.addItem({
-        id: 'cyber-trunk-01',
-        title: 'NEO-TRUNK 01 // Cyber Lime',
-        variant: 'Size: M / Neon Lime',
-        price: 32.00,
-        quantity: 1,
-        image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80'
-      }, false);
-    }
-  }
-
-  bindEvents() {
-    // Open cart drawer triggers
-    document.querySelectorAll('[data-open-cart]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.open();
-      });
+  /* ---------- Money ---------- */
+  J.formatMoney = (cents, format = J.moneyFormat || 'Rs. {{amount}}') => {
+    const v = (Number(cents) / 100);
+    const withDelims = (n, d) => n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return format.replace(/\{\{\s*(\w+)\s*\}\}/, (_, k) => {
+      if (k === 'amount_no_decimals') return withDelims(v, 0);
+      if (k === 'amount_with_comma_separator') return withDelims(v, 2).replace(/,/g, '#').replace('.', ',').replace(/#/g, '.');
+      return withDelims(v, 2);
     });
+  };
 
-    // Close cart triggers
-    document.querySelectorAll('[data-close-cart]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.close();
-      });
+  /* ---------- Toast ---------- */
+  let toastEl, toastT;
+  J.toast = (msg) => {
+    if (!toastEl) { toastEl = document.createElement('div'); toastEl.className = 'toast'; toastEl.setAttribute('role', 'status'); document.body.appendChild(toastEl); }
+    toastEl.textContent = msg;
+    toastEl.classList.add('is-visible');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toastEl.classList.remove('is-visible'), 2600);
+  };
+
+  /* ---------- Header scroll state ---------- */
+  const onScroll = raf(() => document.body.classList.toggle('is-scrolled', window.scrollY > 120));
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- Reveal on scroll ---------- */
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }) : null;
+  const observeReveals = (root = document) => $$('.reveal', root).forEach((el) => (io ? io.observe(el) : el.classList.add('is-in')));
+  observeReveals();
+
+  /* ---------- Menu drawer ---------- */
+  const menu = $('[data-menu]');
+  const setMenu = (open) => {
+    if (!menu) return;
+    menu.classList.toggle('is-open', open);
+    menu.setAttribute('aria-hidden', String(!open));
+    $$('[data-menu-open]').forEach((b) => b.setAttribute('aria-expanded', String(open)));
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  };
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-menu-open]')) setMenu(true);
+    else if (e.target.closest('[data-menu-close]') || (menu && e.target.closest('[data-menu] a'))) setMenu(false);
+  });
+
+  /* ---------- Cart drawer ---------- */
+  const drawer = $('[data-cart-drawer]');
+  let lastFocus;
+  const setDrawer = (open) => {
+    if (!drawer) return;
+    if (open) lastFocus = document.activeElement;
+    drawer.classList.toggle('is-open', open);
+    drawer.setAttribute('aria-hidden', String(!open));
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    if (open) setTimeout(() => $('.drawer__panel', drawer).focus(), 50);
+    else if (lastFocus) lastFocus.focus();
+  };
+  J.openCart = () => setDrawer(true);
+
+  const setCount = (n) => $$('[data-cart-count]').forEach((el) => {
+    el.textContent = n;
+    el.classList.remove('is-bump'); void el.offsetWidth; el.classList.add('is-bump');
+  });
+
+  const refreshDrawer = async () => {
+    if (J.preview) return J.preview.render();
+    const res = await fetch(`${J.routes.cart}?view=drawer`, { credentials: 'same-origin' });
+    const html = await res.text();
+    const target = $('[data-cart-contents]');
+    if (target) target.innerHTML = html;
+    const cart = await (await fetch(`${J.routes.cart}.js`)).json();
+    setCount(cart.item_count);
+  };
+
+  const addToCart = async (formData) => {
+    drawer && drawer.classList.add('is-loading');
+    try {
+      const res = await fetch(`${J.routes.cartAdd}.js`, { method: 'POST', headers: { Accept: 'application/json' }, body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.description || data.message || J.strings.error);
+      await refreshDrawer();
+      setDrawer(true);
+    } catch (err) {
+      J.toast(err.message || J.strings.error || 'Something went wrong');
+    } finally {
+      drawer && drawer.classList.remove('is-loading');
+    }
+  };
+
+  const changeLine = async (line, quantity) => {
+    if (J.preview) return J.preview.change(line, quantity);
+    drawer && drawer.classList.add('is-loading');
+    try {
+      await fetch(`${J.routes.cartChange}.js`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ line, quantity }) });
+      if (document.body.classList.contains('template-cart')) return window.location.reload();
+      await refreshDrawer();
+    } finally { drawer && drawer.classList.remove('is-loading'); }
+  };
+
+  document.addEventListener('submit', (e) => {
+    const form = e.target.closest('[data-product-form]');
+    if (!form || !drawer) return;
+    e.preventDefault();
+    const fd = new FormData(form);
+    if (e.submitter && e.submitter.name === 'id') fd.set('id', e.submitter.value);
+    if (e.submitter) { e.submitter.classList.add('is-added'); setTimeout(() => e.submitter.classList.remove('is-added'), 1200); }
+    addToCart(fd);
+  });
+
+  document.addEventListener('click', (e) => {
+    const opener = e.target.closest('[data-cart-open]');
+    if (opener && drawer && !document.body.classList.contains('template-cart')) { e.preventDefault(); setDrawer(true); return; }
+    if (e.target.closest('[data-cart-close]')) { setDrawer(false); return; }
+    const q = e.target.closest('[data-qty-change]');
+    if (q && q.dataset.lineIndex) { changeLine(Number(q.dataset.lineIndex), Number(q.dataset.qtyChange)); return; }
+    const demo = e.target.closest('[data-demo-add]');
+    if (demo) {
+      if (J.preview) { J.preview.add(demo.dataset); setDrawer(true); }
+      else J.toast('Demo product: assign a collection in the theme editor');
+    }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setDrawer(false); setMenu(false); } });
+
+  /* ---------- Waistband explorer ---------- */
+  const initBands = (scope = document) => $$('[data-bands]', scope).forEach((root) => {
+    const slides = $$('[data-band-slide]', root);
+    const rows = $$('[data-band-trigger]', root);
+    const chip = $('[data-band-chip]', root);
+    const file = $('[data-band-file]', root);
+    const count = $('[data-band-count]', root);
+    let current = 0, timer;
+    const pad = (n) => String(n).padStart(2, '0');
+    const show = (i) => {
+      if (i === current) return;
+      slides[current].classList.remove('is-active');
+      slides[current].classList.add('is-leaving');
+      const prev = slides[current];
+      setTimeout(() => prev.classList.remove('is-leaving'), 800);
+      slides[i].classList.add('is-active');
+      rows.forEach((r, k) => { r.classList.toggle('is-active', k === i); r.setAttribute('aria-pressed', String(k === i)); });
+      if (chip) { chip.textContent = rows[i].dataset.title; chip.animate([{ transform: 'rotate(-20deg) scale(.6)' }, { transform: 'rotate(-4deg) scale(1)' }], { duration: 500, easing: 'cubic-bezier(.34,1.56,.64,1)' }); }
+      if (file) file.textContent = `band_${pad(i + 1)}.jpg`;
+      if (count) count.textContent = `${pad(i + 1)} / ${pad(rows.length)}`;
+      current = i;
+    };
+    rows.forEach((r, i) => {
+      r.addEventListener('click', () => { show(i); clearInterval(timer); });
+      if (finePointer) r.addEventListener('mouseenter', () => { show(i); clearInterval(timer); });
     });
-
-    if (this.backdrop) {
-      this.backdrop.addEventListener('click', () => this.close());
+    if (!reduced && rows.length > 1 && io) {
+      const auto = new IntersectionObserver(([en]) => {
+        clearInterval(timer);
+        if (en.isIntersecting) timer = setInterval(() => show((current + 1) % rows.length), 3200);
+      }, { threshold: 0.4 });
+      auto.observe(root);
+      root.addEventListener('pointerdown', () => { clearInterval(timer); auto.disconnect(); }, { once: true });
     }
+  });
 
-    // Direct Add to Cart buttons
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-quick-add]');
-      if (btn) {
-        e.preventDefault();
-        const id = btn.getAttribute('data-product-id');
-        const title = btn.getAttribute('data-product-title');
-        const price = parseFloat(btn.getAttribute('data-product-price') || 32);
-        const image = btn.getAttribute('data-product-image');
-        const variant = btn.getAttribute('data-product-variant') || 'Size: M';
+  initBands();
 
-        this.addItem({ id, title, price, image, variant, quantity: 1 });
-      }
+  /* ---------- Banana Crew picker ---------- */
+  const initCrew = (scope = document) => $$('[data-crew]', scope).forEach((root) => {
+    const art = $('[data-crew-art]', root);
+    const name = $('[data-crew-name]', root);
+    const mood = $('[data-crew-mood]', root);
+    const no = $('[data-crew-no]', root);
+    const link = $('[data-crew-link]', root);
+    const tiles = $$('[data-crew-pick]', root);
+    tiles.forEach((t) => t.addEventListener('click', () => {
+      tiles.forEach((x) => { x.classList.toggle('is-active', x === t); x.setAttribute('aria-pressed', String(x === t)); });
+      const svg = $('svg', t).cloneNode(true);
+      svg.setAttribute('class', 'crew__svg is-swap');
+      art.replaceChildren(svg);
+      name.textContent = t.dataset.name;
+      mood.textContent = t.dataset.mood;
+      no.textContent = `${t.dataset.no} / ${String(tiles.length).padStart(2, '0')}`;
+      if (link) link.href = t.dataset.link;
+    }));
+  });
+  initCrew();
+
+  /* ---------- Scroll-linked: manifesto scrub + campaign split ---------- */
+  const scrubs = $$('[data-scrub]').map((el) => ({ el, words: $$('.scrub', el) }));
+  const splits = $$('[data-split-scroll]');
+  const onScrollFx = raf(() => {
+    const vh = window.innerHeight;
+    scrubs.forEach(({ el, words }) => {
+      const r = el.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
+      const lit = Math.round(p * words.length);
+      words.forEach((w, i) => w.classList.toggle('is-lit', i < lit));
     });
-  }
-
-  open() {
-    this.drawer?.classList.add('active');
-    this.backdrop?.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  close() {
-    this.drawer?.classList.remove('active');
-    this.backdrop?.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  addItem(product, openDrawer = true) {
-    const existing = this.items.find(i => i.id === product.id && i.variant === product.variant);
-    if (existing) {
-      existing.quantity += product.quantity || 1;
-    } else {
-      this.items.push({
-        id: product.id,
-        title: product.title,
-        variant: product.variant || 'Standard',
-        price: product.price,
-        image: product.image,
-        quantity: product.quantity || 1
-      });
-    }
-
-    this.save();
-    this.render();
-    if (openDrawer) {
-      this.open();
-      this.showToast(`Added ${product.title} to Bag!`);
-    }
-  }
-
-  updateQuantity(id, variant, delta) {
-    const item = this.items.find(i => i.id === id && i.variant === variant);
-    if (item) {
-      item.quantity += delta;
-      if (item.quantity <= 0) {
-        this.items = this.items.filter(i => !(i.id === id && i.variant === variant));
-      }
-    }
-    this.save();
-    this.render();
-  }
-
-  removeItem(id, variant) {
-    this.items = this.items.filter(i => !(i.id === id && i.variant === variant));
-    this.save();
-    this.render();
-  }
-
-  save() {
-    localStorage.setItem('jumper_cart_items', JSON.stringify(this.items));
-  }
-
-  render() {
-    const totalCount = this.items.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotal = this.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    // Update Counter Badges
-    this.countBadges.forEach(b => {
-      b.textContent = totalCount;
-      b.style.display = totalCount > 0 ? 'flex' : 'none';
-    });
-
-    // Update Subtotal
-    if (this.subtotalEl) {
-      this.subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-    }
-
-    // Update Free Shipping Bar
-    if (this.freeShippingBar && this.freeShippingText) {
-      const remaining = Math.max(0, this.freeShippingThreshold - subtotal);
-      const percentage = Math.min(100, (subtotal / this.freeShippingThreshold) * 100);
-      this.freeShippingBar.style.width = `${percentage}%`;
-
-      if (remaining === 0) {
-        this.freeShippingText.innerHTML = `🎉 You unlocked <strong>FREE EXPRESS SHIPPING</strong>!`;
-      } else {
-        this.freeShippingText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more for <strong>FREE EXPRESS SHIPPING</strong>`;
-      }
-    }
-
-    // Render Items List
-    if (this.itemsList) {
-      if (this.items.length === 0) {
-        this.itemsList.innerHTML = `
-          <div style="text-align:center; padding: 4rem 1rem; color: var(--text-muted);">
-            <p style="font-size:1.1rem; margin-bottom:1.5rem;">Your cyber bag is currently empty.</p>
-            <a href="#shop" class="btn btn-primary btn-pill" data-close-cart>Explore Drops</a>
-          </div>
-        `;
-        return;
-      }
-
-      this.itemsList.innerHTML = this.items.map(item => `
-        <div class="cart-item" data-id="${item.id}">
-          <img src="${item.image}" alt="${item.title}" class="cart-item-img">
-          <div class="cart-item-details">
-            <h4>${item.title}</h4>
-            <p class="cart-item-variant">${item.variant}</p>
-            <div class="cart-qty-ctrl">
-              <button class="cart-qty-btn" onclick="window.themeCart.updateQuantity('${item.id}', '${item.variant}', -1)">-</button>
-              <span class="cart-qty-num">${item.quantity}</span>
-              <button class="cart-qty-btn" onclick="window.themeCart.updateQuantity('${item.id}', '${item.variant}', 1)">+</button>
-            </div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-family:var(--font-display); font-size:1.25rem; color:var(--white); margin-bottom:0.4rem;">
-              $${(item.price * item.quantity).toFixed(2)}
-            </div>
-            <button onclick="window.themeCart.removeItem('${item.id}', '${item.variant}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.75rem; text-transform:uppercase; font-weight:700;">Remove</button>
-          </div>
-        </div>
-      `).join('');
-    }
-  }
-
-  showToast(message) {
-    let toast = document.getElementById('cyber-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'cyber-toast';
-      toast.style.cssText = `
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--surface-glass-heavy);
-        border: 1px solid var(--neon-lime);
-        color: var(--white);
-        padding: 0.85rem 1.75rem;
-        border-radius: 999px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.8), var(--glow-lime);
-        z-index: 99999;
-        font-family: var(--font-heading);
-        font-weight: 700;
-        font-size: 0.9rem;
-        backdrop-filter: blur(16px);
-        transition: transform 0.4s var(--ease-elastic);
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      `;
-      document.body.appendChild(toast);
-    }
-    toast.innerHTML = `<span style="color:var(--neon-lime);">●</span> ${message}`;
-    toast.style.transform = 'translateX(-50%) translateY(0)';
-    setTimeout(() => {
-      toast.style.transform = 'translateX(-50%) translateY(100px)';
-    }, 2800);
-  }
-}
-
-/**
- * Quick View Modal Manager
- */
-class QuickViewManager {
-  constructor() {
-    this.backdrop = document.querySelector('#quick-view-modal');
-    this.dialog = this.backdrop?.querySelector('.modal-dialog');
-    this.closeBtn = this.backdrop?.querySelector('.modal-close-btn');
-
-    this.init();
-  }
-
-  init() {
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-quick-view]');
-      if (btn) {
-        e.preventDefault();
-        const data = {
-          title: btn.getAttribute('data-product-title') || 'NEO-TRUNK 01 // Cyber Edition',
-          price: btn.getAttribute('data-product-price') || '32.00',
-          image: btn.getAttribute('data-product-image') || 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80',
-          desc: 'Engineered with quantum MicroModal fabric, zero ride-up ergonomic pouch, and 4-way hyper-stretch waistband for all-day cyber performance.'
-        };
-        this.open(data);
-      }
-    });
-
-    this.closeBtn?.addEventListener('click', () => this.close());
-    this.backdrop?.addEventListener('click', (e) => {
-      if (e.target === this.backdrop) this.close();
-    });
-  }
-
-  open(product) {
-    if (!this.backdrop) return;
-    
-    // Fill data
-    const titleEl = this.backdrop.querySelector('.qv-title');
-    const priceEl = this.backdrop.querySelector('.qv-price');
-    const imgEl = this.backdrop.querySelector('.qv-image');
-    const descEl = this.backdrop.querySelector('.qv-desc');
-    const addBtn = this.backdrop.querySelector('#qv-add-btn');
-
-    if (titleEl) titleEl.textContent = product.title;
-    if (priceEl) priceEl.textContent = `$${product.price}`;
-    if (imgEl) imgEl.src = product.image;
-    if (descEl) descEl.textContent = product.desc;
-
-    if (addBtn) {
-      addBtn.onclick = () => {
-        window.themeCart?.addItem({
-          id: `qv-${Date.now()}`,
-          title: product.title,
-          price: parseFloat(product.price),
-          image: product.image,
-          variant: 'Size: M / Stealth Neon'
-        });
-        this.close();
-      };
-    }
-
-    this.backdrop.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  close() {
-    this.backdrop?.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-}
-
-/**
- * Color Studio Lighting Shift Controller
- */
-class ColorStudio {
-  constructor() {
-    this.swatches = document.querySelectorAll('.pdp-swatches-row .color-swatch-chip');
-    this.pdpSection = document.querySelector('.pdp-section');
-    this.aurora1 = document.querySelector('.aurora-orb-1');
-    this.aurora2 = document.querySelector('.aurora-orb-2');
-    this.heroScene = window.heroSceneInstance;
-
-    this.init();
-  }
-
-  init() {
-    this.swatches.forEach(swatch => {
-      swatch.addEventListener('click', () => {
-        this.swatches.forEach(s => s.classList.remove('active'));
-        swatch.classList.add('active');
-
-        const colorHex = swatch.getAttribute('data-color');
-        const colorName = swatch.getAttribute('data-name');
-        const label = document.querySelector('.pdp-selected-color-name');
-        if (label) label.textContent = colorName;
-
-        this.updateLighting(colorHex, colorName);
-      });
-    });
-  }
-
-  updateLighting(colorHex, colorName) {
-    if (this.aurora1) {
-      this.aurora1.style.background = `radial-gradient(circle, ${colorHex} 0%, transparent 70%)`;
-    }
-    if (window.heroSceneInstance) {
-      window.heroSceneInstance.setGarmentColor(colorHex, colorHex, colorName);
-    }
-  }
-}
-
-// Global initialization
-document.addEventListener('DOMContentLoaded', () => {
-  window.themeCart = new ThemeCart();
-  window.quickView = new QuickViewManager();
-  window.colorStudio = new ColorStudio();
-  window.bundleBuilder = new BundleBuilder();
-
-  // Initialize 3D Hero Scene
-  if (document.getElementById('hero-3d-canvas')) {
-    window.heroSceneInstance = new Hero3DScene('hero-3d-canvas');
-  }
-
-  // Initialize Fabric Weave Visualizer Canvas
-  if (document.getElementById('fabric-weave-canvas')) {
-    new FabricVisualizer('fabric-weave-canvas');
-  }
-
-  // Sticky Purchase Bar on PDP
-  const stickyBar = document.querySelector('.sticky-purchase-bar');
-  if (stickyBar) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 600) {
-        stickyBar.classList.add('visible');
-      } else {
-        stickyBar.classList.remove('visible');
-      }
-    });
-  }
-
-  // Wishlist Toggle
-  document.querySelectorAll('.product-card-wishlist').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      btn.classList.toggle('active');
-      const isLoved = btn.classList.contains('active');
-      window.themeCart?.showToast(isLoved ? 'Added to Cyber Wishlist ❤️' : 'Removed from Wishlist');
+    splits.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.7)));
+      $$('.word', el).forEach((w, i) => w.style.setProperty('--split-y', `${(1 - p) * (60 + i * 30)}%`));
     });
   });
-});
+  if (reduced) $$('.scrub').forEach((w) => w.classList.add('is-lit'));
+  else if (scrubs.length || splits.length) { window.addEventListener('scroll', onScrollFx, { passive: true }); window.addEventListener('resize', onScrollFx); onScrollFx(); }
+
+  /* ---------- Pointer niceties (desktop only) ---------- */
+  if (finePointer && !reduced) {
+    // Hero parallax
+    $$('[data-parallax-group]').forEach((g) => {
+      const items = $$('[data-depth]', g);
+      const host = g.closest('section') || g;
+      host.addEventListener('mousemove', raf((e) => {
+        const r = host.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        items.forEach((it) => { const d = parseFloat(it.dataset.depth); it.style.translate = `${x * d * 18}px ${y * d * 18}px`; });
+      }));
+      host.addEventListener('mouseleave', () => items.forEach((it) => (it.style.translate = '0 0')));
+    });
+
+    // Card tilt
+    document.addEventListener('mousemove', raf((e) => {
+      const card = e.target.closest && e.target.closest('[data-tilt]');
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 8}deg`);
+      card.style.setProperty('--rx', `${-((e.clientY - r.top) / r.height - 0.5) * 8}deg`);
+    }));
+    $$('[data-tilt]').forEach((c) => c.addEventListener('mouseleave', () => { c.style.setProperty('--rx', '0deg'); c.style.setProperty('--ry', '0deg'); }));
+
+    // Magnetic buttons
+    $$('[data-magnetic]').forEach((b) => {
+      b.addEventListener('mousemove', (e) => {
+        const r = b.getBoundingClientRect();
+        b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.18}px, ${(e.clientY - r.top - r.height / 2) * 0.28}px)`;
+      });
+      b.addEventListener('mouseleave', () => (b.style.transform = ''));
+    });
+
+    // Custom cursor
+    const cursor = $('[data-cursor]');
+    if (cursor) {
+      const label = $('[data-cursor-label]', cursor);
+      let x = 0, y = 0, cx = 0, cy = 0;
+      document.addEventListener('mousemove', (e) => {
+        x = e.clientX; y = e.clientY; cursor.classList.add('is-active');
+        const t = e.target.closest && e.target.closest('[data-cursor-text]');
+        cursor.classList.toggle('has-label', !!t);
+        if (t) label.textContent = t.dataset.cursorText;
+      });
+      document.addEventListener('mouseleave', () => cursor.classList.remove('is-active'));
+      const loop = () => { cx += (x - cx) * 0.22; cy += (y - cy) * 0.22; cursor.style.transform = `translate(${cx}px, ${cy}px)`; requestAnimationFrame(loop); };
+      loop();
+    }
+  }
+
+  /* ---------- Drag to scroll rails ---------- */
+  $$('[data-drag-scroll]').forEach((rail) => {
+    let down = false, sx = 0, sl = 0, moved = false;
+    rail.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = rail.scrollLeft; });
+    window.addEventListener('pointermove', (e) => { if (!down) return; const dx = e.clientX - sx; if (Math.abs(dx) > 4) { moved = true; rail.classList.add('is-dragging'); } rail.scrollLeft = sl - dx; });
+    window.addEventListener('pointerup', () => { down = false; rail.classList.remove('is-dragging'); });
+    rail.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
+  });
+
+  /* ---------- Product page ---------- */
+  $$('[data-pdp]').forEach((root) => {
+    const json = $('[data-product-json]', root);
+    const product = json ? JSON.parse(json.textContent) : null;
+    const form = $('[data-product-form]', root);
+    const idInput = form && $('input[name="id"]', form);
+    const priceEl = $('[data-pdp-price]', root);
+    const btn = $('[data-add-btn]', root);
+    const btnLabel = btn && $('[data-add-label]', btn);
+    const sticky = $('[data-pdp-sticky]');
+
+    const currentOptions = () => $$('[data-option-index]', root).map((fs) => { const c = $('input:checked', fs); return c ? c.value : null; });
+    const update = () => {
+      if (!product) return;
+      const opts = currentOptions();
+      const v = product.variants.find((x) => x.options.every((o, i) => o === opts[i]));
+      if (!v) { if (btn) btn.disabled = true; if (btnLabel) btnLabel.textContent = 'Unavailable'; return; }
+      if (idInput) idInput.value = v.id;
+      if (priceEl) priceEl.innerHTML = J.formatMoney(v.price) + (v.compare_at_price > v.price ? ` <s class="price__compare">${J.formatMoney(v.compare_at_price)}</s>` : '');
+      if (btn) btn.disabled = !v.available;
+      if (btnLabel) btnLabel.textContent = v.available ? (J.strings.addToCart || 'Add to bag') : (J.strings.soldOut || 'Sold out');
+      $$('[data-option-label]', root).forEach((l, i) => (l.textContent = opts[i] || ''));
+      if (v.featured_media) {
+        const m = $(`[data-media-id="${v.featured_media.id}"]`, root);
+        if (m && window.innerWidth < 990) m.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+      const url = new URL(window.location.href);
+      url.searchParams.set('variant', v.id);
+      window.history.replaceState({}, '', url.toString());
+    };
+    root.addEventListener('change', (e) => { if (e.target.closest('[data-option-index]')) update(); });
+
+    // Quantity stepper
+    $$('[data-qty-step]', root).forEach((b) => b.addEventListener('click', () => {
+      const input = $('input[name="quantity"]', root);
+      input.value = Math.max(1, Number(input.value || 1) + Number(b.dataset.qtyStep));
+    }));
+
+    // Hover zoom
+    if (finePointer) $$('.pdp__media', root).forEach((m) => {
+      m.addEventListener('click', () => m.classList.toggle('is-zoom'));
+      m.addEventListener('mousemove', (e) => { const r = m.getBoundingClientRect(); m.style.setProperty('--zx', `${((e.clientX - r.left) / r.width) * 100}%`); m.style.setProperty('--zy', `${((e.clientY - r.top) / r.height) * 100}%`); });
+      m.addEventListener('mouseleave', () => m.classList.remove('is-zoom'));
+    });
+
+    // Sticky add bar on mobile
+    if (sticky && btn && io) {
+      new IntersectionObserver(([en]) => sticky.classList.toggle('is-visible', !en.isIntersecting && en.boundingClientRect.top < 0)).observe(btn);
+      $('[data-sticky-add]', sticky).addEventListener('click', () => btn.click());
+    }
+  });
+
+  /* ---------- Theme editor support ---------- */
+  document.addEventListener('shopify:section:load', (e) => { observeReveals(e.target); initBands(e.target); initCrew(e.target); });
+})();

@@ -1,103 +1,380 @@
 {
-  "name": "Homepage",
   "sections": {
-    "announcement": {
-      "type": "announcement-bar",
-      "settings": {
-        "text": "⚡ FREE EXPRESS SHIPPING ON ORDERS OVER $75 • 100% FIT GUARANTEE"
-      }
-    },
     "hero": {
       "type": "hero",
       "settings": {
-        "tagline": "Y2K CYBER LUXURY • GEN-Z COMFORT",
-        "headline": "MOVE DIFFERENT.",
-        "subheading": "Engineered for everyday confidence. 3x softer than cotton MicroModal with zero ride-up contour physics.",
-        "btn_1_text": "Shop Men",
-        "btn_2_text": "Build 30% Off Bundle"
-      },
-      "blocks": {
-        "badge_1": { "type": "trust_badge", "settings": { "title": "Ultra Soft MicroModal", "icon": "feather" } },
-        "badge_2": { "type": "trust_badge", "settings": { "title": "Breathable Air-Mesh", "icon": "wind" } },
-        "badge_3": { "type": "trust_badge", "settings": { "title": "4-Way Hyper Stretch", "icon": "maximize-2" } },
-        "badge_4": { "type": "trust_badge", "settings": { "title": "Zero Ride-Up Guarantee", "icon": "shield-check" } }
-      },
-      "block_order": ["badge_1", "badge_2", "badge_3", "badge_4"]
-    },
-    "featured_collections": {
-      "type": "featured-collections",
-      "settings": {
-        "heading": "NEXT-GEN SILHOUETTES"
-      },
-      "blocks": {
-        "col_1": { "type": "collection_card", "settings": { "title": "CYBER TRUNKS", "tagline": "SIGNATURE FIT", "subtitle": "Mid-thigh contour cut with zero pinch." } },
-        "col_2": { "type": "collection_card", "settings": { "title": "LOOSE BOXERS", "tagline": "AIR-FLOW RELAXED", "subtitle": "Featherlight lounge boxers with anti-friction seams." } },
-        "col_3": { "type": "collection_card", "settings": { "title": "SPORT BRIEFS", "tagline": "AERODYNAMIC CUT", "subtitle": "High-leg dynamic freedom for athletic power." } },
-        "col_4": { "type": "collection_card", "settings": { "title": "CYBER PACKS", "tagline": "BEST VALUE", "subtitle": "Curated bundles with up to 50% savings." } }
-      },
-      "block_order": ["col_1", "col_2", "col_3", "col_4"]
-    },
-    "fabric_story": {
-      "type": "fabric-story",
-      "blocks": {
-        "chap_1": { "type": "chapter", "settings": { "title": "Cloud Soft MicroModal", "badge": "PROPRIETARY WEAVE", "stat_1_val": "2.0X", "stat_1_label": "Softer Than Cotton", "stat_2_val": "50%", "stat_2_label": "More Breathable" } },
-        "chap_2": { "type": "chapter", "settings": { "title": "4-Way Hyper Stretch", "badge": "MOTION BIOMETRICS", "stat_1_val": "360°", "stat_1_label": "Expansion Range", "stat_2_val": "99.4%", "stat_2_label": "Elastic Retention" } },
-        "chap_3": { "type": "chapter", "settings": { "title": "Sweat-Free Air Mesh", "badge": "THERMOREGULATION", "stat_1_val": "3X", "stat_1_label": "Faster Moisture Wick", "stat_2_val": "-2.5°C", "stat_2_label": "Cooling Effect" } },
-        "chap_4": { "type": "chapter", "settings": { "title": "Sustainable Eco-Craft", "badge": "CIRCULAR FUTURE", "stat_1_val": "99%", "stat_1_label": "Water Recycled", "stat_2_val": "100%", "stat_2_label": "OEKO-TEX Certified" } }
-      },
-      "block_order": ["chap_1", "chap_2", "chap_3", "chap_4"]
-    },
-    "bundle_builder": {
-      "type": "bundle-builder",
-      "settings": {
-        "title": "PACK & SAVE UP TO 50%"
+        "scheme": "lime",
+        "eyebrow": "Summer trunks",
+        "eyebrow_2": "Drop 01",
+        "heading": "Wear/it/loud.",
+        "subheading": "Underwear with the volume up.",
+        "text": "<p>Soft, stretchy and built for everything the day throws at you. Gym. Office. Rooftop. Same trunks.</p>",
+        "button_label": "Shop new prints",
+        "button_2_label": "Meet the crew",
+        "button_2_link": "#crew",
+        "fallback": "photo-pool.jpg",
+        "image_alt": "Jumper trunks with blue camo waistband at the pool",
+        "chip": "New in",
+        "chip_color": "yellow",
+        "badge_text": "Wear it loud ✦ Play loud ✦ Band first ✦ "
       }
     },
-    "lifestyle": {
-      "type": "lifestyle-story",
+    "cross": {
+      "type": "ticker-cross",
       "settings": {
-        "tagline": "UNFILTERED FREEDOM",
-        "quote": "We didn't just redesign underwear. We eliminated friction from modern living."
+        "text_a": "Wear it loud,Play loud,Band first",
+        "text_b": "Soft stretch,Loud bands,Made to move,Free shipping all India",
+        "speed": 30
       }
     },
-    "marquee": {
-      "type": "marquee",
-      "settings": {}
-    },
-    "product_grid": {
-      "type": "product-grid",
+    "featured": {
+      "type": "featured-collection",
       "settings": {
-        "heading": "EXPLORE ALL DROPS",
-        "products_to_show": 6
+        "scheme": "paper",
+        "number": "01",
+        "label": "New in",
+        "heading": "New prints. Loud on purpose.",
+        "text": "Soft stretch bodies. Woven bands that never hide. Pick a print, pick a size, done.",
+        "limit": 4,
+        "tabs": "cyan,orange,yellow,pink",
+        "link_label": "Shop all trunks"
       }
     },
-    "reviews": {
-      "type": "reviews-carousel",
-      "settings": {
-        "title": "10,000+ COMFORT REBELS"
-      },
+    "bands": {
+      "type": "band-explorer",
       "blocks": {
-        "rev_1": { "type": "review", "settings": { "author": "KAI S.", "location": "Verified Cyber Buyer • Tokyo", "quote": "Literally the softest pair I have ever put on. Feels weightless during 12-hour studio sessions." } },
-        "rev_2": { "type": "review", "settings": { "author": "MARCUS V.", "location": "Verified Athlete • Los Angeles", "quote": "The 4-way stretch is unmatched. I threw out every ordinary cotton pair I owned." } },
-        "rev_3": { "type": "review", "settings": { "author": "ELENA R.", "location": "Fashion Director • Berlin", "quote": "The aesthetics are insane, but the moisture wicking is the real magic. Zero sweat, zero chafing." } }
+        "b1": {
+          "type": "band",
+          "settings": {
+            "title": "Blue camo print",
+            "type": "Print",
+            "fallback": "band-blue-camo.jpg",
+            "swatch": "cyan"
+          }
+        },
+        "b2": {
+          "type": "band",
+          "settings": {
+            "title": "Orange wave print",
+            "type": "Print",
+            "fallback": "band-orange-wave.jpg",
+            "swatch": "orange"
+          }
+        },
+        "b3": {
+          "type": "band",
+          "settings": {
+            "title": "Lime shadow camo",
+            "type": "Print",
+            "fallback": "band-lime-shadow.jpg",
+            "swatch": "lime"
+          }
+        },
+        "b4": {
+          "type": "band",
+          "settings": {
+            "title": "Black elastic, orange piping",
+            "type": "Elastic",
+            "fallback": "band-black-orange-piping.jpg",
+            "swatch": "orange"
+          }
+        },
+        "b5": {
+          "type": "band",
+          "settings": {
+            "title": "Orange woven mesh",
+            "type": "Woven",
+            "fallback": "band-orange-mesh.jpg",
+            "swatch": "orange"
+          }
+        },
+        "b6": {
+          "type": "band",
+          "settings": {
+            "title": "Navy woven repeat",
+            "type": "Woven",
+            "fallback": "band-navy-repeat.jpg",
+            "swatch": "ink"
+          }
+        },
+        "b7": {
+          "type": "band",
+          "settings": {
+            "title": "Black woven label",
+            "type": "Woven",
+            "fallback": "band-black-woven.jpg",
+            "swatch": "ink"
+          }
+        },
+        "b8": {
+          "type": "band",
+          "settings": {
+            "title": "White elastic, Ink wordmark",
+            "type": "Elastic",
+            "fallback": "band-white-elastic.jpg",
+            "swatch": "paper"
+          }
+        }
       },
-      "block_order": ["rev_1", "rev_2", "rev_3"]
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "b7",
+        "b8"
+      ],
+      "settings": {
+        "number": "02",
+        "label": "Waistband signature",
+        "heading": "The band is the billboard.",
+        "text": "Wordmark front and centre, repeated across the band. Waistband peeking, never hidden."
+      }
     },
-    "instagram": {
-      "type": "instagram-feed",
-      "settings": {}
+    "world": {
+      "type": "crew-world",
+      "blocks": {
+        "w1": {
+          "type": "setting",
+          "settings": {
+            "tag": "Court",
+            "title": "Gym and court",
+            "caption": "Sport details that echo the print.",
+            "fallback": "photo-court.jpg",
+            "tab": "orange"
+          }
+        },
+        "w2": {
+          "type": "setting",
+          "settings": {
+            "tag": "Street",
+            "title": "Office to street",
+            "caption": "Waistband peeking, never hidden.",
+            "fallback": "photo-denim.jpg",
+            "tab": "cyan"
+          }
+        },
+        "w3": {
+          "type": "setting",
+          "settings": {
+            "tag": "Beach",
+            "title": "Travel and beach",
+            "caption": "Sun, sand and zero effort.",
+            "fallback": "photo-beach.jpg",
+            "tab": "yellow"
+          }
+        },
+        "w4": {
+          "type": "setting",
+          "settings": {
+            "tag": "Pool",
+            "title": "Social and pool",
+            "caption": "Splash-ready and photo-ready.",
+            "fallback": "photo-pool.jpg",
+            "tab": "pink"
+          }
+        }
+      },
+      "block_order": [
+        "w1",
+        "w2",
+        "w3",
+        "w4"
+      ],
+      "settings": {
+        "number": "03",
+        "label": "The Crew's world",
+        "heading": "Gym. Office. Rooftop. Same trunks.",
+        "text": "Four settings, one wardrobe. Jumper has to look right in all of them."
+      }
+    },
+    "campaign": {
+      "type": "campaign-banner",
+      "blocks": {
+        "f1": {
+          "type": "feature",
+          "settings": {
+            "feature": "Woven band",
+            "code": "JMP-01"
+          }
+        },
+        "f2": {
+          "type": "feature",
+          "settings": {
+            "feature": "Soft stretch body",
+            "code": "JMP-02"
+          }
+        },
+        "f3": {
+          "type": "feature",
+          "settings": {
+            "feature": "Loud print",
+            "code": "JMP-03"
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "settings": {
+        "heading": "New/prints",
+        "story_label": "Product story",
+        "text": "Woven band, soft stretch body, loud print. Serious product. Bold attitude.",
+        "button_label": "Shop the drop",
+        "chip": "Blue camo",
+        "panel": "cyan"
+      }
+    },
+    "crew": {
+      "type": "banana-crew",
+      "blocks": {
+        "c1": {
+          "type": "character",
+          "settings": {
+            "character": "jump",
+            "name": "Jump",
+            "mood": "Pure joy."
+          }
+        },
+        "c2": {
+          "type": "character",
+          "settings": {
+            "character": "surf",
+            "name": "Surf",
+            "mood": "Beach days."
+          }
+        },
+        "c3": {
+          "type": "character",
+          "settings": {
+            "character": "stroll",
+            "name": "Stroll",
+            "mood": "Every day."
+          }
+        },
+        "c4": {
+          "type": "character",
+          "settings": {
+            "character": "lounge",
+            "name": "Lounge",
+            "mood": "Easy comfort."
+          }
+        },
+        "c5": {
+          "type": "character",
+          "settings": {
+            "character": "skate",
+            "name": "Skate",
+            "mood": "Street energy."
+          }
+        },
+        "c6": {
+          "type": "character",
+          "settings": {
+            "character": "thumbs",
+            "name": "Thumbs up",
+            "mood": "Good to go."
+          }
+        },
+        "c7": {
+          "type": "character",
+          "settings": {
+            "character": "wink",
+            "name": "Wink",
+            "mood": "Cheeky charm."
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7"
+      ],
+      "settings": {
+        "number": "04",
+        "label": "The Banana Crew",
+        "heading": "Pick your mood.",
+        "text": "Seven characters. Same line weight, same cheeky spirit, a new pose for every mood.",
+        "button_label": "Shop the mood"
+      }
+    },
+    "manifesto": {
+      "type": "manifesto",
+      "blocks": {
+        "t1": {
+          "type": "trait",
+          "settings": {
+            "title": "Cheeky",
+            "text": "A wink, never a smirk. Humour that feels like a friend nudging you."
+          }
+        },
+        "t2": {
+          "type": "trait",
+          "settings": {
+            "title": "Bold",
+            "text": "Loud prints, loud bands, loud colour. Jumper never whispers."
+          }
+        },
+        "t3": {
+          "type": "trait",
+          "settings": {
+            "title": "Active",
+            "text": "Made for courts, beaches and pool decks. Always in motion."
+          }
+        },
+        "t4": {
+          "type": "trait",
+          "settings": {
+            "title": "Easy",
+            "text": "Confident without trying. Comfort first, no fuss."
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ],
+      "settings": {
+        "scheme": "ink",
+        "number": "05",
+        "label": "The core philosophy",
+        "statement": "*Serious* product. *Bold* attitude. Real quality with a Gen-Z grin. The antithesis of basic, functional inner-wear and of sterile, premium-minimalist labels.",
+        "say": "Wear it loud.",
+        "not": "Our garments are available in a range of vibrant options."
+      }
+    },
+    "join": {
+      "type": "join-crew",
+      "settings": {
+        "frame_text": "Wear it loud",
+        "label": "The Crew",
+        "heading": "Join the Crew.",
+        "text": "First dibs on new prints, drops and the occasional cheeky surprise.",
+        "button_label": "I'm in",
+        "fine_print": "No spam. Unsubscribe any time.",
+        "character": "wink"
+      }
     }
   },
   "order": [
-    "announcement",
     "hero",
-    "featured_collections",
-    "fabric_story",
-    "bundle_builder",
-    "lifestyle",
-    "marquee",
-    "product_grid",
-    "reviews",
-    "instagram"
+    "cross",
+    "featured",
+    "bands",
+    "world",
+    "campaign",
+    "crew",
+    "manifesto",
+    "join"
   ]
 }

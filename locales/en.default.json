@@ -1,20 +1,135 @@
 {
   "general": {
-    "cart": {
-      "view": "View Bag",
-      "checkout": "Proceed To Checkout",
-      "empty": "Your cyber bag is currently empty."
-    },
-    "search": {
-      "search": "Search Cyber Drops"
-    }
+    "home": "Home",
+    "page": "Page {{ page }}",
+    "pagination": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "404_title": "Wrong turn. Cheeky.",
+    "404_text": "This page jumped off somewhere. The trunks are still right here."
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "menu": "Open menu",
+    "close": "Close",
+    "search": "Search",
+    "account": "Account",
+    "cart": "Open bag",
+    "primary_nav": "Primary",
+    "mobile_nav": "Mobile",
+    "announcement": "Announcements"
   },
   "products": {
-    "product": {
-      "add_to_cart": "Add To Cyber Bag",
-      "sold_out": "Drop Sold Out",
-      "on_sale": "Sale",
-      "quantity": "Quantity"
-    }
+    "add_to_cart": "Add to bag",
+    "add_variant": "Add size {{ variant }} to bag",
+    "sold_out": "Sold out",
+    "sale": "Sale",
+    "new_in": "New in",
+    "from": "From",
+    "quick_add": "Quick add",
+    "size_guide": "Size guide",
+    "print": "Print",
+    "details": "Details",
+    "fit": "Fit",
+    "body": "Body",
+    "band": "Band",
+    "care": "Care",
+    "tax_included": "Taxes included. Free shipping all India."
+  },
+  "cart": {
+    "title": "Your bag",
+    "bag": "Bag",
+    "items": "Items",
+    "added": "Added. Loud choice.",
+    "error": "That didn't work. Try again?",
+    "empty": "Your bag is empty. Not for long.",
+    "continue": "Shop trunks",
+    "subtotal": "Subtotal",
+    "taxes_note": "Taxes and shipping calculated at checkout.",
+    "checkout": "Check out",
+    "view": "View bag",
+    "remove": "Remove",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "quantity": "Quantity",
+    "note": "Order note",
+    "update": "Update bag",
+    "free_shipping_remaining": "{{ amount }} away from free shipping",
+    "free_shipping_unlocked": "Free shipping unlocked ✦"
+  },
+  "collections": {
+    "styles": "Styles",
+    "collections": "Collections",
+    "all_title": "All collections",
+    "sort": "Sort by",
+    "clear": "Clear",
+    "from": "From",
+    "to": "To",
+    "no_match": "Nothing matches. Loosen the filters."
+  },
+  "search": {
+    "title": "Search",
+    "results": "Results",
+    "placeholder": "Try “camo” or “trunk”",
+    "submit": "Search",
+    "none": "Nothing for “{{ terms }}”. Try another word."
+  },
+  "newsletter": {
+    "label": "Email",
+    "placeholder": "you@email.com",
+    "success": "You're in the Crew.",
+    "notify": "Notify me"
+  },
+  "sections": {
+    "manifesto": { "say": "Say it like this", "not": "Not like this" }
+  },
+  "contact": {
+    "label": "Get in touch",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send it",
+    "success": "Got it. We'll get back to you soon."
+  },
+  "blog": { "stories": "Stories", "back": "Back to the journal" },
+  "password": { "owner": "Store owner? Enter here", "placeholder": "Password", "enter": "Enter" },
+  "gift_card": { "title": "Gift card", "expired": "Expired", "shop": "Start shopping", "print": "Print" },
+  "customer": {
+    "login": "Log in",
+    "sign_in": "Sign in",
+    "create": "Create account",
+    "forgot": "Forgot your password?",
+    "recover_sent": "Check your email for a reset link.",
+    "reset": "Reset password",
+    "guest": "Continue as guest",
+    "email": "Email",
+    "password": "Password",
+    "password_confirm": "Confirm password",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "account": "Account",
+    "hey": "Hey {{ name }}.",
+    "orders": "Order history",
+    "order": "Order",
+    "date": "Date",
+    "status": "Status",
+    "total": "Total",
+    "product": "Product",
+    "no_orders": "No orders yet. Your drawer is waiting.",
+    "addresses": "Addresses",
+    "logout": "Log out",
+    "back": "Back to account",
+    "billing": "Billing address",
+    "shipping": "Shipping address",
+    "address1": "Address",
+    "city": "City",
+    "country": "Country",
+    "zip": "PIN code",
+    "phone": "Phone",
+    "set_default": "Set as default",
+    "add_address": "Add address",
+    "delete": "Delete",
+    "delete_confirm": "Delete this address?",
+    "activate": "Activate account"
   }
 }

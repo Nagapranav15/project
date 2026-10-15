@@ -1,0 +1,15 @@
+<section class="page-hero scheme-{{ section.settings.scheme }}">
+  <div class="container">
+    <p class="t-label section-head__label"><span class="num">✦</span> {{ shop.name }}</p>
+    <h1 class="t-display page-hero__title">{{ page.title }}</h1>
+  </div>
+</section>
+<section class="section scheme-paper">
+  <div class="container"><div class="prose rte t-body">{{ page.content }}</div></div>
+</section>
+{% schema %}
+{
+  "name": "Page",
+  "settings": [{ "type": "select", "id": "scheme", "label": "Header ground", "default": "lime", "options": [{ "value": "lime", "label": "Lime" }, { "value": "ink", "label": "Ink" }, { "value": "paper", "label": "Paper" }] }]
+}
+{% endschema %}

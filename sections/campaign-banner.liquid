@@ -1,0 +1,64 @@
+{%- comment -%} Campaign banner (Guidelines p.60): message · story · product panel. Lime type on Ink, one Cyan panel at ~20%. {%- endcomment -%}
+{%- assign lines = section.settings.heading | split: '/' -%}
+<section class="section section--tight campaign" id="campaign">
+  <div class="container">
+    <div class="campaign__card scheme-ink">
+      <div class="campaign__message">
+        <h2 class="t-display campaign__title" data-split-scroll>
+          {%- for line in lines -%}<span class="ln"><span class="word">{{ line | strip }}</span></span>{%- endfor -%}
+        </h2>
+        {% render 'logo-wordmark', class: 'campaign__wordmark' %}
+      </div>
+
+      <div class="campaign__story">
+        <p class="t-label">{{ section.settings.story_label }}</p>
+        <table class="spec spec--dark">
+          <tbody>
+            {%- for block in section.blocks -%}
+              <tr {{ block.shopify_attributes }}>
+                <td class="t-label">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</td>
+                <td>{{ block.settings.feature }}</td>
+                <td class="t-label">{{ block.settings.code }}</td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+        <p class="t-body campaign__text">{{ section.settings.text }}</p>
+        <a class="btn btn--lime-on-ink" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" data-magnetic>{{ section.settings.button_label }} {% render 'icon', icon: 'arrow' %}</a>
+      </div>
+
+      <div class="campaign__panel" style="--panel: var(--{{ section.settings.panel }})">
+        <figure class="campaign__frame">
+          {% render 'image', image: section.settings.image, fallback: 'product-fan.jpg', alt: section.settings.chip, class: 'campaign__img', sizes: '(min-width: 990px) 25vw, 80vw' %}
+        </figure>
+        <span class="chip chip--lime campaign__chip">{{ section.settings.chip }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Campaign banner",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Use / for a line break.", "default": "New/prints" },
+    { "type": "text", "id": "story_label", "label": "Story label", "default": "Product story" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Woven band, soft stretch body, loud print. Serious product. Bold attitude." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop the drop" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "image_picker", "id": "image", "label": "Product photo" },
+    { "type": "text", "id": "chip", "label": "Chip", "default": "Blue camo" },
+    { "type": "select", "id": "panel", "label": "Panel colour", "default": "cyan", "options": [
+      { "value": "cyan", "label": "Cyan" }, { "value": "orange", "label": "Orange" }, { "value": "yellow", "label": "Yellow" }, { "value": "pink", "label": "Pink" }, { "value": "purple", "label": "Purple" }
+    ]}
+  ],
+  "blocks": [
+    { "type": "feature", "name": "Spec row", "settings": [
+      { "type": "text", "id": "feature", "label": "Feature", "default": "Woven band" },
+      { "type": "text", "id": "code", "label": "Code", "default": "JMP-01" }
+    ]}
+  ],
+  "max_blocks": 5,
+  "presets": [{ "name": "Campaign banner", "blocks": [{ "type": "feature" }] }]
+}
+{% endschema %}

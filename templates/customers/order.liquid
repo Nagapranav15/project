@@ -1,0 +1,29 @@
+<section class="page-hero scheme-lime">
+  <div class="container">
+    <p class="t-label section-head__label"><span class="num">✦</span> {{ order.created_at | date: '%d %b %Y' }}</p>
+    <h1 class="t-display page-hero__title">{{ 'customer.order' | t }} {{ order.name }}</h1>
+  </div>
+</section>
+<section class="section scheme-paper">
+  <div class="container">
+    <p style="margin-bottom: 24px"><a class="link-arrow" href="{{ routes.account_url }}">{{ 'customer.back' | t }}</a></p>
+    <table class="account-table">
+      <thead><tr><th class="t-label">{{ 'customer.product' | t }}</th><th class="t-label">{{ 'cart.quantity' | t }}</th><th class="t-label">{{ 'customer.total' | t }}</th></tr></thead>
+      <tbody>
+        {%- for line_item in order.line_items -%}
+          <tr><td>{{ line_item.title | link_to: line_item.product.url }}</td><td>{{ line_item.quantity }}</td><td>{{ line_item.final_line_price | money }}</td></tr>
+        {%- endfor -%}
+      </tbody>
+      <tfoot>
+        <tr><td colspan="2" class="t-label">{{ 'cart.subtotal' | t }}</td><td>{{ order.line_items_subtotal_price | money }}</td></tr>
+        {%- for shipping_method in order.shipping_methods -%}<tr><td colspan="2" class="t-label">{{ shipping_method.title }}</td><td>{{ shipping_method.price | money }}</td></tr>{%- endfor -%}
+        {%- for tax_line in order.tax_lines -%}<tr><td colspan="2" class="t-label">{{ tax_line.title }}</td><td>{{ tax_line.price | money }}</td></tr>{%- endfor -%}
+        <tr><td colspan="2" class="t-label">{{ 'customer.total' | t }}</td><td class="t-subhead">{{ order.total_price | money_with_currency }}</td></tr>
+      </tfoot>
+    </table>
+    <div class="cart-page__grid" style="margin-top: 48px">
+      <div><p class="t-label" style="margin-bottom: 8px">{{ 'customer.billing' | t }}</p>{{ order.billing_address | format_address }}</div>
+      {%- if order.shipping_address -%}<div><p class="t-label" style="margin-bottom: 8px">{{ 'customer.shipping' | t }}</p>{{ order.shipping_address | format_address }}</div>{%- endif -%}
+    </div>
+  </div>
+</section>

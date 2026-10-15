@@ -1,0 +1,61 @@
+<section class="section scheme-paper world" id="world">
+  <div class="container">
+    <header class="section-head">
+      <div>
+        <p class="t-label section-head__label reveal"><span class="num">{{ section.settings.number }}</span> {{ section.settings.label }}</p>
+        <h2 class="t-headline reveal" style="--d: 1">{{ section.settings.heading }}</h2>
+      </div>
+      <p class="t-body section-head__side reveal" style="--d: 2">{{ section.settings.text }}</p>
+    </header>
+  </div>
+
+  <div class="world__rail" data-drag-scroll>
+    {%- for block in section.blocks -%}
+      <a class="world__card reveal" href="{{ block.settings.link | default: routes.all_products_collection_url }}" style="--tab: var(--{{ block.settings.tab }}); --i: {{ forloop.index0 }}" data-cursor-text="Shop" {{ block.shopify_attributes }}>
+        <figure class="world__media">
+          {% render 'image', image: block.settings.image, fallback: block.settings.fallback, alt: block.settings.title, class: 'world__img', sizes: '(min-width: 990px) 25vw, 75vw' %}
+        </figure>
+        <div class="world__tab">
+          <span class="t-label">{{ block.settings.tag }}</span>
+          {% render 'icon', icon: 'arrow' %}
+        </div>
+        <h3 class="world__title">{{ block.settings.title }}</h3>
+        <p class="world__caption">{{ block.settings.caption }}</p>
+      </a>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "The Crew's world",
+  "settings": [
+    { "type": "text", "id": "number", "label": "Section number", "default": "03" },
+    { "type": "text", "id": "label", "label": "Label", "default": "The Crew's world" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Gym. Office. Rooftop. Same trunks." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Four settings, one wardrobe. Jumper has to look right in all of them." }
+  ],
+  "blocks": [
+    {
+      "type": "setting",
+      "name": "Setting",
+      "settings": [
+        { "type": "text", "id": "tag", "label": "Tab label", "default": "Court" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Gym and court" },
+        { "type": "text", "id": "caption", "label": "Caption", "default": "Sport details that echo the print." },
+        { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "select", "id": "fallback", "label": "Bundled photo", "default": "photo-court.jpg", "options": [
+          { "value": "photo-court.jpg", "label": "Court" }, { "value": "photo-denim.jpg", "label": "Studio denim" },
+          { "value": "photo-beach.jpg", "label": "Beach" }, { "value": "photo-pool.jpg", "label": "Pool" }, { "value": "photo-garden.jpg", "label": "Garden" }
+        ]},
+        { "type": "select", "id": "tab", "label": "Tab colour", "default": "orange", "options": [
+          { "value": "yellow", "label": "Yellow" }, { "value": "cyan", "label": "Cyan" }, { "value": "orange", "label": "Orange" }, { "value": "pink", "label": "Pink" }, { "value": "lime", "label": "Lime" }
+        ]},
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{ "name": "The Crew's world", "blocks": [{ "type": "setting" }] }]
+}
+{% endschema %}

@@ -1,0 +1,33 @@
+{%- layout none -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ 'gift_card.title' | t }} – {{ shop.name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
+    {{ content_for_header }}
+  </head>
+  <body class="scheme-lime">
+    <main class="auth">
+      <div class="auth__card window">
+        <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">gift_card.exe</span></div>
+        <div class="window__body" style="text-align: center; justify-items: center">
+          {% render 'logo-wordmark', class: 'header__wordmark' %}
+          <p class="t-label">{{ 'gift_card.title' | t }}</p>
+          <p class="t-display" style="font-size: clamp(48px, 10vw, 96px)">{{ gift_card.balance | money }}</p>
+          {%- if gift_card.enabled == false or gift_card.expired -%}<p class="chip chip--pink">{{ 'gift_card.expired' | t }}</p>{%- endif -%}
+          <p class="t-subhead" style="border: 2px dashed var(--ink); padding: 16px 24px">{{ gift_card.code | format_code }}</p>
+          <div id="QrCode" data-identifier="{{ gift_card.qr_identifier }}"></div>
+          <a class="btn" href="{{ shop.url }}">{{ 'gift_card.shop' | t }}</a>
+          <button class="link-arrow" type="button" onclick="window.print()">{{ 'gift_card.print' | t }}</button>
+        </div>
+      </div>
+    </main>
+    <script>
+      window.addEventListener('load', () => { const q = document.getElementById('QrCode'); if (window.QRCode && q) new QRCode(q, { text: q.dataset.identifier, width: 120, height: 120 }); });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<section class="page-hero scheme-lime">
+  <div class="container">
+    <h1 class="t-display page-hero__title">{{ 'customer.addresses' | t }}</h1>
+  </div>
+</section>
+<section class="section scheme-paper">
+  <div class="container cart-page__grid">
+    <div style="display: grid; gap: 16px">
+      <p><a class="link-arrow" href="{{ routes.account_url }}">{{ 'customer.back' | t }}</a></p>
+      {%- paginate customer.addresses by 10 -%}
+        {%- for address in customer.addresses -%}
+          <div class="window">
+            <div class="window__bar"><span class="t-label">{% if address == customer.default_address %}default{% else %}address_{{ forloop.index }}{% endif %}</span></div>
+            <div style="padding: 16px; display: grid; gap: 12px">
+              <div>{{ address | format_address }}</div>
+              <form method="post" action="/account/addresses/{{ address.id }}">
+                <input type="hidden" name="_method" value="delete">
+                <button class="link-arrow" type="submit" onclick="return confirm('{{ 'customer.delete_confirm' | t }}')">{{ 'customer.delete' | t }}</button>
+              </form>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endpaginate -%}
+    </div>
+    <div class="window">
+      <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">new_address.exe</span></div>
+      <div style="padding: 24px">
+        {%- form 'customer_address', customer.new_address, class: 'form' -%}
+          <div class="field"><label class="t-label" for="AddrFirst">{{ 'customer.first_name' | t }}</label><input id="AddrFirst" name="address[first_name]" autocomplete="given-name"></div>
+          <div class="field"><label class="t-label" for="AddrLast">{{ 'customer.last_name' | t }}</label><input id="AddrLast" name="address[last_name]" autocomplete="family-name"></div>
+          <div class="field"><label class="t-label" for="Addr1">{{ 'customer.address1' | t }}</label><input id="Addr1" name="address[address1]" autocomplete="address-line1"></div>
+          <div class="field"><label class="t-label" for="AddrCity">{{ 'customer.city' | t }}</label><input id="AddrCity" name="address[city]" autocomplete="address-level2"></div>
+          <div class="field"><label class="t-label" for="AddrCountry">{{ 'customer.country' | t }}</label><select id="AddrCountry" name="address[country]">{{ all_country_option_tags }}</select></div>
+          <div class="field"><label class="t-label" for="AddrZip">{{ 'customer.zip' | t }}</label><input id="AddrZip" name="address[zip]" autocomplete="postal-code"></div>
+          <div class="field"><label class="t-label" for="AddrPhone">{{ 'customer.phone' | t }}</label><input id="AddrPhone" type="tel" name="address[phone]" autocomplete="tel"></div>
+          <label style="display: flex; gap: 8px"><input type="checkbox" name="address[default]" value="1"> {{ 'customer.set_default' | t }}</label>
+          <button class="btn" type="submit">{{ 'customer.add_address' | t }}</button>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</section>

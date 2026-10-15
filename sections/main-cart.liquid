@@ -1,0 +1,66 @@
+<section class="page-hero scheme-lime">
+  <div class="container">
+    <p class="t-label section-head__label"><span class="num">{{ cart.item_count }}</span> {{ 'cart.items' | t }}</p>
+    <h1 class="t-display page-hero__title">{{ 'cart.title' | t }}</h1>
+    {% render 'character', name: 'thumbs', class: 'page-hero__char' %}
+  </div>
+</section>
+<section class="section scheme-paper cart-page">
+  <div class="container">
+    {%- if cart.item_count == 0 -%}
+      <div class="empty">
+        {% render 'character', name: 'lounge' %}
+        <p class="t-subhead">{{ 'cart.empty' | t }}</p>
+        <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue' | t }} {% render 'icon', icon: 'arrow' %}</a>
+      </div>
+    {%- else -%}
+      <form action="{{ routes.cart_url }}" method="post" class="cart-page__grid" id="CartForm">
+        <ul role="list" style="border-top: 2px solid var(--ink)">
+          {%- for item in cart.items -%}
+            <li class="line">
+              <a class="line__media" href="{{ item.url }}">{%- if item.image -%}{{ item.image | image_url: width: 360 | image_tag: loading: 'lazy', alt: item.title }}{%- endif -%}</a>
+              <div class="line__info">
+                <a class="line__title" href="{{ item.url }}">{{ item.product.title }}</a>
+                {%- unless item.product.has_only_default_variant -%}<p class="t-label line__variant">{{ item.variant.title }}</p>{%- endunless -%}
+                {%- for p in item.properties -%}{%- unless p.last == blank or p.first contains '_' -%}<p class="t-label line__variant">{{ p.first }}: {{ p.last }}</p>{%- endunless -%}{%- endfor -%}
+                <div class="qty">
+                  <button type="button" class="qty__btn" data-qty-change="{{ item.quantity | minus: 1 }}" data-line-index="{{ forloop.index }}" aria-label="{{ 'cart.decrease' | t }}">{% render 'icon', icon: 'minus' %}</button>
+                  <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" aria-label="{{ 'cart.quantity' | t }}">
+                  <button type="button" class="qty__btn" data-qty-change="{{ item.quantity | plus: 1 }}" data-line-index="{{ forloop.index }}" aria-label="{{ 'cart.increase' | t }}">{% render 'icon', icon: 'plus' %}</button>
+                </div>
+              </div>
+              <div class="line__end">
+                <span class="price">{{ item.final_line_price | money }}</span>
+                <a class="line__remove t-label" href="{{ item.url_to_remove }}">{{ 'cart.remove' | t }}</a>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+        <aside class="cart-summary">
+          <div class="window">
+            <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">checkout.exe</span></div>
+            <div class="window__body">
+              <div class="drawer__total"><span class="t-label">{{ 'cart.subtotal' | t }}</span><span class="t-subhead">{{ cart.total_price | money_with_currency }}</span></div>
+              {%- for discount in cart.cart_level_discount_applications -%}<p class="t-label">{{ discount.title }} (−{{ discount.total_allocated_amount | money }})</p>{%- endfor -%}
+              <p class="drawer__note">{{ 'cart.taxes_note' | t }}</p>
+              {%- if section.settings.show_note -%}
+                <label class="t-label" for="CartNote">{{ 'cart.note' | t }}</label>
+                <textarea id="CartNote" name="note">{{ cart.note }}</textarea>
+              {%- endif -%}
+              <button class="btn btn--block" type="submit" name="checkout">{{ 'cart.checkout' | t }} {% render 'icon', icon: 'arrow' %}</button>
+              <button class="link-arrow" type="submit" name="update" style="justify-self: start">{{ 'cart.update' | t }}</button>
+              {%- if additional_checkout_buttons -%}<div class="additional-checkout-buttons">{{ content_for_additional_checkout_buttons }}</div>{%- endif -%}
+            </div>
+          </div>
+        </aside>
+      </form>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": [{ "type": "checkbox", "id": "show_note", "label": "Show order note", "default": true }]
+}
+{% endschema %}

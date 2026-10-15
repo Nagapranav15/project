@@ -1,13 +1,16 @@
 {
-  "name": "jumper-cyberwear-shopify",
+  "name": "jumper-loud-theme",
   "version": "1.0.0",
-  "description": "Futuristic Y2K Premium Animated Shopify 2.0 Theme & Web Application",
+  "private": true,
+  "description": "Jumper — Wear it loud. Shopify OS 2.0 theme + static preview.",
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
-    "preview": "vite preview"
+    "preview": "node scripts/preview.mjs",
+    "serve": "node scripts/preview.mjs && npx --yes serve dist -l 4173",
+    "shopify:dev": "shopify theme dev",
+    "shopify:push": "shopify theme push --unpublished",
+    "zip": "zip -r jumper-loud-theme.zip assets config layout locales sections snippets templates -x '.*'"
   },
   "devDependencies": {
-    "vite": "^5.2.0"
+    "liquidjs": "10.16.1"
   }
 }

@@ -1,12 +1,27 @@
 {
-  "name": "Cart",
   "sections": {
-    "cart_main": {
-      "type": "cart-drawer",
-      "settings": {}
+    "main": {
+      "type": "main-cart",
+      "settings": {
+        "show_note": true
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "scheme": "paper",
+        "number": "+",
+        "label": "Before you go",
+        "heading": "One more pair?",
+        "text": "Three is a drawer. Buy 2 get 1 on all trunks.",
+        "limit": 4,
+        "tabs": "pink,cyan,orange,yellow",
+        "link_label": "Shop all trunks"
+      }
     }
   },
   "order": [
-    "cart_main"
+    "main",
+    "featured"
   ]
 }

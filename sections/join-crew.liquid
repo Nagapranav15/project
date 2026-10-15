@@ -1,0 +1,58 @@
+{%- comment -%} Type frame (Guidelines p.58): one phrase repeats around the frame like a ticker. Ink type on Lime. {%- endcomment -%}
+<section class="section section--tight join" id="join">
+  <div class="container">
+    <div class="tframe">
+      {%- for side in (1..4) -%}
+        <div class="tframe__side tframe__side--{{ side }}" aria-hidden="true">
+          <div class="ticker" style="--speed: 26s">
+            {%- for pass in (1..2) -%}
+              <div class="ticker__track">{%- for i in (1..8) -%}<span class="ticker__item">{{ section.settings.frame_text }}</span><span class="ticker__dash">–</span>{%- endfor -%}</div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
+
+      <div class="tframe__inner scheme-ink">
+        <div class="join__copy">
+          <p class="t-label">{{ section.settings.label }}</p>
+          <h2 class="t-headline join__title">{{ section.settings.heading }}</h2>
+          <p class="t-body">{{ section.settings.text }}</p>
+        </div>
+        {%- form 'customer', class: 'join__form', id: 'JoinForm' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter, crew">
+          {%- if form.posted_successfully? -%}
+            <p class="join__ok t-subhead" role="status">{% render 'sparkle', class: 'join__spark' %} {{ 'newsletter.success' | t }}</p>
+          {%- else -%}
+            <label class="visually-hidden" for="JoinEmail">{{ 'newsletter.label' | t }}</label>
+            <div class="join__field">
+              <input id="JoinEmail" type="email" name="contact[email]" autocomplete="email" required placeholder="{{ 'newsletter.placeholder' | t }}">
+              <button class="btn btn--lime-on-ink" type="submit">{{ section.settings.button_label }}</button>
+            </div>
+            {%- if form.errors -%}<p class="join__err" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+            <p class="t-label join__fine">{{ section.settings.fine_print }}</p>
+          {%- endif -%}
+        {%- endform -%}
+        {% render 'character', name: section.settings.character, class: 'join__char' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Join the Crew",
+  "settings": [
+    { "type": "text", "id": "frame_text", "label": "Frame phrase", "default": "Wear it loud" },
+    { "type": "text", "id": "label", "label": "Label", "default": "The Crew" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Join the Crew." },
+    { "type": "text", "id": "text", "label": "Text", "default": "First dibs on new prints, drops and the occasional cheeky surprise." },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "I'm in" },
+    { "type": "text", "id": "fine_print", "label": "Fine print", "default": "No spam. Unsubscribe any time." },
+    { "type": "select", "id": "character", "label": "Character", "default": "wink", "options": [
+      { "value": "surf", "label": "Surf" }, { "value": "stroll", "label": "Stroll" }, { "value": "lounge", "label": "Lounge" },
+      { "value": "skate", "label": "Skate" }, { "value": "thumbs", "label": "Thumbs up" }, { "value": "wink", "label": "Wink" }, { "value": "jump", "label": "Jump" }
+    ]}
+  ],
+  "presets": [{ "name": "Join the Crew" }]
+}
+{% endschema %}

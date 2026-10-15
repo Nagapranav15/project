@@ -1,64 +1,75 @@
-<header class="site-header">
-  <div class="container header-inner">
-    <a href="{{ routes.root_url }}" class="brand-logo">
-      <span class="text-gradient-chrome">{{ section.settings.logo_text | default: 'JUMPER' }}</span>
-      <span class="brand-logo-badge">{{ section.settings.badge_text | default: 'CYBER 2.0' }}</span>
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+-%}
+<header class="header" data-header>
+  <div class="header__inner container">
+    <button class="icon-btn header__burger" type="button" data-menu-open aria-controls="MenuDrawer" aria-expanded="false" aria-label="{{ 'accessibility.menu' | t }}">
+      {% render 'icon', icon: 'menu' %}
+    </button>
+
+    <a class="header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+      {% render 'logo-wordmark', class: 'header__wordmark', label: shop.name %}
     </a>
 
-    <nav>
-      <ul class="nav-desktop">
-        {%- for link in linklists[section.settings.menu].links -%}
-          <li>
-            <a href="{{ link.url }}" class="nav-link{% if link.active %} active{% endif %}">{{ link.title }}</a>
-          </li>
+    <nav class="header__nav" aria-label="{{ 'accessibility.primary_nav' | t }}">
+      <ul class="header__links" role="list">
+        {%- if menu.links.size > 0 -%}
+          {%- for link in menu.links -%}
+            <li><a class="header__link{% if link.active %} is-active{% endif %}" href="{{ link.url }}" data-text="{{ link.title | escape }}">{{ link.title }}</a></li>
+          {%- endfor -%}
         {%- else -%}
-          <li><a href="#hero" class="nav-link active">Home</a></li>
-          <li><a href="#collections" class="nav-link">Collections</a></li>
-          <li><a href="#fabric-story" class="nav-link">Fabric Tech</a></li>
-          <li><a href="#bundle-builder" class="nav-link">Bundle & Save</a></li>
-          <li><a href="#shop" class="nav-link">Catalog</a></li>
-          <li><a href="#reviews" class="nav-link">Reviews</a></li>
-        {%- endfor -%}
+          {%- assign fallback = 'Trunks,Briefs,Prints,Crew' | split: ',' -%}
+          {%- for t in fallback -%}
+            <li><a class="header__link" href="{{ routes.all_products_collection_url }}" data-text="{{ t }}">{{ t }}</a></li>
+          {%- endfor -%}
+        {%- endif -%}
       </ul>
     </nav>
 
-    <div class="header-actions">
-      <button class="action-btn" aria-label="Search" onclick="window.themeCart?.showToast('Search active')">
-        <i data-lucide="search" style="width:18px;height:18px;"></i>
-      </button>
-      <button class="action-btn" aria-label="Wishlist" onclick="window.themeCart?.showToast('Wishlist opened')">
-        <i data-lucide="heart" style="width:18px;height:18px;"></i>
-      </button>
-      <button class="action-btn" aria-label="Cart" data-open-cart>
-        <i data-lucide="shopping-bag" style="width:18px;height:18px;"></i>
-        <span class="cart-counter">{{ cart.item_count }}</span>
-      </button>
+    <div class="header__actions">
+      <a class="icon-btn header__search" href="{{ routes.search_url }}" aria-label="{{ 'accessibility.search' | t }}">{% render 'icon', icon: 'search' %}</a>
+      {%- if shop.customer_accounts_enabled -%}
+        <a class="icon-btn header__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" aria-label="{{ 'accessibility.account' | t }}">{% render 'icon', icon: 'account' %}</a>
+      {%- endif -%}
+      <a class="header__bag" href="{{ routes.cart_url }}" data-cart-open aria-label="{{ 'accessibility.cart' | t }}">
+        <span class="t-label">{{ 'cart.bag' | t }}</span>
+        <span class="header__count" data-cart-count>{{ cart.item_count }}</span>
+      </a>
     </div>
   </div>
 </header>
 
+<div class="menu-drawer" id="MenuDrawer" data-menu aria-hidden="true">
+  <div class="menu-drawer__top container">
+    {% render 'logo-wordmark', class: 'menu-drawer__wordmark' %}
+    <button class="icon-btn" type="button" data-menu-close aria-label="{{ 'accessibility.close' | t }}">{% render 'icon', icon: 'close' %}</button>
+  </div>
+  <nav class="menu-drawer__nav container" aria-label="{{ 'accessibility.mobile_nav' | t }}">
+    <ul role="list">
+      {%- if menu.links.size > 0 -%}
+        {%- for link in menu.links -%}
+          <li style="--i: {{ forloop.index }}"><a href="{{ link.url }}"><span class="menu-drawer__num t-label">0{{ forloop.index }}</span>{{ link.title }}</a></li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for t in fallback -%}
+          <li style="--i: {{ forloop.index }}"><a href="{{ routes.all_products_collection_url }}"><span class="menu-drawer__num t-label">0{{ forloop.index }}</span>{{ t }}</a></li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </nav>
+  <div class="menu-drawer__foot container">
+    <p class="t-subhead">{{ section.settings.drawer_line }}</p>
+    {% render 'character', name: 'jump', class: 'menu-drawer__char' %}
+  </div>
+</div>
+
 {% schema %}
 {
   "name": "Header",
+  "class": "section-header",
   "settings": [
-    {
-      "type": "text",
-      "id": "logo_text",
-      "label": "Logo Text",
-      "default": "JUMPER"
-    },
-    {
-      "type": "text",
-      "id": "badge_text",
-      "label": "Badge Text",
-      "default": "CYBER 2.0"
-    },
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "Navigation Menu",
-      "default": "main-menu"
-    }
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "text", "id": "drawer_line", "label": "Mobile menu line", "default": "Wear it loud." }
   ]
 }
 {% endschema %}

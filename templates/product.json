@@ -1,22 +1,87 @@
 {
-  "name": "Product",
   "sections": {
     "main": {
       "type": "main-product",
-      "settings": {}
+      "blocks": {
+        "title": {
+          "type": "title"
+        },
+        "price": {
+          "type": "price"
+        },
+        "tab": {
+          "type": "print_tab"
+        },
+        "buy": {
+          "type": "buy",
+          "settings": {
+            "show_dynamic_checkout": true
+          }
+        },
+        "perks": {
+          "type": "perks",
+          "settings": {
+            "perk_1": "Free shipping all India",
+            "perk_2": "15-day easy exchange",
+            "perk_3": "Soft stretch, all day"
+          }
+        },
+        "desc": {
+          "type": "description",
+          "settings": {
+            "fallback": "<p>Soft stretch body. Loud woven band. Made to move.</p>"
+          }
+        },
+        "spec": {
+          "type": "spec",
+          "settings": {
+            "fit": "Trunk",
+            "body": "Soft stretch fabric",
+            "band": "Woven, wordmark repeated",
+            "care": "Machine wash cool. Wear loud."
+          }
+        },
+        "ship": {
+          "type": "collapsible",
+          "settings": {
+            "heading": "Shipping and exchanges",
+            "content": "<p>Free shipping all India. Dispatch in 24 hours. Exchange unworn packs within 15 days.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "price",
+        "tab",
+        "buy",
+        "perks",
+        "desc",
+        "spec",
+        "ship"
+      ],
+      "settings": {
+        "tab": "cyan"
+      }
     },
-    "fabric": {
-      "type": "fabric-story",
-      "settings": {}
+    "bands": {
+      "type": "ticker-cross",
+      "settings": {
+        "text_a": "Band first,Wear it loud,Play loud",
+        "text_b": "Soft stretch,Loud bands,Made to move",
+        "speed": 30
+      }
     },
-    "reviews": {
-      "type": "reviews-carousel",
-      "settings": {}
+    "recos": {
+      "type": "product-recommendations",
+      "settings": {
+        "label": "Complete the drawer",
+        "heading": "Pairs well with."
+      }
     }
   },
   "order": [
     "main",
-    "fabric",
-    "reviews"
+    "bands",
+    "recos"
   ]
 }

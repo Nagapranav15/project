@@ -1,0 +1,45 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "shop": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "fallback": "Trunks,Briefs,New prints,Packs"
+          }
+        },
+        "crew": {
+          "type": "menu",
+          "settings": {
+            "heading": "The Crew",
+            "fallback": "About Jumper,Banana Crew,Journal,Stockists"
+          }
+        },
+        "help": {
+          "type": "text",
+          "settings": {
+            "heading": "Help",
+            "text": "<p>Free shipping all India. Easy 15-day exchanges on unworn packs. Machine wash cool. Wear loud.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "shop",
+        "crew",
+        "help"
+      ],
+      "settings": {
+        "tagline": "Underwear with the volume up.",
+        "signoff": "Stay cheeky, never crude.",
+        "show_payment": true
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

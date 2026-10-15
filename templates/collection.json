@@ -1,19 +1,29 @@
 {
-  "name": "Collection",
   "sections": {
-    "banner": {
-      "type": "marquee",
-      "settings": {}
-    },
-    "grid": {
-      "type": "product-grid",
+    "main": {
+      "type": "main-collection",
       "settings": {
-        "heading": "CYBER DROPS & RELEASES"
+        "fallback_title": "All trunks",
+        "per_page": 24,
+        "tabs": "cyan,orange,yellow,pink",
+        "character": "skate"
+      }
+    },
+    "join": {
+      "type": "join-crew",
+      "settings": {
+        "frame_text": "Wear it loud",
+        "label": "The Crew",
+        "heading": "Join the Crew.",
+        "text": "First dibs on new prints, drops and the occasional cheeky surprise.",
+        "button_label": "I'm in",
+        "fine_print": "No spam. Unsubscribe any time.",
+        "character": "surf"
       }
     }
   },
   "order": [
-    "banner",
-    "grid"
+    "main",
+    "join"
   ]
 }

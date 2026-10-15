@@ -1,77 +1,94 @@
 <!doctype html>
 <html class="no-js" lang="{{ request.locale.iso_code }}">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#05060A">
-  <link rel="canonical" href="{{ canonical_url }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#CEFF05">
+    <link rel="canonical" href="{{ canonical_url }}">
 
-  {%- if settings.favicon != blank -%}
-    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
-  {%- endif -%}
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
+    {%- else -%}
+      <link rel="icon" type="image/svg+xml" href="{{ 'icon-j.svg' | asset_url }}">
+    {%- endif -%}
 
-  <title>
-    {{ page_title }}
-    {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
-    {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
-  </title>
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif -%}
+      {%- if current_page != 1 %} &ndash; {{ 'general.page' | t: page: current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
 
-  {% if page_description %}
-    <meta name="description" content="{{ page_description | escape }}">
-  {% endif %}
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
 
-  <!-- External Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
-  <script src="https://unpkg.com/lucide@latest" defer></script>
+    {% render 'meta-tags' %}
 
-  <!-- Theme Styles -->
-  {{ 'theme.css' | asset_url | stylesheet_tag }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 
-  {{ content_for_header }}
-</head>
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
 
-<body class="template-{{ template.name | handle }}">
-  <!-- Noise Overlay & Aurora Lighting -->
-  <div class="noise-overlay"></div>
-  <div class="aurora-bg">
-    <div class="aurora-orb aurora-orb-1"></div>
-    <div class="aurora-orb aurora-orb-2"></div>
-    <div class="aurora-orb aurora-orb-3"></div>
-  </div>
-
-  <!-- Custom Cursor -->
-  <div class="custom-cursor"></div>
-  <div class="custom-cursor-follower"></div>
-
-  <!-- Sections -->
-  {% sections 'header-group' %}
-
-  <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
-    {{ content_for_layout }}
-  </main>
-
-  {% section 'cart-drawer' %}
-  {% section 'quick-view-modal' %}
-  {% sections 'footer-group' %}
-
-  <!-- Theme Scripts -->
-  <script src="{{ 'hero-3d.js' | asset_url }}" defer></script>
-  <script src="{{ 'fabric-visualizer.js' | asset_url }}" defer></script>
-  <script src="{{ 'bundle-builder.js' | asset_url }}" defer></script>
-  <script src="{{ 'theme.js' | asset_url }}" defer></script>
-  <script src="{{ 'animations.js' | asset_url }}" defer></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
+    {%- style -%}
+      :root {
+        --lime: {{ settings.color_lime }};
+        --ink: {{ settings.color_ink }};
+        --paper: {{ settings.color_paper }};
+        --yellow: {{ settings.color_yellow }};
+        --cyan: {{ settings.color_cyan }};
+        --orange: {{ settings.color_orange }};
+        --pink: {{ settings.color_pink }};
+        --purple: {{ settings.color_purple }};
+        {%- if settings.brand_font_family != blank %}
+        --font-brand: {{ settings.brand_font_family }}, 'Archivo', Arial, sans-serif;
+        {%- endif %}
+        --motion: {% if settings.enable_motion %}1{% else %}0{% endif %};
       }
-    });
-  </script>
-</body>
+    {%- endstyle -%}
+
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+      window.Jumper = {
+        routes: {
+          root: {{ routes.root_url | json }},
+          cart: {{ routes.cart_url | json }},
+          cartAdd: {{ routes.cart_add_url | json }},
+          cartChange: {{ routes.cart_change_url | json }}
+        },
+        strings: {
+          added: {{ 'cart.added' | t | json }},
+          soldOut: {{ 'products.sold_out' | t | json }},
+          addToCart: {{ 'products.add_to_cart' | t | json }},
+          error: {{ 'cart.error' | t | json }}
+        },
+        moneyFormat: {{ shop.money_format | json }},
+        motion: {{ settings.enable_motion | json }}
+      };
+    </script>
+    <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ template.name | handle }}{% if template.suffix %} template-{{ template.suffix | handle }}{% endif %}">
+    {%- if settings.show_loader and request.design_mode == false -%}{% render 'loader' %}{%- endif -%}
+    <a class="skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="MainContent" class="main" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% render 'cart-drawer' %}
+
+    {%- if settings.show_custom_cursor -%}
+      <div class="cursor" aria-hidden="true" data-cursor><span class="cursor__label" data-cursor-label></span></div>
+    {%- endif -%}
+  </body>
 </html>

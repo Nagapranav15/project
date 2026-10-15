@@ -1,68 +1,60 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Jumper Cyberwear",
-    "theme_version": "2.0.0",
-    "theme_author": "DeepMind Agentic Suite",
-    "theme_documentation_url": "https://jumpercyberwear.com/docs",
-    "theme_support_url": "https://jumpercyberwear.com/support"
+    "theme_name": "Jumper Loud",
+    "theme_version": "1.0.0",
+    "theme_author": "Jumper",
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://help.shopify.com/manual/online-store/themes"
   },
   {
-    "name": "Colors & Cyber Glows",
+    "name": "Colours",
     "settings": [
-      {
-        "type": "color",
-        "id": "color_bg",
-        "label": "Background Color",
-        "default": "#05060A"
-      },
-      {
-        "type": "color",
-        "id": "color_surface",
-        "label": "Surface Color",
-        "default": "#0D1020"
-      },
-      {
-        "type": "color",
-        "id": "color_neon_lime",
-        "label": "Neon Lime Accent",
-        "default": "#D6FF28"
-      },
-      {
-        "type": "color",
-        "id": "color_electric_purple",
-        "label": "Electric Purple Accent",
-        "default": "#9A5CFF"
-      },
-      {
-        "type": "color",
-        "id": "color_cyan",
-        "label": "Cyan Accent",
-        "default": "#3BE7FF"
-      }
+      { "type": "paragraph", "content": "Brand Guidelines v1.5. Lime leads, Ink and Paper support. Supporting colours take 10 to 20% of a layout, one at a time. Never used for the logo." },
+      { "type": "header", "content": "Primary" },
+      { "type": "color", "id": "color_lime", "label": "Lime", "default": "#CEFF05" },
+      { "type": "color", "id": "color_ink", "label": "Ink", "default": "#111111" },
+      { "type": "color", "id": "color_paper", "label": "Paper", "default": "#F7F7F7" },
+      { "type": "header", "content": "Supporting" },
+      { "type": "color", "id": "color_yellow", "label": "Yellow", "default": "#FEF337" },
+      { "type": "color", "id": "color_cyan", "label": "Cyan", "default": "#01C6FD" },
+      { "type": "color", "id": "color_orange", "label": "Orange", "default": "#FE8800" },
+      { "type": "color", "id": "color_pink", "label": "Pink", "default": "#FF2E9B" },
+      { "type": "color", "id": "color_purple", "label": "Purple", "default": "#C502FF" }
     ]
   },
   {
-    "name": "Typography & Animations",
+    "name": "Typography",
     "settings": [
-      {
-        "type": "checkbox",
-        "id": "enable_custom_cursor",
-        "label": "Enable Custom Neon Cursor",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_smooth_scroll",
-        "label": "Enable Lenis Smooth Scroll",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_3d_hero",
-        "label": "Enable 3D Three.js WebGL Hero",
-        "default": true
-      }
+      { "type": "paragraph", "content": "The brand typeface is Obviously (Medium). Upload your licensed Obviously web font files to Assets and add an @font-face, then type its family name below. Until then the theme uses Archivo Expanded as a close stand-in." },
+      { "type": "text", "id": "brand_font_family", "label": "Brand font family name", "placeholder": "Obviously" }
+    ]
+  },
+  {
+    "name": "Motion and cursor",
+    "settings": [
+      { "type": "checkbox", "id": "show_loader", "label": "Show inflating JUMPER loading screen (first visit and every refresh)", "default": true },
+      { "type": "checkbox", "id": "enable_motion", "label": "Enable scroll and pointer animations", "default": true },
+      { "type": "checkbox", "id": "show_custom_cursor", "label": "Show Lime custom cursor on desktop", "default": true }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      { "type": "number", "id": "free_shipping_threshold", "label": "Free shipping threshold (in store currency, 0 to hide meter)", "default": 999 }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
+      { "type": "url", "id": "social_instagram", "label": "Instagram" },
+      { "type": "url", "id": "social_youtube", "label": "YouTube" }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      { "type": "image_picker", "id": "favicon", "label": "Favicon", "info": "Defaults to the brand icon with J." }
     ]
   }
 ]

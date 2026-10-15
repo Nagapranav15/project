@@ -1,0 +1,179 @@
+{%- comment -%}
+  Loading screen: "morph inflating" JUMPER.
+  Uses the master wordmark artwork, split into its six letters with clip regions. Each letter
+  puffs up (blur + moving alpha threshold, continuous so it never steps) and stretches to fill the screen with a soft staggered overshoot,
+  wobbles, then deflates back to the exact logo before the panel wipes away.
+  Lime on Ink, an approved logo colourway. Shown on first visit and on every hard refresh.
+{%- endcomment -%}
+<div class="loader" data-loader aria-hidden="true">
+  <div class="loader__under"></div>
+  <div class="loader__panel">
+    <div class="loader__src" hidden>{% render 'logo-wordmark' %}</div>
+    <svg class="loader__stage" data-loader-stage xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="loaderPuff" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+          <feMorphology operator="erode" radius="1" in="SourceGraphic" result="thin"/>
+          <feMorphology operator="dilate" radius="1" in="thin" result="clean"/>
+          <feGaussianBlur in="clean" stdDeviation="0.4" result="soft" data-puff-blur/>
+          <feColorMatrix in="soft" mode="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2 -0.5" result="goo" data-puff-matrix/>
+          <feFlood flood-color="#CEFF05" result="tint"/>
+          <feComposite in="tint" in2="goo" operator="in"/>
+        </filter>
+      </defs>
+      <g data-loader-word></g>
+    </svg>
+    <div class="loader__bar"><span data-loader-bar></span></div>
+  </div>
+</div>
+<script>
+  (() => {
+    const el = document.querySelector('[data-loader]');
+    if (!el) return;
+    const html = document.documentElement;
+    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    const reload = nav ? nav.type === 'reload' : (performance.navigation && performance.navigation.type === 1);
+    let seen = false;
+    try { seen = sessionStorage.getItem('jumper-loaded') === '1'; } catch (e) {}
+    const force = location.search.includes('loader');
+    if (location.search.includes('noloader') || (seen && !reload && !force)) { el.remove(); return; }
+    html.classList.add('is-loading');
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = el.querySelector('[data-loader-stage]');
+    const word = el.querySelector('[data-loader-word]');
+    const d = el.querySelector('.loader__src path').getAttribute('d');
+    const matrix = el.querySelector('[data-puff-matrix]');
+    const blur = el.querySelector('[data-puff-blur]');
+    const bar = el.querySelector('[data-loader-bar]');
+
+    // Wordmark units: 712 x 163. Clip polygons follow the joins between letters.
+    const LETTERS = [
+      { clip: '-20,-20 127,-20 126,77 124.5,120 124.5,190 -20,190', x0: 0, x1: 126, y0: 11, y1: 163, h: 0.97 },
+      { clip: '127,-20 234.3,-20 234.3,190 124.5,190 124.5,120 126,77', x0: 124.5, x1: 234.3, y0: 20, y1: 150, h: 0.9 },
+      { clip: '234.3,-20 371,-20 371,80 377,88 377,190 234.3,190', x0: 234.3, x1: 377, y0: 3, y1: 160, h: 1 },
+      { clip: '371,-20 485.2,-20 483.6,60 480,190 339.6,190 341.6,90 371,80', x0: 341, x1: 485.6, y0: 0, y1: 163, h: 0.95 },
+      { clip: '485.2,-20 564,-20 570.2,104 571.4,145 572.2,190 480,190 483.6,60', x0: 481, x1: 572.6, y0: 18, y1: 150, h: 0.88 },
+      { clip: '564,-20 740,-20 740,190 572.2,190 571.4,145 570.2,104', x0: 564.5, x1: 712, y0: 0, y1: 158, h: 0.98 }
+    ];
+    const defs = svg.querySelector('defs');
+    const base = document.createElementNS(NS, 'path');
+    base.setAttribute('id', 'loaderWordmark');
+    base.setAttribute('d', d);
+    defs.appendChild(base);
+    const nodes = LETTERS.map((L, i) => {
+      const cp = document.createElementNS(NS, 'clipPath');
+      cp.setAttribute('id', `loaderClip${i}`);
+      const poly = document.createElementNS(NS, 'polygon');
+      poly.setAttribute('points', L.clip);
+      cp.appendChild(poly);
+      defs.appendChild(cp);
+      const wrap = document.createElementNS(NS, 'g');
+      const g = document.createElementNS(NS, 'g');
+      wrap.appendChild(g);
+      const use = document.createElementNS(NS, 'use');
+      use.setAttribute('href', '#loaderWordmark');
+      use.setAttribute('clip-path', `url(#loaderClip${i})`);
+      use.setAttribute('fill', '#CEFF05');
+      g.appendChild(use);
+      word.appendChild(wrap);
+      g.wrap = wrap;
+      return g;
+    });
+
+    let vw, vh, k0, ox, oy, slots;
+    const layout = () => {
+      vw = svg.clientWidth || innerWidth; vh = svg.clientHeight || innerHeight;
+      svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+      const natW = Math.min(vw * 0.62, 560);
+      k0 = natW / 712; ox = (vw - natW) / 2; oy = (vh - 163 * k0) / 2;
+      const margin = vw * 0.03, gap = Math.max(14, vw * 0.028);
+      const total = LETTERS.reduce((s, L) => s + (L.x1 - L.x0), 0);
+      const avail = vw - margin * 2 - gap * 5;
+      let x = margin;
+      slots = LETTERS.map((L) => {
+        const w = avail * (L.x1 - L.x0) / total;
+        const H = vh * 0.94 * L.h;
+        const s = { x, w, y: (vh - H) / 2, H };
+        x += w + gap;
+        return s;
+      });
+    };
+    layout();
+    addEventListener('resize', layout);
+
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const clamp = (t) => Math.max(0, Math.min(1, t));
+    const outQuart = (t) => 1 - Math.pow(1 - t, 4);
+    const inOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const smooth = (t) => t * t * (3 - 2 * t);
+    // one soft overshoot, no ringing
+    const outBack = (t) => { const c = 1.15, c3 = c + 1; return 1 + c3 * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const INTRO = 0.55;           // logo fades in at rest
+    const CYCLE = 3.0;            // inflate → breathe → deflate
+    const UP = 1.05, UP_STAGGER = 0.055;
+    const DOWN_AT = 1.8, DOWN = 0.85, DOWN_STAGGER = 0.045;
+    let loaded = document.readyState === 'complete';
+    addEventListener('load', () => { loaded = true; });
+    const t0 = performance.now();
+    let finishing = false, barShown = 0;
+
+    word.setAttribute('filter', 'url(#loaderPuff)');
+    const frozen = parseFloat(new URLSearchParams(location.search).get('loaderT'));
+    const draw = (time) => {
+      if ((svg.clientWidth || innerWidth) !== vw || (svg.clientHeight || innerHeight) !== vh) layout();
+      const tt = isNaN(frozen) ? (time - t0) / 1000 : frozen;
+      const intro = outQuart(clamp(tt / INTRO));
+      const ct = tt < INTRO ? -1 : (tt - INTRO) % CYCLE;
+      const cx = vw / 2, cy = vh / 2, pop = 0.94 + 0.06 * intro;
+      let puffSum = 0;
+      nodes.forEach((g, i) => {
+        const L = LETTERS[i], S = slots[i];
+        let p = 0;
+        if (ct >= 0 && !reduce) {
+          const up = outBack(clamp((ct - i * UP_STAGGER) / UP));
+          const down = inOutCubic(clamp((ct - DOWN_AT - i * DOWN_STAGGER) / DOWN));
+          p = up * (1 - down);
+          // slow breath while fully inflated, faded in and out so it never jumps
+          const env = smooth(clamp((ct - 1.05) / 0.3)) * (1 - smooth(clamp((ct - DOWN_AT + 0.25) / 0.3)));
+          p *= 1 + 0.014 * env * Math.sin((ct - 1.05) * 5 + i * 0.7);
+        }
+        puffSum += clamp(p);
+        const w = L.x1 - L.x0, h = L.y1 - L.y0;
+        const sx = lerp(k0, S.w / w, p);
+        const sy = lerp(k0, S.H / h, p);
+        const left = lerp(ox + L.x0 * k0, S.x, p);
+        const top = lerp(oy + L.y0 * k0, S.y, p);
+        g.setAttribute('transform',
+          `translate(${cx} ${cy}) scale(${pop.toFixed(4)}) translate(${-cx} ${-cy}) translate(${(left - L.x0 * sx).toFixed(2)} ${(top - L.y0 * sy).toFixed(2)}) scale(${sx.toFixed(4)} ${sy.toFixed(4)})`);
+      });
+      word.style.opacity = intro.toFixed(3);
+
+      // Puff is continuous: blur grows and the alpha threshold drops, so letters swell and round off.
+      // At rest the threshold is soft (anti-aliased), so the logo stays crisp.
+      const puff = smooth(clamp(puffSum / nodes.length));
+      const unit = Math.min(vw, vh) / 900;
+      const A = lerp(2, 22, puff), edge = lerp(0.5, 0.26, puff);
+      blur.setAttribute('stdDeviation', (0.4 + puff * 9 * unit).toFixed(2));
+      matrix.setAttribute('values', `0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 ${A.toFixed(3)} ${(-(A * edge - 0.5)).toFixed(3)}`);
+
+      const target = loaded ? clamp(tt / (INTRO + CYCLE)) : Math.min(0.85, tt / 6);
+      barShown += (target - barShown) * 0.08;
+      bar.style.transform = `scaleX(${barShown.toFixed(4)})`;
+
+      // finish only when the logo is back at rest at the end of a cycle and the page has loaded
+      const atRest = reduce ? tt > 0.6 : (tt > INTRO + CYCLE - 0.1 && (ct > CYCLE - 0.1 || ct < 0.02));
+      if (isNaN(frozen) && !finishing && loaded && atRest) {
+        finishing = true;
+        el.classList.add('is-done');
+        html.classList.remove('is-loading');
+        try { sessionStorage.setItem('jumper-loaded', '1'); } catch (e) {}
+        setTimeout(() => el.remove(), 1400);
+        return;
+      }
+      if (isNaN(frozen)) requestAnimationFrame(draw);
+    };
+    requestAnimationFrame(draw);
+  })();
+</script>

@@ -1,0 +1,23 @@
+{%- assign tabs = 'cyan,orange,yellow,pink' | split: ',' -%}
+<section class="page-hero scheme-lime">
+  <div class="container">
+    <p class="t-label section-head__label"><span class="num">{{ collections.size }}</span> {{ 'collections.collections' | t }}</p>
+    <h1 class="t-display page-hero__title">{{ 'collections.all_title' | t }}</h1>
+  </div>
+</section>
+<section class="section scheme-paper">
+  <div class="world__rail" style="grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); overflow: visible; cursor: auto">
+    {%- for collection in collections -%}
+      {%- assign t = forloop.index0 | modulo: 4 -%}
+      <a class="world__card reveal" href="{{ collection.url }}" style="--tab: var(--{{ tabs[t] }}); --i: {{ forloop.index0 | modulo: 4 }}">
+        <figure class="world__media">
+          {%- if collection.featured_image -%}{{ collection.featured_image | image_url: width: 900 | image_tag: class: 'world__img', loading: 'lazy', sizes: '(min-width: 990px) 25vw, 90vw' }}
+          {%- else -%}<img class="world__img" src="{{ 'product-fan.jpg' | asset_url }}" alt="" loading="lazy">{%- endif -%}
+        </figure>
+        <div class="world__tab"><span class="t-label">{{ collection.products_count }} {{ 'collections.styles' | t }}</span>{% render 'icon', icon: 'arrow' %}</div>
+        <h2 class="world__title">{{ collection.title }}</h2>
+      </a>
+    {%- endfor -%}
+  </div>
+</section>
+{% schema %}{ "name": "Collections list" }{% endschema %}

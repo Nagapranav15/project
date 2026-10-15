@@ -1,0 +1,68 @@
+{%- comment -%} The Banana Crew. Supplied character artwork only, one line colour, calm ground. {%- endcomment -%}
+{%- assign first = section.blocks.first -%}
+<section class="section scheme-lime crew" id="crew" data-crew>
+  <div class="container crew__grid">
+    <div class="crew__head">
+      <p class="t-label section-head__label reveal"><span class="num">{{ section.settings.number }}</span> {{ section.settings.label }}</p>
+      <h2 class="t-headline reveal" style="--d: 1">{{ section.settings.heading }}</h2>
+      <p class="t-body reveal" style="--d: 2">{{ section.settings.text }}</p>
+    </div>
+
+    <div class="crew__stage" aria-live="polite">
+      <div class="crew__art" data-crew-art>{% render 'character', name: first.settings.character, class: 'crew__svg' %}</div>
+      <div class="crew__readout">
+        <p class="t-label crew__no" data-crew-no>01 / {{ section.blocks.size | prepend: '0' | slice: -2, 2 }}</p>
+        <p class="crew__name" data-crew-name>{{ first.settings.name }}</p>
+        <p class="t-subhead crew__mood" data-crew-mood>{{ first.settings.mood }}</p>
+        <a class="btn crew__cta" href="{{ first.settings.link | default: routes.all_products_collection_url }}" data-crew-link>{{ section.settings.button_label }} {% render 'icon', icon: 'arrow' %}</a>
+      </div>
+    </div>
+
+    <ul class="crew__tiles" role="list">
+      {%- for block in section.blocks -%}
+        <li {{ block.shopify_attributes }}>
+          <button class="crew__tile{% if forloop.first %} is-active{% endif %}" type="button"
+            data-crew-pick
+            data-no="{{ forloop.index | prepend: '0' | slice: -2, 2 }}"
+            data-name="{{ block.settings.name | escape }}"
+            data-mood="{{ block.settings.mood | escape }}"
+            data-link="{{ block.settings.link | default: routes.all_products_collection_url }}"
+            aria-pressed="{{ forloop.first }}">
+            {% render 'character', name: block.settings.character, class: 'crew__tile-svg' %}
+            <span class="t-label">{{ block.settings.name }}</span>
+          </button>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Banana Crew",
+  "settings": [
+    { "type": "text", "id": "number", "label": "Section number", "default": "04" },
+    { "type": "text", "id": "label", "label": "Label", "default": "The Banana Crew" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Pick your mood." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Seven characters. Same line weight, same cheeky spirit, a new pose for every mood." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop the mood" }
+  ],
+  "blocks": [
+    {
+      "type": "character",
+      "name": "Character",
+      "settings": [
+        { "type": "select", "id": "character", "label": "Character", "default": "jump", "options": [
+          { "value": "surf", "label": "01 Surf" }, { "value": "stroll", "label": "02 Stroll" }, { "value": "lounge", "label": "03 Lounge" },
+          { "value": "skate", "label": "04 Skate" }, { "value": "thumbs", "label": "05 Thumbs up" }, { "value": "wink", "label": "06 Wink" }, { "value": "jump", "label": "07 Jump" }
+        ]},
+        { "type": "text", "id": "name", "label": "Name", "default": "Jump" },
+        { "type": "text", "id": "mood", "label": "Mood", "default": "Pure joy." },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 7,
+  "presets": [{ "name": "Banana Crew", "blocks": [{ "type": "character" }] }]
+}
+{% endschema %}

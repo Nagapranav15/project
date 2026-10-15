@@ -1,0 +1,16 @@
+<article>
+  <header class="page-hero scheme-lime">
+    <div class="container">
+      <p class="t-label section-head__label"><span class="num">✦</span> {{ article.published_at | date: '%d %b %Y' }} · {{ article.author }}</p>
+      <h1 class="t-headline page-hero__title" style="max-width: 20ch">{{ article.title }}</h1>
+    </div>
+  </header>
+  <div class="section scheme-paper">
+    <div class="container">
+      {%- if article.image -%}<figure class="pdp__media" style="aspect-ratio: 16 / 9; margin-bottom: 48px; cursor: auto">{{ article.image | image_url: width: 1800 | image_tag: loading: 'eager', sizes: '100vw' }}</figure>{%- endif -%}
+      <div class="prose rte t-body">{{ article.content }}</div>
+      <p style="margin-top: 48px"><a class="link-arrow" href="{{ blog.url }}">{{ 'blog.back' | t }}</a></p>
+    </div>
+  </div>
+</article>
+{% schema %}{ "name": "Article" }{% endschema %}
