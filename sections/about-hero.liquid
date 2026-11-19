@@ -1,6 +1,6 @@
 {%- comment -%}
-  About hero: grey "We don't do boring." type with the crew cutout. On load the colour switches on (grey to Lime),
-  the last line lands on a tilted Pink block, and an Ink colour block lands behind the crew. On desktop the section pins and the lines split apart as you
+  About hero: "We don't do boring." type with the crew cutout. It loads on white, then the Lime sweeps in,
+  the last line lands on a tilted Pink block, and a Cyan sun lands behind the crew, with the spinning Jumper badge on its edge. On desktop the section pins and the lines split apart as you
   scroll. Everything sits on the same container as the header, so the type lines up with the logo.
 {%- endcomment -%}
 {%- liquid
@@ -20,12 +20,17 @@
         {%- if l3 != blank -%}<span class="xl l3"><span><em data-xh-hi>{{ l3 | escape }}</em></span></span>{%- endif -%}
       </div>
       <div class="xh-media" data-xh-media aria-hidden="true">
-        <span class="xh-block" data-xh-block></span>
-        {%- if section.settings.image != blank -%}
-          <img class="xh-cut" data-xh-cut src="{{ section.settings.image | image_url: width: 1400 }}" alt="" width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}">
-        {%- else -%}
-          <img class="xh-cut" data-xh-cut src="{{ 'about-cutout.webp' | asset_url }}" alt="" width="892" height="1100">
-        {%- endif -%}
+        {%- comment -%} the frame has the photo's own shape, so the sun disc behind the crew stays in place at every size {%- endcomment -%}
+        <span class="xh-fig">
+          <span class="xh-block" data-xh-block></span>
+          {%- if section.settings.image != blank -%}
+            <img class="xh-cut" data-xh-cut src="{{ section.settings.image | image_url: width: 1400 }}" alt="" width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}">
+          {%- else -%}
+            <img class="xh-cut" data-xh-cut src="{{ 'about-cutout.webp' | asset_url }}" alt="" width="892" height="1100">
+          {%- endif -%}
+          {%- comment -%} the site's spinning Jumper badge as a sticker on the sun's top-right edge, in front and clear of both faces {%- endcomment -%}
+          {% render 'badge', id: 'ringXh', class: 'xh-badge' %}
+        </span>
       </div>
     </div>
     <div class="xh-foot" data-xh-foot>

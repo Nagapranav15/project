@@ -1,10 +1,16 @@
 {%- liquid
   assign coll = section.settings.collection
+  comment
+    No collection picked: show the store's own products (all trunks), so live stores never show demo cards.
+  endcomment
+  if coll == blank
+    assign coll = collections.all
+  endif
   assign limit = section.settings.limit
   assign anchor = section.settings.anchor | default: section.id | handleize
   assign link = section.settings.link | default: coll.url | default: routes.all_products_collection_url
 -%}
-<section class="newin" id="{{ anchor }}" aria-labelledby="title-{{ section.id }}">
+<section class="newin shop-home" id="{{ anchor }}" aria-labelledby="title-{{ section.id }}">
   <div class="wrap">
     <div class="sec-top">
       <div>
@@ -26,6 +32,9 @@
         {% render 'product-card', demo: 'grey', index: 3 %}
       {%- endif -%}
     </div>
+    {%- if section.settings.button_label != blank -%}
+      <div class="shop-home-cta"><a class="btn btn-ink" href="{{ link }}">{{ section.settings.button_label | escape }} <span class="arrow">→</span></a></div>
+    {%- endif -%}
   </div>
 </section>
 
@@ -37,10 +46,11 @@
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "New in" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Loud on purpose." },
     { "type": "textarea", "id": "text", "label": "Text", "default": "Pick your size and add straight from the card. Hover to see it on." },
-    { "type": "collection", "id": "collection", "label": "Collection", "info": "Until you pick one, four Drop 01 demo cards show." },
+    { "type": "collection", "id": "collection", "label": "Collection", "info": "Until you pick one, the store's products show (all trunks)." },
     { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 12, "step": 1, "default": 4 },
     { "type": "text", "id": "link_label", "label": "Link label", "default": "Shop all trunks" },
-    { "type": "url", "id": "link", "label": "Link", "info": "Empty links to the collection." }
+    { "type": "url", "id": "link", "label": "Link", "info": "Empty links to the collection." },
+    { "type": "text", "id": "button_label", "label": "Button under the cards", "default": "Shop all trunks", "info": "Leave empty to hide the button." }
   ],
   "presets": [{ "name": "Product cards" }]
 }

@@ -334,11 +334,24 @@
         "r8"
       ],
       "settings": {}
+    },
+    "shop": {
+      "type": "featured-collection",
+      "settings": {
+        "anchor": "shop",
+        "eyebrow": "Shop",
+        "heading": "Shop the drop.",
+        "text": "Four of the loudest. Pick your size and add straight from the card.",
+        "limit": 4,
+        "link_label": "",
+        "button_label": "Shop all trunks"
+      }
     }
   },
   "order": [
     "hero",
     "tapes",
+    "shop",
     "scenes",
     "move",
     "proof",

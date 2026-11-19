@@ -79,6 +79,7 @@ const base = {
   recommendations: { performed: true, products_count: 3, products: products.slice(1) }, collections: [collection, { ...collection, title: 'Packs', featured_image: { src: 'assets/box-front.webp' } }, { ...collection, title: 'New in', featured_image: null }],
   powered_by_link: '<a href="#">Powered by Shopify</a>', all_country_option_tags: '<option value="India">India</option>',
 };
+base.collections.all = collection; // Shopify's collections.all (the home Shop section falls back to it)
 const withProducts = (type, section) => {
   if (type === 'featured-collection' && !section.settings.collection) section.settings.collection = collection;
   if (type === 'pack-builder') section.blocks.forEach((b) => { if (byName[b.settings.name]) b.settings.product = byName[b.settings.name]; });

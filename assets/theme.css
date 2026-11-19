@@ -1775,7 +1775,7 @@ g.fl[data-letter="R"]:hover { fill: var(--cyan); }
 /* hero: everything sits on the header's container, so the type lines up with the logo */
 /* Lime behind the pinned hero too, so no page colour shows below it while it is pinned and it runs straight into the tapes */
 .xhero { position: relative; --foot-h: 112px; background: var(--lime); }
-.xh-pin { position: relative; height: calc(100vh - var(--chrome, 96px)); height: calc(100svh - var(--chrome, 96px)); min-height: 520px; max-height: 1000px; overflow: hidden; background: #d4d4d1; --g: 1; --tc: #8d8d89; }
+.xh-pin { position: relative; height: calc(100vh - var(--chrome, 96px)); height: calc(100svh - var(--chrome, 96px)); min-height: 520px; max-height: 1000px; overflow: hidden; background: #fff; --g: 0; --tc: #111; } /* loads on white in full colour; the Lime sweeps in over it */
 .xh-bg { position: absolute; inset: 0; background: var(--lime); clip-path: circle(0% at 72% 34%); }
 .xh-stage { position: absolute; top: 0; bottom: var(--foot-h); left: 0; right: 0; z-index: 1; }
 .xh-type { position: relative; z-index: 1; height: 100%; display: grid; align-content: center; justify-items: start; color: var(--tc); font-weight: 500; text-transform: uppercase; font-size: clamp(60px, min(9.6vw, 18.5vh), 176px); line-height: .82; letter-spacing: -.03em; }
@@ -2094,12 +2094,9 @@ html.banana-cursor.is-pressing, html.banana-cursor.is-pressing * { cursor: var(-
   /* two Paper sections in a row share one gap instead of adding both paddings */
   .shopify-section:has(> :is(.scenes, .ts, .faq, .contact-sec, .rich)) + .shopify-section > :is(.scenes, .ts, .faq, .contact-sec, .rich) { padding-top: 0; }
 
-  /* home hero: the photo takes what the screen has left after the words, so the photo, headline, text and
-     Shop button all fit on the first screen (between 200px and 420px tall) */
+  /* home hero: the photo keeps its original 4:5 shape */
   .hero { padding-top: 24px; }
   .hero .wrap { gap: 28px; }
-  .hero-photo { aspect-ratio: auto; height: clamp(200px, calc(100svh - var(--chrome, 91px) - 385px), 420px); }
-  .hero-photo img { object-position: 50% 42%; }
   .hero .eyebrow { margin-bottom: 14px; }
   .hero h1 { font-size: clamp(36px, 10.6vw, 46px); }
   .hero .sub { font-size: 16px; margin-top: 14px; }
@@ -2197,3 +2194,95 @@ html.banana-cursor.is-pressing, html.banana-cursor.is-pressing * { cursor: var(-
 @media (min-width: 861px) and (max-height: 720px) {
   .xh-type { font-size: clamp(52px, min(15vh, calc((min(100vw, 1320px) * .62 - 96px) / 5.3)), 150px); padding-bottom: 8px; }
 }
+
+/* ---------- product page: size by waist (slider in place of the size buttons) ---------- */
+.wsz .step-label { align-items: baseline; }
+.wsz-pills { display: none; }
+.wsz-read { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 2px; }
+.wsz-num { display: flex; align-items: baseline; gap: 8px; }
+.wsz-num b { font-weight: 500; font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.wsz-num small { font-weight: 600; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.wsz-size { display: inline-grid; place-items: center; min-width: 64px; padding: 10px 14px; border: 2px solid var(--ink); background: var(--lime); box-shadow: 4px 4px 0 var(--ink); font-weight: 600; font-size: 18px; letter-spacing: .04em; }
+.wsz-size.is-na { background: var(--paper); color: var(--muted); text-decoration: line-through; box-shadow: none; }
+.wsz-range { -webkit-appearance: none; appearance: none; width: 100%; height: 10px; margin: 18px 0 6px; border: 1.5px solid var(--ink); border-radius: 999px; background: linear-gradient(90deg, var(--lime) var(--fill, 0%), var(--paper) var(--fill, 0%)); outline: 0; cursor: var(--cur-link, pointer); touch-action: pan-y; }
+.wsz-range::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--pink); border: 3px solid var(--ink); cursor: grab; }
+.wsz-range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--pink); border: 3px solid var(--ink); cursor: grab; }
+.wsz-range:active::-webkit-slider-thumb { cursor: grabbing; }
+.wsz-range:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+/* tick numbers sit under the thumb's centre at each stop (the thumb is 28px, so 14px in from each end) */
+.wsz-ticks { display: flex; justify-content: space-between; padding: 0 3px; font-size: 12px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wsz-ticks span { width: 22px; text-align: center; transition: color .2s; }
+.wsz-ticks span.on { color: var(--ink); font-weight: 700; }
+.wsz-note { margin: 4px 0 0; font-size: 14px; font-weight: 500; color: var(--pink); min-height: 0; }
+.wsz-note:empty { display: none; }
+
+/* ---------- home: Shop the drop (product cards + a button to all trunks) ---------- */
+.shop-home-cta { display: flex; justify-content: center; margin-top: 44px; }
+/* phones: the same two equal columns as the shop page (they never grow past the screen), name over price */
+@media (max-width: 560px) {
+  .shop-home .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; overflow: visible; margin-inline: 0; padding: 0; gap: 12px; width: 100%; max-width: 100%; }
+  .shop-home .card { flex: none; min-width: 0; width: 100%; max-width: 100%; }
+  .shop-home .card .media { width: 100%; }
+  .shop-home .card .info { min-width: 0; padding: 10px; gap: 8px; }
+  .shop-home .card .row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .shop-home .card h3 { font-size: 13px; line-height: 1.15; overflow-wrap: anywhere; }
+  .shop-home .card .price { white-space: normal; font-size: 14px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+  .shop-home .card .price s { margin-right: 0; font-size: 12px; }
+  .shop-home .card .sizes { gap: 4px; }
+  .shop-home .card .sizes button { min-width: 0; padding: 6px 0; font-size: 12px; }
+  .shop-home .card .qa { padding: 9px 4px; font-size: 13px; }
+  .shop-home .card:hover { transform: none; box-shadow: none; }
+  .shop-home-cta { margin-top: 32px; }
+  .shop-home-cta .btn { width: 100%; justify-content: center; }
+}
+
+/* ---------- About hero background: depth instead of a flat sheet of Lime ----------
+   a light glow behind the crew, deeper Lime at the edges, a studio floor under the rock and two patches of fine
+   Ink halftone in the empty corners. It all sits on the Lime layer, so it sweeps in with the colour. */
+/* every layer fades back to pure Lime along the bottom edge, so the hero runs into the next section with no seam */
+.xh-bg {
+  background:
+    linear-gradient(to bottom, rgba(206, 255, 5, 0) 78%, var(--lime) 99%),
+    radial-gradient(ellipse 46% 58% at 76% 42%, rgba(255, 255, 255, .42), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(ellipse 85% 85% at 50% 40%, rgba(110, 140, 0, 0) 55%, rgba(110, 140, 0, .2) 100%),
+    var(--lime);
+}
+.xh-bg::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(17, 17, 17, .2) 1.3px, transparent 1.8px);
+  background-size: 13px 13px;
+  -webkit-mask-image: radial-gradient(ellipse 30% 34% at 4% 6%, #000 0%, transparent 100%), radial-gradient(ellipse 26% 22% at 58% 84%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(ellipse 30% 34% at 4% 6%, #000 0%, transparent 100%), radial-gradient(ellipse 26% 22% at 58% 84%, #000 0%, transparent 100%);
+}
+@media (max-width: 860px) {
+  .xh-bg {
+    background:
+      linear-gradient(to bottom, rgba(206, 255, 5, 0) 82%, var(--lime) 99%),
+      radial-gradient(ellipse 80% 42% at 50% 64%, rgba(255, 255, 255, .42), rgba(255, 255, 255, 0) 70%),
+      radial-gradient(ellipse 90% 80% at 50% 45%, rgba(110, 140, 0, 0) 55%, rgba(110, 140, 0, .2) 100%),
+      var(--lime);
+  }
+  .xh-bg::before {
+    -webkit-mask-image: radial-gradient(ellipse 55% 22% at 100% 4%, #000 0%, transparent 100%), radial-gradient(ellipse 50% 18% at 0% 58%, #000 0%, transparent 100%);
+    mask-image: radial-gradient(ellipse 55% 22% at 100% 4%, #000 0%, transparent 100%), radial-gradient(ellipse 50% 18% at 0% 58%, #000 0%, transparent 100%);
+  }
+}
+/* Shop the drop and New in are both on Paper: they share one gap instead of adding both paddings */
+.shopify-section:has(> .shop-home) + .shopify-section > .scenes { padding-top: 0; }
+
+/* ---------- About hero: a Cyan sun disc with a turning text ring behind the crew (was a flat Ink block) ----------
+   The photo and the disc share a frame with the photo's own shape (892 x 1100), so the disc always sits behind the
+   two of them: their torsos inside it, the rock in front of its lower edge. */
+.xh-fig { position: absolute; bottom: 0; left: 50%; height: 90%; aspect-ratio: 892 / 1100; transform: translateX(-50%); }
+.xh-fig .xh-cut { left: 0; top: 0; right: auto; bottom: auto; width: 100%; height: 100%; transform: none; transform-origin: 50% 100%; }
+.xh-fig .xh-block { left: 24%; right: auto; top: 7%; bottom: auto; width: 72%; aspect-ratio: 1; height: auto; border-radius: 50%; background: var(--cyan); transform: none; }
+/* the site's spinning Jumper badge as a sticker on the sun's top-right edge (in front of the sun, clear of both faces) */
+.xh-badge { position: absolute; left: 71%; top: 1%; width: 25%; z-index: 3; }
+@media (min-width: 861px) {
+  .xh-fig { left: auto; right: 0; height: min(90%, 820px); transform: none; }
+  .xh-fig .xh-cut { height: 100%; transform-origin: 100% 100%; }
+  .xh-fig .xh-block { top: 7%; bottom: auto; }
+}
+/* the rock settles into the floor: the photo's flat bottom edge (and its shadow) fade out instead of a hard cut */
+.xh-media .xh-fig { -webkit-mask-image: linear-gradient(to top, transparent 0, #000 3%); mask-image: linear-gradient(to top, transparent 0, #000 3%); }
+.wsz-help { margin: 10px 0 0; font-size: 14px; color: var(--muted); }

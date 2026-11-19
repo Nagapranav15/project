@@ -550,29 +550,48 @@
   if (hasGsap) gsap.registerPlugin(ScrollTrigger);
   function initScenes(scope) {
     if (!hasGsap || reduce) return;
-    // move your way: pinned build
+    // move your way
     $$('[data-move-pin]', scope).forEach(function (pinEl) {
-      var lines = $$('.gl', pinEl), cut = $('[data-cuts]', pinEl) || $('.cut', pinEl), bottom = $('[data-move-bottom]', pinEl);
-      /* the same pinned build on every screen; phones hold it a little shorter */
-      var phone = window.matchMedia('(max-width: 560px)').matches;
-      var tl = gsap.timeline({ scrollTrigger: { trigger: pinEl, start: 'top top', end: phone ? '+=130%' : '+=160%', scrub: 0.8, pin: true, anticipatePin: 1 } });
-      tl.from($$('.gl > span', pinEl), { yPercent: 105, stagger: 0.12, duration: 0.5, ease: 'power3.out' }, 0);
-      if (cut) tl.from(cut, { yPercent: 45, scale: 0.82, duration: 0.7, ease: 'power2.out' }, 0.1);
-      if (lines[0]) tl.to(lines[0], { xPercent: -18, duration: 0.6, ease: 'none' }, 0.55);
-      if (lines[1]) tl.to(lines[1], { xPercent: 14, duration: 0.6, ease: 'none' }, 0.55);
-      if (lines[2]) tl.to(lines[2], { xPercent: -10, duration: 0.6, ease: 'none' }, 0.55);
-      if (cut) tl.to(cut, { scale: 1.06, duration: 0.6, ease: 'none' }, 0.55);
-      if (bottom) tl.from(bottom, { y: 60, opacity: 0, duration: 0.3 }, 0.8);
+      if (pinEl._mv) return; pinEl._mv = true;
+      var lines = $$('.gl', pinEl), cut = $('[data-cuts]', pinEl) || $('.cut', pinEl), bottom = $('[data-move-bottom]', pinEl), words = $$('.gl > span', pinEl);
+      gsap.matchMedia().add({ phone: '(max-width: 560px)', desk: '(min-width: 561px)' }, function (ctx) {
+        if (ctx.conditions.phone) {
+          /* phones: the words rise and the crew comes up while the section scrolls in, so it is already built when
+             it pins (never an empty screen). While pinned the lines slide apart, the crew grows a touch and the
+             tabs and button come up. The two parts move different properties, so they never fight. */
+          var enter = gsap.timeline({ scrollTrigger: { trigger: pinEl, start: 'top 85%', end: 'top top', scrub: 0.6 } });
+          enter.from(words, { yPercent: 105, stagger: 0.1, duration: 0.6, ease: 'power3.out' }, 0);
+          if (cut) enter.from(cut, { yPercent: 35, duration: 0.8, ease: 'power2.out' }, 0.1);
+          var hold = gsap.timeline({ scrollTrigger: { trigger: pinEl, start: 'top top', end: '+=100%', scrub: 0.8, pin: true, anticipatePin: 1 } });
+          if (lines[0]) hold.to(lines[0], { xPercent: -14, duration: 1, ease: 'none' }, 0);
+          if (lines[1]) hold.to(lines[1], { xPercent: 11, duration: 1, ease: 'none' }, 0);
+          if (lines[2]) hold.to(lines[2], { xPercent: -8, duration: 1, ease: 'none' }, 0);
+          if (cut) hold.to(cut, { scale: 1.05, transformOrigin: '50% 100%', duration: 1, ease: 'none' }, 0);
+          if (bottom) hold.from(bottom, { y: 50, opacity: 0, duration: 0.35, ease: 'power2.out' }, 0.05);
+          return;
+        }
+        /* desktop: the scene builds while pinned */
+        var tl = gsap.timeline({ scrollTrigger: { trigger: pinEl, start: 'top top', end: '+=160%', scrub: 0.8, pin: true, anticipatePin: 1 } });
+        tl.from(words, { yPercent: 105, stagger: 0.12, duration: 0.5, ease: 'power3.out' }, 0);
+        if (cut) tl.from(cut, { yPercent: 45, scale: 0.82, duration: 0.7, ease: 'power2.out' }, 0.1);
+        if (lines[0]) tl.to(lines[0], { xPercent: -18, duration: 0.6, ease: 'none' }, 0.55);
+        if (lines[1]) tl.to(lines[1], { xPercent: 14, duration: 0.6, ease: 'none' }, 0.55);
+        if (lines[2]) tl.to(lines[2], { xPercent: -10, duration: 0.6, ease: 'none' }, 0.55);
+        if (cut) tl.to(cut, { scale: 1.06, duration: 0.6, ease: 'none' }, 0.55);
+        if (bottom) tl.from(bottom, { y: 60, opacity: 0, duration: 0.3 }, 0.8);
+      });
       if (cut && finePointer) {
         var qx = gsap.quickTo(cut, 'x', { duration: 0.8, ease: 'power3' });
         pinEl.addEventListener('pointermove', function (e) { var r = this.getBoundingClientRect(); qx(((e.clientX - r.left) / r.width - 0.5) * 40); });
       }
     });
-    /* new in on phones: pin the row and let scrolling down slide the cards sideways, settling on a card */
-    if (window.matchMedia('(max-width: 560px)').matches) {
-      $$('.scenes', scope).forEach(function (sec) {
-        var grid = $('.scene-grid', sec), cards = $$('.scene', sec);
-        if (!grid || cards.length < 2 || sec._sideways) return; sec._sideways = true;
+    /* new in on phones: pin the row and let scrolling down slide the cards sideways, settling on a card.
+       gsap.matchMedia sets it up whenever the screen is phone width and undoes it when it isn't, so it also works
+       after a rotate or a resize (no reload needed). */
+    $$('.scenes', scope).forEach(function (sec) {
+      var grid = $('.scene-grid', sec), cards = $$('.scene', sec);
+      if (!grid || cards.length < 2 || sec._sideways) return; sec._sideways = true;
+      gsap.matchMedia().add('(max-width: 560px)', function () {
         sec.classList.add('scenes-pinned');
         /* travel until the last card sits as far from the right edge as the first one does from the left */
         var dist = function () { var first = cards[0], last = cards[cards.length - 1], pad = parseFloat(getComputedStyle(grid).paddingLeft) || 0; return Math.max(0, (last.offsetLeft + last.offsetWidth - first.offsetLeft) - (grid.clientWidth - 2 * pad)); };
@@ -583,8 +602,9 @@
           return best;
         };
         gsap.to(grid, { x: function () { return -dist(); }, ease: 'none', scrollTrigger: { trigger: sec, start: 'bottom bottom', end: function () { return '+=' + dist(); }, scrub: 0.6, pin: true, anticipatePin: 1, invalidateOnRefresh: true, refreshPriority: 1, snap: { snapTo: stops, inertia: false, duration: { min: 0.15, max: 0.5 }, delay: 0.1, ease: 'power1.inOut' } } });
+        return function () { sec.classList.remove('scenes-pinned'); gsap.set(grid, { clearProps: 'x' }); };
       });
-    }
+    });
     $$('.card, .tile, .acard, .scene', scope).forEach(function (c, i) { gsap.from(c, { y: 60, rotate: i % 2 ? 1.5 : -1.5, duration: 1, ease: 'expo.out', delay: (i % 4) * 0.06, scrollTrigger: { trigger: c, start: 'top 95%' } }); });
     $$('.reviews', scope).forEach(function (rv) { $$('.review', rv).forEach(function (c, i) { gsap.from(c, { y: 80, duration: 1.1, ease: 'expo.out', delay: i * 0.08, scrollTrigger: { trigger: rv, start: 'top 90%' } }); }); });
     $$('.sec-top h2, .pack h2, .join h2, .contact-sec h2, .rich h2', scope).forEach(function (h) { gsap.from(h, { y: 40, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: h, start: 'top 92%' } }); });
@@ -679,7 +699,7 @@
           btn.firstChild.nodeValue = S.addedShort + ' ';
           var size = selected().filter(Boolean).join(' / ');
           toast(fill(S.added, { title: root.dataset.title + (size && !root.hasAttribute('data-single') ? ' (' + size + ')' : '') }));
-          setTimeout(function () { btn.firstChild.nodeValue = label; btn.disabled = false; }, 1600);
+          setTimeout(function () { btn.firstChild.nodeValue = label; btn.disabled = false; update(); }, 1600);
         }).catch(function (x) { btn.firstChild.nodeValue = label; btn.disabled = false; if (err) { err.textContent = (x && x.description) || S.error; err.hidden = false; } else cartError(x); });
       });
     });
@@ -1233,6 +1253,47 @@
     var cur = fs && $('input:checked', fs); if (cur) rows.forEach(function (r) { r.classList.toggle('is-hit', r.dataset.size.trim().toLowerCase() === cur.value.trim().toLowerCase()); });
   }
 
+  /* product page size by waist: the slider (even jeans waist sizes) picks the matching size option. A size the
+     product doesn't stock in this colour (say XXL) clears the choice, so Add to bag shows Unavailable. */
+  function initWaist(fs) {
+    if (fs._wz) return; fs._wz = true;
+    var range = $('[data-waist-range]', fs), num = $('[data-waist-num]', fs), tag = $('[data-waist-size]', fs), note = $('[data-waist-note]', fs);
+    var rows = $$('[data-waist-row]', fs).map(function (r) { return { size: r.dataset.size, lo: parseFloat(r.dataset.jmin), hi: parseFloat(r.dataset.jmax) }; });
+    var radios = $$('input[type=radio]', fs);
+    if (!range || !rows.length) return;
+    var lo = +range.min, hi = +range.max;
+    var even = function (n) { n = Math.ceil(n); if (n % 2) n += 1; return Math.max(lo, Math.min(hi, n)); };
+    function rowFor(n) {
+      var hit = rows.filter(function (r) { return n >= r.lo && n <= r.hi; })[0];
+      return hit || rows.filter(function (r) { return r.lo > n; })[0] || rows[rows.length - 1];
+    }
+    function paint(n, size, have) {
+      range.value = n;
+      range.style.setProperty('--fill', ((n - lo) / (hi - lo || 1) * 100).toFixed(1) + '%');
+      if (num) num.textContent = n;
+      if (tag) { tag.textContent = size; tag.classList.toggle('is-na', !have); }
+      if (note) note.textContent = have ? '' : fill(fs.dataset.missing || '', { size: size });
+      $$('.wsz-ticks span', fs).forEach(function (t) { t.classList.toggle('on', +t.textContent === n); });
+    }
+    function choose(n, silent) {
+      var row = rowFor(n), want = row.size.trim().toLowerCase();
+      var inp = radios.filter(function (i) { return i.value.trim().toLowerCase() === want; })[0];
+      paint(n, row.size, !!inp);
+      if (silent) return;
+      if (inp) { if (!inp.checked) { inp.checked = true; inp.dispatchEvent(new Event('change', { bubbles: true })); } }
+      else { radios.forEach(function (i) { i.checked = false; }); fs.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+    range.addEventListener('input', function () { choose(+range.value); });
+    // a size picked from the chart moves the slider to that size's first waist number
+    $$('[data-sg-row]', fs).forEach(function (r) {
+      r.addEventListener('click', function () { var row = rows.filter(function (x) { return x.size === r.dataset.size; })[0]; if (row) choose(even(row.lo)); });
+    });
+    // start on the size already selected (from the URL or the first available variant)
+    var cur = radios.filter(function (i) { return i.checked; })[0];
+    var start = cur && rows.filter(function (x) { return x.size.trim().toLowerCase() === cur.value.trim().toLowerCase(); })[0];
+    choose(even(start ? start.lo : rows[0].lo), true);
+  }
+
   /* product reviews: the write-a-review dialog. A thank-you or an error from the last send reopens it. */
   function initReviews(sec) {
     if (sec._rv) return; sec._rv = true;
@@ -1382,33 +1443,17 @@
     if (G) {
       var intro = gsap.timeline({ delay: 0.1 });
       intro.from($$('.xl > span', root), { yPercent: 115, duration: 1.1, ease: 'expo.out', stagger: 0.09 }, 0);
-      if (block) intro.fromTo(block, { scaleY: 0, rotate: -6, transformOrigin: '50% 100%' }, { scaleY: 1, rotate: 5, duration: 1, ease: 'expo.out' }, 0.15);
+      if (block) intro.fromTo(block, { scale: 0, rotate: -60, transformOrigin: '50% 50%' }, { scale: 1, rotate: 0, duration: 1.1, ease: 'expo.out' }, 0.15); /* the sun disc pops out, its ring swinging round */
       intro.from(cut, { yPercent: 40, scale: 0.85, opacity: 0, duration: 1.2, ease: 'expo.out' }, 0.2)
         .from(foot, { y: 40, opacity: 0, duration: 0.8, ease: 'expo.out' }, 0.7)
         .add(function () { colourOn(); }, 0.4)
         .add(function () { pin.classList.add('typed'); }, 0.95);
-      if (aboutDesk()) {
-        var st = gsap.timeline({ scrollTrigger: { trigger: pin, start: 'top top', end: '+=110%', scrub: 0.7, pin: true, anticipatePin: 1 } });
-        st.to($$('.l1 > span', root), { xPercent: -28, ease: 'none' }, 0)
-          .to($$('.l2 > span', root), { xPercent: 120, ease: 'none' }, 0)
-          .to($$('.l3 > span', root), { xPercent: -14, ease: 'none' }, 0)
-          .to(cut, { scale: 1.12, ease: 'none' }, 0)
-          .to(foot, { opacity: 0, y: 40, ease: 'none', duration: 0.4 }, 0);
-        if (block) st.to(block, { rotate: 11, scale: 1.08, ease: 'none' }, 0);
-      }
+      /* scrolling away: no pin. The three headline lines lift at different speeds; the photo and sun stay still.
+         The line wrappers move, not the spans the intro animates, so the two never fight. */
+      var st = gsap.timeline({ scrollTrigger: { trigger: pin, start: 'top top', end: 'bottom top', scrub: 0.6 } });
+      var lines = $$('.xl', root), speeds = [-140, -95, -55];
+      lines.forEach(function (l, i) { st.to(l, { y: speeds[i] || -55, ease: 'none' }, 0); });
     } else colourOn(true);
-    /* pointer parallax: each layer moves a different amount */
-    if (!reduce && finePointer && cut) {
-      var tx = 0, ty = 0, cx = 0, cy = 0;
-      pin.addEventListener('pointermove', function (e) { tx = e.clientX / innerWidth - 0.5; ty = e.clientY / innerHeight - 0.5; });
-      pin.addEventListener('pointerleave', function () { tx = ty = 0; });
-      (function par() {
-        cx += (tx - cx) * 0.07; cy += (ty - cy) * 0.07;
-        cut.style.translate = (cx * -18) + 'px 0';
-        if (block) block.style.translate = (cx * 26) + 'px ' + (cy * 16) + 'px';
-        if (document.contains(cut)) requestAnimationFrame(par);
-      })();
-    }
   }
 
   /* house rules: each card stacks on the last; the one underneath shrinks back */
@@ -1497,14 +1542,25 @@
     if (root._ab) return; root._ab = true;
     splitReveal(root);
     var box = $('[data-pile-box]', root), srcs = (root.dataset.pile || '').split('|').filter(Boolean); if (!box || !srcs.length) return;
-    var order = [0, 1, 2, 3, 4, 1, 0, 2, 3, 4];
-    var xs = [4, 15, 26, 64, 75, 86, 9, 70, 20, 80], rs = [-14, 8, -6, 10, -9, 15, 22, -18, -25, 12], ys = [0, 0, 0, 0, 0, 0, 60, 70, 40, 50];
-    if (innerWidth < 700) { order = order.slice(0, 6); xs = [-4, 20, 50, 72, 8, 60]; ys = [0, 0, 0, 0, 50, 46]; }
+    var order = [0, 1, 2, 3, 4, 1, 0, 2, 3, 4], rs = [-14, 8, -6, 10, -9, 15, 22, -18, -25, 12];
+    var wide = { xs: [4, 15, 26, 64, 75, 86, 9, 70, 20, 80], ys: [0, 0, 0, 0, 0, 0, 60, 70, 40, 50], n: 10 };
+    var narrow = { xs: [-4, 20, 50, 72, 8, 60], ys: [0, 0, 0, 0, 50, 46], n: 6 };
     var els = order.map(function (k, i) {
       var d = document.createElement('div'); d.className = 'pc';
       var im = document.createElement('img'); im.src = srcs[k % srcs.length]; im.alt = ''; im.loading = 'lazy'; d.appendChild(im);
-      d.style.left = xs[i] + '%'; d.style.bottom = (ys[i] - 20) + 'px'; d.style.rotate = rs[i] + 'deg'; box.appendChild(d); return d;
+      d.style.rotate = rs[i] + 'deg'; box.appendChild(d); return d;
     });
+    /* the pile is laid out for the screen it is on, and again if the screen crosses 700px (rotate, resize) */
+    var narrowMq = window.matchMedia('(max-width: 699px)');
+    function layout() {
+      var L = narrowMq.matches ? narrow : wide;
+      els.forEach(function (d, i) {
+        var on = i < L.n; d.style.display = on ? '' : 'none';
+        if (on) { d.style.left = L.xs[i] + '%'; d.style.bottom = (L.ys[i] - 20) + 'px'; }
+      });
+    }
+    layout();
+    if (narrowMq.addEventListener) narrowMq.addEventListener('change', layout); else if (narrowMq.addListener) narrowMq.addListener(layout);
     if (!hasGsap || reduce) return;
     gsap.set(els, { y: -1200 });
     ScrollTrigger.create({ trigger: root, start: 'top 55%', once: true, onEnter: function () {
@@ -1522,6 +1578,7 @@
     $$('[data-about-drop]', scope).forEach(initAboutDrop);
     $$('[data-size-chart]', scope).forEach(initSizeChart);
     $$('[data-sg]', scope).forEach(initSizeGuide);
+    $$('[data-waist]', scope).forEach(initWaist);
     $$('[data-reviews]', scope).forEach(initReviews);
     $$('[data-finder]', scope).forEach(initFinder);
     $$('[data-stretch]', scope).forEach(initStretch);

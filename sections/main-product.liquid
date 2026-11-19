@@ -88,6 +88,80 @@
           {%- unless product.has_only_default_variant -%}
             {%- for option in product.options_with_values -%}
               {%- assign oname = option.name | downcase -%}
+              {%- liquid
+                assign waist_mode = false
+                if forloop.first and oname contains 'size' and section.settings.size_guide == blank and size_rows.size > 0
+                  assign waist_mode = true
+                endif
+              -%}
+              {%- if waist_mode -%}
+                {%- comment -%}
+                  Size by waist: a slider of jeans waist sizes (even numbers, inches) picks the matching size option.
+                  The size buttons stay in the form, hidden, so the cart, price and stock logic work as before.
+                  Each Size block's "Jeans size" (for example 31–32) sets which waist numbers belong to it.
+                {%- endcomment -%}
+                {%- liquid
+                  assign w_lo = size_rows.first.settings.jeans | replace: '–', '-' | split: '-' | first | strip | plus: 0
+                  assign w_hi = size_rows.last.settings.jeans | replace: '–', '-' | split: '-' | last | strip | plus: 0
+                  assign w_lo_mod = w_lo | modulo: 2
+                  if w_lo_mod == 1
+                    assign w_lo = w_lo | plus: 1
+                  endif
+                  assign w_hi_mod = w_hi | modulo: 2
+                  if w_hi_mod == 1
+                    assign w_hi = w_hi | minus: 1
+                  endif
+                -%}
+                <fieldset class="popt wsz" data-option data-waist data-missing="{{ section.settings.waist_missing | escape }}">
+                  <legend class="step-label"><span>{{ section.settings.waist_prompt | escape }}</span>
+                    <button type="button" class="sg-toggle" aria-haspopup="dialog" aria-expanded="false" aria-controls="sg-{{ section.id }}" data-sg-toggle>{{ 'products.size_guide' | t }}</button>
+                  </legend>
+                  <div class="wsz-read" aria-hidden="true">
+                    <span class="wsz-num"><b data-waist-num>{{ w_lo }}</b><small>{{ section.settings.waist_unit | escape }}</small></span>
+                    <span class="wsz-size" data-waist-size>{{ option.selected_value | escape }}</span>
+                  </div>
+                  <input class="wsz-range" type="range" min="{{ w_lo }}" max="{{ w_hi }}" step="2" value="{{ w_lo }}" aria-label="{{ section.settings.waist_prompt | escape }}" data-waist-range>
+                  <div class="wsz-ticks" aria-hidden="true">
+                    {%- for n in (w_lo..w_hi) -%}{%- assign odd = n | modulo: 2 -%}{%- if odd == 0 -%}<span>{{ n }}</span>{%- endif -%}{%- endfor -%}
+                  </div>
+                  {%- if section.settings.waist_help != blank -%}<p class="wsz-help">{{ section.settings.waist_help | escape }}</p>{%- endif -%}
+                  <p class="wsz-note" data-waist-note aria-live="polite"></p>
+                  <div class="wsz-map" hidden>
+                    {%- for row in size_rows -%}
+                      {%- assign j = row.settings.jeans | replace: '–', '-' | split: '-' -%}
+                      <i data-waist-row data-size="{{ row.settings.label | escape }}" data-jmin="{{ j.first | strip }}" data-jmax="{{ j.last | strip }}"></i>
+                    {%- endfor -%}
+                  </div>
+                  <div class="pills wsz-pills">
+                    {%- for value in option.values -%}
+                      <label><input type="radio" name="opt-{{ section.id }}-{{ forloop.parentloop.index0 }}" value="{{ value | escape }}" tabindex="-1"{% if option.selected_value == value %} checked{% endif %}><span>{{ value | escape }}</span></label>
+                    {%- endfor -%}
+                  </div>
+                  <dialog class="sg" id="sg-{{ section.id }}" aria-label="{{ 'products.size_guide' | t }}" data-sg data-result="{{ section.settings.sg_result | escape }}" data-between="{{ section.settings.sg_between | escape }}" data-none="{{ section.settings.sg_none | escape }}">
+                    <div class="sg-head"><h3>{{ 'products.size_guide' | t }}</h3><button type="button" class="menu-close" data-sg-close>{{ 'accessibility.close' | t }}</button></div>
+                    <table class="sg-table">
+                      <thead><tr><th scope="col">{{ 'products.sg_size' | t }}</th><th scope="col">{{ 'products.sg_waist' | t }}</th><th scope="col">{{ 'products.sg_hip' | t }}</th><th scope="col">{{ 'products.sg_jeans' | t }}</th></tr></thead>
+                      <tbody>
+                        {%- for row in size_rows -%}
+                          {%- liquid
+                            assign r = row.settings
+                            assign wmin = r.waist_min | divided_by: 2.54 | round: 1 | append: '' | replace: '.0', ''
+                            assign wmax = r.waist_max | divided_by: 2.54 | round: 1 | append: '' | replace: '.0', ''
+                            assign hmin = r.hip_min | divided_by: 2.54 | round: 1 | append: '' | replace: '.0', ''
+                            assign hmax = r.hip_max | divided_by: 2.54 | round: 1 | append: '' | replace: '.0', ''
+                          -%}
+                          <tr data-sg-row data-size="{{ r.label | escape }}" data-wmin="{{ r.waist_min }}" data-wmax="{{ r.waist_max }}" tabindex="0" {{ row.shopify_attributes }}>
+                            <th scope="row"><span class="sz-tag">{{ r.label | escape }}</span></th>
+                            <td>{{ wmin }}–{{ wmax }}</td><td>{{ hmin }}–{{ hmax }}</td><td>{{ r.jeans | escape }}</td>
+                          </tr>
+                        {%- endfor -%}
+                      </tbody>
+                    </table>
+                    {%- if section.settings.sg_note != blank -%}<p class="sg-note">{{ section.settings.sg_note | escape }}</p>{%- endif -%}
+                  </dialog>
+                </fieldset>
+                {%- continue -%}
+              {%- endif -%}
               <fieldset class="popt" data-option>
                 <legend class="step-label"><span>{{ option.name | escape }}: <b data-option-value>{{ option.selected_value | escape }}</b></span>
                   {%- if forloop.first and oname contains 'size' -%}
@@ -237,6 +311,11 @@
     { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show Buy it now button", "default": true },
     { "type": "page", "id": "size_guide", "label": "Size guide page", "info": "Optional. Leave empty to open the size guide under the sizes (add Size blocks)." },
     { "type": "header", "content": "Size guide" },
+    { "type": "paragraph", "content": "With Size blocks added, the size buttons become a jeans size slider. Each block's Jeans size (for example 31–32) decides which jeans sizes pick that size." },
+    { "type": "text", "id": "waist_prompt", "label": "Size slider title", "default": "Find your perfect fit" },
+    { "type": "text", "id": "waist_help", "label": "Size slider help", "default": "Slide to the jeans size you already wear. We'll match your trunk." },
+    { "type": "text", "id": "waist_unit", "label": "Size slider unit", "default": "jeans size" },
+    { "type": "text", "id": "waist_missing", "label": "Size not stocked", "default": "[[size]] isn't stocked in this colour yet." , "info": "[[size]] becomes the size." },
     { "type": "text", "id": "sg_label", "label": "Slider label", "default": "Your waist" },
     { "type": "text", "id": "sg_hint", "label": "Before sliding", "default": "Slide to your waist, or tap a row below." },
     { "type": "text", "id": "sg_result", "label": "Result", "default": "You're a [[size]]. Picked it for you.", "info": "[[size]] becomes the size." },

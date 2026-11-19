@@ -67,6 +67,17 @@
             "hip_max": 117,
             "jeans": "36–38"
           }
+        },
+        "size_xxl": {
+          "type": "size",
+          "settings": {
+            "label": "XXL",
+            "waist_min": 103,
+            "waist_max": 110,
+            "hip_min": 118,
+            "hip_max": 125,
+            "jeans": "40–42"
+          }
         }
       },
       "block_order": [
@@ -76,7 +87,8 @@
         "size_s",
         "size_m",
         "size_l",
-        "size_xl"
+        "size_xl",
+        "size_xxl"
       ],
       "settings": {
         "show_badge": false
