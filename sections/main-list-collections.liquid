@@ -1,23 +1,27 @@
-{%- assign tabs = 'cyan,orange,yellow,pink' | split: ',' -%}
-<section class="page-hero scheme-lime">
-  <div class="container">
-    <p class="t-label section-head__label"><span class="num">{{ collections.size }}</span> {{ 'collections.collections' | t }}</p>
-    <h1 class="t-display page-hero__title">{{ 'collections.all_title' | t }}</h1>
+{%- assign title = section.settings.title | escape -%}
+{% render 'page-hero', eyebrow: section.settings.eyebrow, title: title, badge: true %}
+<section class="coll">
+  <div class="wrap">
+    <div class="tiles">
+      {%- for c in collections -%}
+        {%- assign i = forloop.index0 | modulo: 4 -%}
+        <a class="tile" href="{{ c.url }}" style="--spark:{% case i %}{% when 0 %}var(--pink){% when 1 %}var(--cyan){% when 2 %}var(--orange){% else %}var(--purple){% endcase %}">
+          <div class="media">
+            {%- if c.featured_image -%}{{ c.featured_image | image_url: width: 900 | image_tag: alt: '', loading: 'lazy', widths: '400, 600, 900', sizes: '(max-width: 560px) 100vw, 33vw' }}{%- else -%}<span class="ph">{% render 'mark' %}</span>{%- endif -%}
+          </div>
+          <div class="info"><h2>{{ c.title | escape }}</h2><span>{{ 'collections.count' | t: count: c.products_count }}</span></div>
+        </a>
+      {%- endfor -%}
+    </div>
   </div>
 </section>
-<section class="section scheme-paper">
-  <div class="world__rail" style="grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); overflow: visible; cursor: auto">
-    {%- for collection in collections -%}
-      {%- assign t = forloop.index0 | modulo: 4 -%}
-      <a class="world__card reveal" href="{{ collection.url }}" style="--tab: var(--{{ tabs[t] }}); --i: {{ forloop.index0 | modulo: 4 }}">
-        <figure class="world__media">
-          {%- if collection.featured_image -%}{{ collection.featured_image | image_url: width: 900 | image_tag: class: 'world__img', loading: 'lazy', sizes: '(min-width: 990px) 25vw, 90vw' }}
-          {%- else -%}<img class="world__img" src="{{ 'product-fan.jpg' | asset_url }}" alt="" loading="lazy">{%- endif -%}
-        </figure>
-        <div class="world__tab"><span class="t-label">{{ collection.products_count }} {{ 'collections.styles' | t }}</span>{% render 'icon', icon: 'arrow' %}</div>
-        <h2 class="world__title">{{ collection.title }}</h2>
-      </a>
-    {%- endfor -%}
-  </div>
-</section>
-{% schema %}{ "name": "Collections list" }{% endschema %}
+
+{% schema %}
+{
+  "name": "Collections list",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Shop" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "All collections" }
+  ]
+}
+{% endschema %}

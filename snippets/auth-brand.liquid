@@ -1,0 +1,14 @@
+{%- comment -%}
+  Brand panel beside the sign-in and sign-up forms. Usage: render 'auth-brand', heading: 'customer.login_title' | t
+{%- endcomment -%}
+<aside class="auth-brand">
+  <img class="rv-logo" src="{{ 'favicon-180.png' | asset_url }}" alt="" width="72" height="72">
+  <h1>{%- if heading != blank -%}{{ heading }}{%- else -%}{{ 'customer.auth_welcome' | t }}{%- endif -%}</h1>
+  <p>{{ 'customer.auth_text' | t }}</p>
+  <ul>
+    <li>{{ 'customer.auth_perk_1' | t }}</li>
+    <li>{{ 'customer.auth_perk_2' | t }}</li>
+    <li>{{ 'customer.auth_perk_3' | t }}</li>
+  </ul>
+  <span class="auth-sticker">{{ 'customer.auth_sticker' | t }}</span>
+</aside>

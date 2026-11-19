@@ -1,42 +1,50 @@
-<section class="page-hero scheme-lime">
-  <div class="container">
-    <h1 class="t-display page-hero__title">{{ 'customer.addresses' | t }}</h1>
-  </div>
-</section>
-<section class="section scheme-paper">
-  <div class="container cart-page__grid">
-    <div style="display: grid; gap: 16px">
-      <p><a class="link-arrow" href="{{ routes.account_url }}">{{ 'customer.back' | t }}</a></p>
+{%- assign title = 'customer.addresses' | t -%}
+{%- capture crumbs -%}<a href="{{ routes.account_url }}">{{ 'customer.back' | t }}</a>{%- endcapture -%}
+{% render 'page-hero', eyebrow: 'Account', title: title, crumbs: crumbs, badge: true %}
+<section class="acct">
+  <div class="wrap">
+    <div style="display:grid;gap:20px;align-content:start">
       {%- paginate customer.addresses by 10 -%}
         {%- for address in customer.addresses -%}
-          <div class="window">
-            <div class="window__bar"><span class="t-label">{% if address == customer.default_address %}default{% else %}address_{{ forloop.index }}{% endif %}</span></div>
-            <div style="padding: 16px; display: grid; gap: 12px">
-              <div>{{ address | format_address }}</div>
-              <form method="post" action="/account/addresses/{{ address.id }}">
+          <div class="addr">
+            {%- if address == customer.default_address -%}<span class="tag">{{ 'customer.default' | t }}</span>{%- endif -%}
+            <p>{{ address | format_address }}</p>
+            <div class="addr-actions">
+              <button class="tbtn" type="button" data-toggle="edit-{{ address.id }}" aria-controls="edit-{{ address.id }}">{{ 'customer.edit' | t }}</button>
+              {%- form 'customer_address', address, class: 'inline-del' -%}
                 <input type="hidden" name="_method" value="delete">
-                <button class="link-arrow" type="submit" onclick="return confirm('{{ 'customer.delete_confirm' | t }}')">{{ 'customer.delete' | t }}</button>
-              </form>
+                <button class="tbtn" type="submit" data-confirm="{{ 'customer.delete_confirm' | t | escape }}">{{ 'customer.delete' | t }}</button>
+              {%- endform -%}
+            </div>
+            <div id="edit-{{ address.id }}" hidden>
+              {%- form 'customer_address', address, class: 'fx' -%}
+                {% render 'address-fields', form: form, address: address, key: address.id %}
+                <div class="actions"><button class="btn btn-ink" type="submit">{{ 'customer.update' | t }} <span class="arrow">→</span></button></div>
+              {%- endform -%}
             </div>
           </div>
         {%- endfor -%}
+        {% render 'pager', paginate: paginate %}
       {%- endpaginate -%}
     </div>
-    <div class="window">
-      <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">new_address.exe</span></div>
-      <div style="padding: 24px">
-        {%- form 'customer_address', customer.new_address, class: 'form' -%}
-          <div class="field"><label class="t-label" for="AddrFirst">{{ 'customer.first_name' | t }}</label><input id="AddrFirst" name="address[first_name]" autocomplete="given-name"></div>
-          <div class="field"><label class="t-label" for="AddrLast">{{ 'customer.last_name' | t }}</label><input id="AddrLast" name="address[last_name]" autocomplete="family-name"></div>
-          <div class="field"><label class="t-label" for="Addr1">{{ 'customer.address1' | t }}</label><input id="Addr1" name="address[address1]" autocomplete="address-line1"></div>
-          <div class="field"><label class="t-label" for="AddrCity">{{ 'customer.city' | t }}</label><input id="AddrCity" name="address[city]" autocomplete="address-level2"></div>
-          <div class="field"><label class="t-label" for="AddrCountry">{{ 'customer.country' | t }}</label><select id="AddrCountry" name="address[country]">{{ all_country_option_tags }}</select></div>
-          <div class="field"><label class="t-label" for="AddrZip">{{ 'customer.zip' | t }}</label><input id="AddrZip" name="address[zip]" autocomplete="postal-code"></div>
-          <div class="field"><label class="t-label" for="AddrPhone">{{ 'customer.phone' | t }}</label><input id="AddrPhone" type="tel" name="address[phone]" autocomplete="tel"></div>
-          <label style="display: flex; gap: 8px"><input type="checkbox" name="address[default]" value="1"> {{ 'customer.set_default' | t }}</label>
-          <button class="btn" type="submit">{{ 'customer.add_address' | t }}</button>
-        {%- endform -%}
-      </div>
+    <div class="panel" style="--spark:var(--cyan)">
+      <h2>{{ 'customer.add_address' | t }}</h2>
+      {%- form 'customer_address', customer.new_address, class: 'fx' -%}
+        {%- if form.errors -%}<div class="err" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+        {% render 'address-fields', form: form, address: customer.new_address, key: 'new' %}
+        <div class="actions"><button class="btn btn-ink" type="submit" style="--spark:var(--cyan)">{{ 'customer.add_address' | t }} <span class="arrow">→</span></button></div>
+      {%- endform -%}
     </div>
   </div>
 </section>
+<script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+<script>
+  // Shopify's country and state picker: fills states for the chosen country and hides the field when there are none
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.Shopify || !Shopify.CountryProvinceSelector) return;
+    document.querySelectorAll('[data-address-country]').forEach(function (s) {
+      var k = s.dataset.addressCountry;
+      new Shopify.CountryProvinceSelector('AddressCountry_' + k, 'AddressProvince_' + k, { hideElement: 'AddressProvinceContainer_' + k });
+    });
+  });
+</script>

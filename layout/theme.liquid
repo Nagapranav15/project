@@ -3,14 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#CEFF05">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="{{ settings.color_lime }}">
     <link rel="canonical" href="{{ canonical_url }}">
 
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
     {%- else -%}
-      <link rel="icon" type="image/svg+xml" href="{{ 'icon-j.svg' | asset_url }}">
+      {%- comment -%} Brand icon with J, Ink on Lime (Brand Guidelines v1.5, icon colourways) {%- endcomment -%}
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32.png' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="512x512" href="{{ 'favicon-512.png' | asset_url }}">
+      <link rel="apple-touch-icon" href="{{ 'favicon-180.png' | asset_url }}">
     {%- endif -%}
 
     <title>
@@ -20,15 +23,22 @@
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
-    {% if page_description %}
+    {%- if page_description -%}
       <meta name="description" content="{{ page_description | escape }}">
-    {% endif %}
+    {%- endif -%}
 
     {% render 'meta-tags' %}
 
+    {{ 'obv-500.otf' | asset_url | preload_tag: as: 'font', type: 'font/otf', crossorigin: 'anonymous' }}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+
+    {%- style -%}
+      @font-face { font-family: "Obv"; src: url({{ 'obv-400.otf' | asset_url }}) format("opentype"); font-weight: 400; font-display: swap; }
+      @font-face { font-family: "Obv"; src: url({{ 'obv-500.otf' | asset_url }}) format("opentype"); font-weight: 500; font-display: swap; }
+      @font-face { font-family: "Obv"; src: url({{ 'obv-600.otf' | asset_url }}) format("opentype"); font-weight: 600; font-display: swap; }
+    {%- endstyle -%}
 
     {{ 'theme.css' | asset_url | stylesheet_tag }}
 
@@ -42,53 +52,107 @@
         --orange: {{ settings.color_orange }};
         --pink: {{ settings.color_pink }};
         --purple: {{ settings.color_purple }};
+        --cur-default: url({{ 'cursor-banana.png' | asset_url }}) 11 4, auto;
+        --cur-link: url({{ 'cursor-banana-hover.png' | asset_url }}) 12 3, pointer;
+        --cur-press: url({{ 'cursor-banana-press.png' | asset_url }}) 14 3, pointer;
         {%- if settings.brand_font_family != blank %}
-        --font-brand: {{ settings.brand_font_family }}, 'Archivo', Arial, sans-serif;
+        --font: {{ settings.brand_font_family }}, "Obv", "Archivo", system-ui, sans-serif;
         {%- endif %}
-        --motion: {% if settings.enable_motion %}1{% else %}0{% endif %};
       }
     {%- endstyle -%}
 
     <script>
-      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');{% if settings.banana_cursor %}
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.documentElement.classList.add('banana-cursor');
+        /* sharp cursors on retina screens, only where the browser understands image-set for cursors */
+        (function (r) {
+          var fn = window.CSS && CSS.supports && (CSS.supports('cursor', 'image-set(url("a.png") 1x) 1 1, auto') ? 'image-set' : CSS.supports('cursor', '-webkit-image-set(url("a.png") 1x) 1 1, auto') ? '-webkit-image-set' : '');
+          if (!fn) return;
+          var set = function (v, a, b, x, y, f) { r.style.setProperty(v, fn + '(url("' + a + '") 1x, url("' + b + '") 2x) ' + x + ' ' + y + ', url("' + a + '") ' + x + ' ' + y + ', ' + f); };
+          set('--cur-default', {{ 'cursor-banana.png' | asset_url | json }}, {{ 'cursor-banana-2x.png' | asset_url | json }}, 11, 4, 'auto');
+          set('--cur-link', {{ 'cursor-banana-hover.png' | asset_url | json }}, {{ 'cursor-banana-hover-2x.png' | asset_url | json }}, 12, 3, 'pointer');
+          set('--cur-press', {{ 'cursor-banana-press.png' | asset_url | json }}, {{ 'cursor-banana-press-2x.png' | asset_url | json }}, 14, 3, 'pointer');
+        })(document.documentElement);
+      }{% endif %}
       window.Jumper = {
         routes: {
           root: {{ routes.root_url | json }},
           cart: {{ routes.cart_url | json }},
           cartAdd: {{ routes.cart_add_url | json }},
-          cartChange: {{ routes.cart_change_url | json }}
-        },
-        strings: {
-          added: {{ 'cart.added' | t | json }},
-          soldOut: {{ 'products.sold_out' | t | json }},
-          addToCart: {{ 'products.add_to_cart' | t | json }},
-          error: {{ 'cart.error' | t | json }}
+          cartChange: {{ routes.cart_change_url | json }},
+          cartUpdate: {{ routes.cart_update_url | json }},
+          search: {{ routes.search_url | json }},
+          predictive: {{ routes.predictive_search_url | json }}
         },
         moneyFormat: {{ shop.money_format | json }},
-        motion: {{ settings.enable_motion | json }}
+        template: {{ template.name | json }},
+        motion: {{ settings.enable_motion | json }},
+        boxSrc: {% if settings.cart_show_box %}{{ 'cart-box.js' | asset_url | json }}{% else %}""{% endif %},
+        loader: {% if settings.show_loader and request.design_mode == false %}{{ settings.loader_style | json }}{% else %}"none"{% endif %},
+        strings: {
+          added: {{ 'cart.added' | t: title: '[[title]]' | json }},
+          pickSize: {{ 'products.pick_size' | t | json }},
+          adding: {{ 'products.adding' | t | json }},
+          addedShort: {{ 'products.added_short' | t | json }},
+          quickAdd: {{ 'products.quick_add' | t | json }},
+          soldOut: {{ 'products.sold_out' | t | json }},
+          unavailable: {{ 'products.unavailable' | t | json }},
+          addToCart: {{ 'products.add_to_cart' | t | json }},
+          error: {{ 'cart.error' | t | json }},
+          boxFull: {{ 'pack.box_full' | t | json }},
+          addMore: {{ 'pack.add_more_html' | t: count: '[[count]]' | json }},
+          packAdded: {{ 'pack.added' | t: count: '[[count]]' | json }},
+          pieceAdded: {{ 'pack.piece_added' | t | json }},
+          packConnect: {{ 'pack.connect' | t: name: '[[name]]' | json }},
+          packSizeOut: {{ 'pack.size_out' | t: name: '[[name]]' | json }},
+          joinBadEmail: {{ 'newsletter.bad_email' | t | json }},
+          joinWelcome: {{ 'newsletter.welcome_name' | t: name: '[[name]]' | json }},
+          joinWelcomeAnon: {{ 'newsletter.welcome' | t | json }},
+          demoCard: {{ 'products.demo' | t | json }},
+          motionOff: {{ 'motion.off' | t | json }},
+          motionOn: {{ 'motion.on' | t | json }},
+          motionAsk: {{ 'motion.ask' | t | json }},
+          motionTurnOff: {{ 'motion.turn_off' | t | json }},
+          searchAll: {{ 'search.view_all' | t | json }},
+          onePiece: {{ 'pack.one_piece' | t | json }},
+          nPack: {{ 'pack.n_pack' | t: count: '[[count]]' | json }},
+          packSize: {{ 'cart.pack_size' | t: size: '[[size]]' | json }}
+        }
       };
     </script>
+    <script src="{{ 'gsap.min.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'ScrollTrigger.min.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'lenis.min.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
 
     {{ content_for_header }}
   </head>
 
   <body class="template-{{ template.name | handle }}{% if template.suffix %} template-{{ template.suffix | handle }}{% endif %}">
-    {%- if settings.show_loader and request.design_mode == false -%}{% render 'loader' %}{%- endif -%}
+    {%- if settings.show_loader and request.design_mode == false -%}
+      {%- if settings.loader_style == 'badge' -%}
+        {% render 'loader-badge' %}
+      {%- else -%}
+        {% render 'loader' %}
+      {%- endif -%}
+    {%- endif -%}
     <a class="skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
 
     {% sections 'header-group' %}
 
-    <main id="MainContent" class="main" role="main" tabindex="-1">
+    <main id="MainContent" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
 
     {% sections 'footer-group' %}
 
-    {% render 'cart-drawer' %}
-
-    {%- if settings.show_custom_cursor -%}
-      <div class="cursor" aria-hidden="true" data-cursor><span class="cursor__label" data-cursor-label></span></div>
+    <div class="scrim" id="scrim"></div>
+    {% section 'cart-drawer' %}
+    {% render 'packing' %}
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    {%- if settings.show_draft_badge -%}
+      <div class="draft">{{ settings.draft_badge_text }}</div>
     {%- endif -%}
   </body>
 </html>

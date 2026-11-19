@@ -1,0 +1,58 @@
+{%- comment -%}
+  About hero: grey "We don't do boring." type with the crew cutout. On load the colour switches on (grey to Lime),
+  the last line lands on a tilted Pink block, and an Ink colour block lands behind the crew. On desktop the section pins and the lines split apart as you
+  scroll. Everything sits on the same container as the header, so the type lines up with the logo.
+{%- endcomment -%}
+{%- liquid
+  assign l1 = section.settings.line_1
+  assign l2 = section.settings.line_2
+  assign l3 = section.settings.line_3
+  assign heading = l1 | append: ' ' | append: l2 | append: ' ' | append: l3 | strip
+-%}
+<section class="xhero" aria-labelledby="aTitle-{{ section.id }}" data-about-hero>
+  <div class="xh-pin" data-xh-pin>
+    <div class="xh-bg" data-xh-bg aria-hidden="true"></div>
+    <h1 class="sr" id="aTitle-{{ section.id }}">{{ heading | escape }}</h1>
+    <div class="wrap xh-stage">
+      <div class="xh-type" aria-hidden="true">
+        {%- if l1 != blank -%}<span class="xl l1"><span>{{ l1 | escape }}</span></span>{%- endif -%}
+        {%- if l2 != blank -%}<span class="xl l2"><span>{{ l2 | escape }}</span></span>{%- endif -%}
+        {%- if l3 != blank -%}<span class="xl l3"><span><em data-xh-hi>{{ l3 | escape }}</em></span></span>{%- endif -%}
+      </div>
+      <div class="xh-media" data-xh-media aria-hidden="true">
+        <span class="xh-block" data-xh-block></span>
+        {%- if section.settings.image != blank -%}
+          <img class="xh-cut" data-xh-cut src="{{ section.settings.image | image_url: width: 1400 }}" alt="" width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}">
+        {%- else -%}
+          <img class="xh-cut" data-xh-cut src="{{ 'about-cutout.webp' | asset_url }}" alt="" width="892" height="1100">
+        {%- endif -%}
+      </div>
+    </div>
+    <div class="xh-foot" data-xh-foot>
+      <div class="wrap xh-foot-in">
+        <div>
+          {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+          {%- if section.settings.sub != blank -%}<p class="xh-sub">{{ section.settings.sub | escape }}</p>{%- endif -%}
+        </div>
+        {%- if section.settings.button_label != blank -%}<a class="btn btn-ink" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">{{ section.settings.button_label | escape }} <span class="arrow">→</span></a>{%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About hero",
+  "settings": [
+    { "type": "text", "id": "line_1", "label": "Line 1", "default": "We don't" },
+    { "type": "text", "id": "line_2", "label": "Line 2", "default": "do" },
+    { "type": "text", "id": "line_3", "label": "Line 3 (on the Pink block)", "default": "boring." },
+    { "type": "image_picker", "id": "image", "label": "Cutout photo", "info": "A transparent PNG or WebP of people works best. Empty uses the Jumper crew cutout." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "About Jumper" },
+    { "type": "text", "id": "sub", "label": "Text", "default": "Not in the gym, not at work, and definitely not under there." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop trunks" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "About hero" }]
+}
+{% endschema %}

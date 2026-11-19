@@ -1,10 +1,18 @@
-<section class="lost scheme-lime">
-  <div class="container">
-    <p class="lost__code" aria-hidden="true">404</p>
-    {% render 'character', name: 'wink', class: 'lost__char' %}
-    <h1 class="t-headline">{{ 'general.404_title' | t }}</h1>
-    <p class="t-body" style="margin: 16px auto 32px">{{ 'general.404_text' | t }}</p>
-    <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue' | t }} {% render 'icon', icon: 'arrow' %}</a>
+<section class="nf">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">{{ 'general.404_eyebrow' | t }}</span>
+      <h1 style="margin-top:18px"><span class="line"><span>{{ 'general.404_line_1' | t }}</span></span><span class="line"><span>{{ 'general.404_line_2' | t }}</span></span></h1>
+      <p>{{ 'general.404_text' | t }}</p>
+      <div class="ctas">
+        <a class="btn btn-ink" href="{{ routes.all_products_collection_url }}">{{ 'general.404_cta' | t }} <span class="arrow">→</span></a>
+        <a class="btn btn-ghost" href="{{ routes.root_url }}">{{ 'general.404_home' | t }}</a>
+      </div>
+    </div>
+    {% render 'badge', id: 'ring404' %}
   </div>
 </section>
-{% schema %}{ "name": "404" }{% endschema %}
+
+{% schema %}
+{ "name": "404" }
+{% endschema %}

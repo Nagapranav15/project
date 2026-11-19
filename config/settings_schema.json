@@ -2,7 +2,7 @@
   {
     "name": "theme_info",
     "theme_name": "Jumper Loud",
-    "theme_version": "1.0.0",
+    "theme_version": "2.0.0",
     "theme_author": "Jumper",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://help.shopify.com/manual/online-store/themes"
@@ -10,51 +10,235 @@
   {
     "name": "Colours",
     "settings": [
-      { "type": "paragraph", "content": "Brand Guidelines v1.5. Lime leads, Ink and Paper support. Supporting colours take 10 to 20% of a layout, one at a time. Never used for the logo." },
-      { "type": "header", "content": "Primary" },
-      { "type": "color", "id": "color_lime", "label": "Lime", "default": "#CEFF05" },
-      { "type": "color", "id": "color_ink", "label": "Ink", "default": "#111111" },
-      { "type": "color", "id": "color_paper", "label": "Paper", "default": "#F7F7F7" },
-      { "type": "header", "content": "Supporting" },
-      { "type": "color", "id": "color_yellow", "label": "Yellow", "default": "#FEF337" },
-      { "type": "color", "id": "color_cyan", "label": "Cyan", "default": "#01C6FD" },
-      { "type": "color", "id": "color_orange", "label": "Orange", "default": "#FE8800" },
-      { "type": "color", "id": "color_pink", "label": "Pink", "default": "#FF2E9B" },
-      { "type": "color", "id": "color_purple", "label": "Purple", "default": "#C502FF" }
+      {
+        "type": "paragraph",
+        "content": "Lime leads, Ink and Paper support. One spark colour per band."
+      },
+      {
+        "type": "header",
+        "content": "Primary"
+      },
+      {
+        "type": "color",
+        "id": "color_lime",
+        "label": "Lime",
+        "default": "#CEFF05"
+      },
+      {
+        "type": "color",
+        "id": "color_ink",
+        "label": "Ink",
+        "default": "#111111"
+      },
+      {
+        "type": "color",
+        "id": "color_paper",
+        "label": "Paper",
+        "default": "#F7F7F7"
+      },
+      {
+        "type": "header",
+        "content": "Sparks"
+      },
+      {
+        "type": "color",
+        "id": "color_pink",
+        "label": "Pink",
+        "default": "#FF2E9B"
+      },
+      {
+        "type": "color",
+        "id": "color_cyan",
+        "label": "Cyan",
+        "default": "#01C6FD"
+      },
+      {
+        "type": "color",
+        "id": "color_orange",
+        "label": "Orange",
+        "default": "#FE8800"
+      },
+      {
+        "type": "color",
+        "id": "color_yellow",
+        "label": "Yellow",
+        "default": "#FEF337"
+      },
+      {
+        "type": "color",
+        "id": "color_purple",
+        "label": "Purple",
+        "default": "#C502FF"
+      }
     ]
   },
   {
     "name": "Typography",
     "settings": [
-      { "type": "paragraph", "content": "The brand typeface is Obviously (Medium). Upload your licensed Obviously web font files to Assets and add an @font-face, then type its family name below. Until then the theme uses Archivo Expanded as a close stand-in." },
-      { "type": "text", "id": "brand_font_family", "label": "Brand font family name", "placeholder": "Obviously" }
+      {
+        "type": "paragraph",
+        "content": "The theme ships the homepage v4 type (Obv) with Archivo as fallback. To use a licensed full font, upload it to Assets with an @font-face and type its family name here."
+      },
+      {
+        "type": "text",
+        "id": "brand_font_family",
+        "label": "Brand font family name",
+        "placeholder": "Obviously"
+      }
     ]
   },
   {
-    "name": "Motion and cursor",
+    "name": "Loading screen",
     "settings": [
-      { "type": "checkbox", "id": "show_loader", "label": "Show inflating JUMPER loading screen (first visit and every refresh)", "default": true },
-      { "type": "checkbox", "id": "enable_motion", "label": "Enable scroll and pointer animations", "default": true },
-      { "type": "checkbox", "id": "show_custom_cursor", "label": "Show Lime custom cursor on desktop", "default": true }
+      {
+        "type": "checkbox",
+        "id": "show_loader",
+        "label": "Show loading screen",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "loader_style",
+        "label": "Loading screen style",
+        "options": [
+          {
+            "value": "inflate",
+            "label": "Inflating JUMPER (first visit and every refresh)"
+          },
+          {
+            "value": "badge",
+            "label": "Badge drop (homepage v4, once per session)"
+          }
+        ],
+        "default": "inflate"
+      },
+      {
+        "type": "text",
+        "id": "loader_tape_text",
+        "label": "Badge loader tape text",
+        "default": "PLAY LOUD ✦ WEAR IT LOUD"
+      },
+      {
+        "type": "text",
+        "id": "badge_ring_text",
+        "label": "Badge ring text",
+        "default": "UNDERWEAR WITH THE VOLUME UP ✦ WEAR IT LOUD ✦ "
+      }
+    ]
+  },
+  {
+    "name": "Motion",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_motion",
+        "label": "Enable smooth scroll and scroll scenes",
+        "default": true,
+        "info": "Visitors whose device asks for less motion get a one-tap switch."
+      },
+      {
+        "type": "checkbox",
+        "id": "banana_cursor",
+        "label": "Banana cursor",
+        "default": true,
+        "info": "On computers with a mouse, the pointer becomes the Banana Crew character and switches to the jumping pose while you click."
+      }
     ]
   },
   {
     "name": "Cart",
     "settings": [
-      { "type": "number", "id": "free_shipping_threshold", "label": "Free shipping threshold (in store currency, 0 to hide meter)", "default": 999 }
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "In your store currency. Set 0 to hide the meter.",
+        "default": 999
+      },
+      {
+        "type": "text",
+        "id": "cart_note_text",
+        "label": "Bag footer note",
+        "default": "Shipping and taxes calculated at checkout. Checkout runs on Shopify."
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Show order note on bag page",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Cart box"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_box",
+        "label": "Packing animation at checkout",
+        "default": true,
+        "info": "When someone taps Checkout, their trunks drop into the Jumper mailer and the lid comes down before checkout opens. Loads a small 3D script on that tap."
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "text",
+        "id": "card_size_option",
+        "label": "Size option name",
+        "default": "Size",
+        "info": "Cards show quick-add buttons for this option."
+      },
+      {
+        "type": "text",
+        "id": "card_new_tag",
+        "label": "Product tag that shows the corner label",
+        "default": "New in"
+      }
+    ]
+  },
+  {
+    "name": "Draft badge",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_draft_badge",
+        "label": "Show draft badge",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "draft_badge_text",
+        "label": "Draft badge text",
+        "default": "Draft v4 · names, prices, perks and reviews are placeholders"
+      }
     ]
   },
   {
     "name": "Social",
     "settings": [
-      { "type": "url", "id": "social_instagram", "label": "Instagram" },
-      { "type": "url", "id": "social_youtube", "label": "YouTube" }
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube",
+        "label": "YouTube"
+      }
     ]
   },
   {
     "name": "Favicon",
     "settings": [
-      { "type": "image_picker", "id": "favicon", "label": "Favicon", "info": "Defaults to the brand icon with J." }
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Defaults to the J mark."
+      }
     ]
   }
 ]

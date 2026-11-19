@@ -1,28 +1,29 @@
 {%- liquid
-  assign tabs = section.settings.tabs | remove: ' ' | split: ','
-  assign coll = collections[section.settings.collection]
+  assign coll = section.settings.collection
+  assign limit = section.settings.limit
+  assign anchor = section.settings.anchor | default: section.id | handleize
+  assign link = section.settings.link | default: coll.url | default: routes.all_products_collection_url
 -%}
-<section class="section scheme-{{ section.settings.scheme }} featured" id="shop">
-  <div class="container">
-    <header class="section-head">
+<section class="newin" id="{{ anchor }}" aria-labelledby="title-{{ section.id }}">
+  <div class="wrap">
+    <div class="sec-top">
       <div>
-        <p class="t-label section-head__label reveal"><span class="num">{{ section.settings.number }}</span> {{ section.settings.label }}</p>
-        <h2 class="t-headline reveal" style="--d: 1">{{ section.settings.heading }}</h2>
+        {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+        <h2 id="title-{{ section.id }}" style="margin-top:14px">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.text != blank -%}<p>{{ section.settings.text | escape }}</p>{%- endif -%}
       </div>
-      <div class="section-head__side reveal" style="--d: 2">
-        <p class="t-body">{{ section.settings.text }}</p>
-        <a class="link-arrow" href="{% if coll != blank %}{{ coll.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}">{{ section.settings.link_label }}</a>
-      </div>
-    </header>
-
-    <div class="grid grid--cards">
+      {%- if section.settings.link_label != blank -%}<a class="link" href="{{ link }}">{{ section.settings.link_label | escape }} <span class="arrow">→</span></a>{%- endif -%}
+    </div>
+    <div class="grid">
       {%- if coll != blank and coll.products_count > 0 -%}
-        {%- for product in coll.products limit: section.settings.limit -%}
-          {%- assign t = forloop.index0 | modulo: tabs.size -%}
-          {% render 'product-card', product: product, tab: tabs[t], index: forloop.index0 %}
+        {%- for product in coll.products limit: limit -%}
+          {% render 'product-card', product: product, index: forloop.index0 %}
         {%- endfor -%}
       {%- else -%}
-        {% render 'demo-grid', limit: section.settings.limit, tabs: tabs %}
+        {% render 'product-card', demo: 'maroon', index: 0 %}
+        {% render 'product-card', demo: 'yellow', index: 1 %}
+        {% render 'product-card', demo: 'navy', index: 2 %}
+        {% render 'product-card', demo: 'grey', index: 3 %}
       {%- endif -%}
     </div>
   </div>
@@ -30,20 +31,17 @@
 
 {% schema %}
 {
-  "name": "Featured prints",
+  "name": "Product cards",
   "settings": [
-    { "type": "select", "id": "scheme", "label": "Ground", "default": "paper", "options": [
-      { "value": "paper", "label": "Paper" }, { "value": "lime", "label": "Lime" }, { "value": "ink", "label": "Ink" }
-    ]},
-    { "type": "text", "id": "number", "label": "Section number", "default": "01" },
-    { "type": "text", "id": "label", "label": "Label", "default": "New in" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "New prints. Loud on purpose." },
-    { "type": "text", "id": "text", "label": "Text", "default": "Soft stretch bodies. Woven bands that never hide. Pick a print, pick a size, done." },
-    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "new-in", "info": "Links like /#new-in scroll here." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "New in" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Loud on purpose." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Pick your size and add straight from the card. Hover to see it on." },
+    { "type": "collection", "id": "collection", "label": "Collection", "info": "Until you pick one, four Drop 01 demo cards show." },
     { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 12, "step": 1, "default": 4 },
-    { "type": "text", "id": "tabs", "label": "Card tab colours", "info": "Comma separated: yellow, cyan, orange, pink, purple", "default": "cyan,orange,yellow,pink" },
-    { "type": "text", "id": "link_label", "label": "Link label", "default": "Shop all trunks" }
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Shop all trunks" },
+    { "type": "url", "id": "link", "label": "Link", "info": "Empty links to the collection." }
   ],
-  "presets": [{ "name": "Featured prints" }]
+  "presets": [{ "name": "Product cards" }]
 }
 {% endschema %}

@@ -1,0 +1,74 @@
+{%- assign anchor = section.settings.anchor | default: section.id | handleize -%}
+<section class="proof" id="{{ anchor }}" aria-labelledby="title-{{ section.id }}">
+  <div class="wrap">
+    {%- assign facts = section.blocks | where: 'type', 'fact' -%}
+    {%- if facts.size > 0 -%}
+      <div class="facts">
+        {%- for block in facts -%}<div class="fact" {{ block.shopify_attributes }}><b>{{ block.settings.title | escape }}</b><span>{{ block.settings.text | escape }}</span></div>{%- endfor -%}
+      </div>
+    {%- endif -%}
+    {%- assign reviews_list = section.blocks | where: 'type', 'review' -%}
+    {%- if reviews_list.size > 0 -%}
+    <div class="sec-top">
+      <div>{% if section.settings.eyebrow != blank %}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{% endif %}<h2 id="title-{{ section.id }}" style="margin-top:14px">{{ section.settings.heading | escape }}</h2></div>
+      {%- if section.settings.link_label != blank -%}<a class="link" href="{{ section.settings.link | default: routes.all_products_collection_url }}">{{ section.settings.link_label | escape }} <span class="arrow">→</span></a>{%- endif -%}
+    </div>
+    <div class="reviews">
+      {%- for block in section.blocks -%}
+        {%- if block.type != 'review' -%}{%- continue -%}{%- endif -%}
+        {%- assign stars = block.settings.rating -%}
+        <figure class="review" {{ block.shopify_attributes }}><span class="rtape"></span><q>{{ block.settings.quote | escape }}</q><figcaption class="who"><span>{{ block.settings.author | escape }}</span><span class="stars" aria-label="{{ stars }} out of 5">{% for s in (1..stars) %}★{% endfor %}{% assign rest = 5 | minus: stars %}{% if rest > 0 %}<span style="opacity:.25">{% for s in (1..rest) %}★{% endfor %}</span>{% endif %}</span></figcaption></figure>
+      {%- endfor -%}
+    </div>
+    {%- endif -%}
+    {%- if reviews_list.size > 0 and section.settings.note != blank -%}<p class="sample">{{ section.settings.note | escape }}</p>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Facts and reviews",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "fit" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "What the crew says" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Worn. Loved. Reordered." },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Find your size" },
+    { "type": "url", "id": "link", "label": "Link" },
+    { "type": "textarea", "id": "note", "label": "Small print", "default": "Reviews are placeholders for the draft. Real reviews replace them at launch." }
+  ],
+  "max_blocks": 9,
+  "blocks": [
+    {
+      "type": "fact",
+      "name": "Fact",
+      "limit": 3,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Soft stretch" },
+        { "type": "text", "id": "text", "label": "Text", "default": "A body that moves with you, gym to rooftop." }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "Wore them to the gym and straight to work. Forgot I had them on." },
+        { "type": "text", "id": "author", "label": "Name", "default": "Sample review · Arjun, Pune" },
+        { "type": "range", "id": "rating", "label": "Stars", "min": 1, "max": 5, "step": 1, "default": 5 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Facts and reviews",
+      "blocks": [
+        { "type": "fact", "settings": { "title": "Soft stretch", "text": "A body that moves with you, gym to rooftop." } },
+        { "type": "fact", "settings": { "title": "15-day exchanges", "text": "Wrong size? Swap unworn packs, no drama." } },
+        { "type": "fact", "settings": { "title": "Free shipping", "text": "On every order over Rs. 999, anywhere in India." } },
+        { "type": "review", "settings": { "quote": "Wore them to the gym and straight to work. Forgot I had them on.", "author": "Sample review · Arjun, Pune", "rating": 5 } },
+        { "type": "review", "settings": { "quote": "The band stays put. Finally a trunk that doesn't roll.", "author": "Sample review · Kabir, Delhi", "rating": 5 } },
+        { "type": "review", "settings": { "quote": "Got the 5 pack. The box alone made my day.", "author": "Sample review · Rohan, Bengaluru", "rating": 5 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,59 @@
+{%- comment -%}
+  House rules: a row of tilted sticker cards that scrolls sideways while the section is pinned.
+  Each card flips on hover (or tap) to show the cheeky line on its back.
+{%- endcomment -%}
+<section class="av" data-hscroll>
+  <div class="av-sticky">
+    <div class="av-head wrap">
+      <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div class="av-track" data-hscroll-track>
+      {%- for block in section.blocks -%}
+        <button type="button" class="av-card" style="--c: {{ block.settings.colour }}; --r: {% cycle '-4', '3', '-2', '5', '-3', '2' %}deg" data-flip data-cursor="{{ section.settings.cursor_label | escape }}" aria-pressed="false" {{ block.shopify_attributes }}>
+          <span class="av-face av-front">
+            <span class="av-no">{{ section.settings.rule_label | escape }} {{ forloop.index }}</span>
+            <span class="av-title">{{ block.settings.title | escape }}</span>
+            {%- if block.settings.tag != blank -%}<span class="av-tag">{{ block.settings.tag | escape }}</span>{%- endif -%}
+          </span>
+          <span class="av-face av-back"><span>{{ block.settings.back | escape }}</span></span>
+        </button>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About: house rules",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "House rules" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Rules we don't break." },
+    { "type": "text", "id": "rule_label", "label": "Card label", "default": "Rule" },
+    { "type": "text", "id": "cursor_label", "label": "Cursor label", "default": "Flip" }
+  ],
+  "blocks": [
+    {
+      "type": "rule",
+      "name": "Rule",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Front", "default": "No ride-up." },
+        { "type": "text", "id": "tag", "label": "Tag" },
+        { "type": "textarea", "id": "back", "label": "Back", "default": "Stays put through squats, sprints and stairs." },
+        { "type": "color", "id": "colour", "label": "Card colour", "default": "#FF2E9B" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About: house rules",
+      "blocks": [
+        { "type": "rule", "settings": { "title": "No ride-up.", "colour": "#FF2E9B" } },
+        { "type": "rule", "settings": { "title": "No boring.", "colour": "#CEFF05" } },
+        { "type": "rule", "settings": { "title": "No apologies.", "colour": "#01C6FD" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

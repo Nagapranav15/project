@@ -1,0 +1,205 @@
+{%- comment -%}
+  Move your way: pinned scroll scene. The mode tabs (Gym, Office, Rooftop, Pool) recolour the giant type and glow,
+  swap the line of copy and point the button at that mode's collection. They cycle on their own while the section
+  is on screen and stop once the visitor picks one.
+{%- endcomment -%}
+{%- liquid
+  assign anchor = section.settings.anchor | default: section.id | handleize
+  assign first = section.blocks.first
+  assign fallback_link = section.settings.link | default: routes.all_products_collection_url
+  assign first_link = first.settings.link | default: fallback_link
+  assign first_colour = first.settings.colour | default: 'var(--cyan)'
+-%}
+<section class="move" id="{{ anchor }}" aria-labelledby="title-{{ section.id }}" style="--mode:{{ first_colour }};--dur:{{ section.settings.interval }}s" data-move{% if section.settings.autoplay %} data-autoplay{% endif %}>
+  <div class="move-pin" data-move-pin>
+    <div class="glow" aria-hidden="true"></div>
+    <div class="giant" aria-hidden="true">
+      {%- for i in (1..3) -%}
+        {%- assign key = 'word_' | append: i -%}
+        {%- if section.settings[key] != blank -%}<span class="gl"><span>{{ section.settings[key] | escape }}</span></span>{%- endif -%}
+      {%- endfor -%}
+    </div>
+    <div class="cuts" data-cuts>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign style = block.settings.image_style
+          assign stock = block.settings.stock
+          if block.settings.image == blank
+            if stock contains 'cutout'
+              assign style = 'cutout'
+            else
+              assign style = 'photo'
+            endif
+          endif
+          case style
+            when 'cutout'
+              assign cls = 'cut'
+            when 'product'
+              assign cls = 'cut prod'
+            else
+              assign cls = 'shot'
+          endcase
+          if forloop.first
+            assign cls = cls | append: ' on'
+          endif
+          assign alt = block.settings.image.alt | default: block.settings.image_alt
+        -%}
+        {%- if block.settings.image != blank -%}
+          {{ block.settings.image | image_url: width: 1400 | image_tag: class: cls, alt: alt, loading: 'lazy', widths: '600, 900, 1200, 1400', sizes: '(max-width: 560px) 90vw, 60vw' }}
+        {%- else -%}
+          {%- liquid
+            case stock
+              when 'cutout'
+                if section.settings.image != blank
+                  assign src = section.settings.image | image_url: width: 1600
+                else
+                  assign src = 'jumper-cutout.webp' | asset_url
+                endif
+              when 'cutout-gym'
+                assign src = 'cutout-gym.webp' | asset_url
+              when 'cutout-office'
+                assign src = 'cutout-office.webp' | asset_url
+              when 'cutout-pool'
+                assign src = 'cutout-pool.webp' | asset_url
+              when 'street'
+                assign src = 'scene-denim.jpg' | asset_url
+              when 'beach'
+                assign src = 'scene-beach.jpg' | asset_url
+              when 'pool'
+                assign src = 'scene-pool.jpg' | asset_url
+              when 'hero'
+                assign src = 'jumper-hero.jpg' | asset_url
+              else
+                assign src = 'scene-court.jpg' | asset_url
+            endcase
+          -%}
+          <img class="{{ cls }}" src="{{ src }}" alt="{{ alt | escape }}" loading="lazy" width="1200" height="1400">
+        {%- endif -%}
+      {%- else -%}
+        {%- if section.settings.image != blank -%}
+          {{ section.settings.image | image_url: width: 1600 | image_tag: class: 'cut on', alt: section.settings.image_alt, loading: 'lazy' }}
+        {%- else -%}
+          <img class="cut on" src="{{ 'jumper-cutout.webp' | asset_url }}" alt="{{ section.settings.image_alt | escape }}" loading="lazy" width="1200" height="1300">
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="top-copy"><div class="wrap">
+      <div>
+        <h2 class="eyebrow" id="title-{{ section.id }}">{{ section.settings.eyebrow | escape }}</h2>
+        <p class="mode-text" data-mode-text aria-live="polite">{{ first.settings.text | default: section.settings.text | escape }}</p>
+      </div>
+      {%- if section.blocks.size > 1 -%}
+        <div class="mode-count" aria-hidden="true"><b data-mode-no>01</b><span>/{{ section.blocks.size | prepend: '0' | slice: -2, 2 }}</span></div>
+      {%- endif -%}
+    </div></div>
+
+    <div class="bottom-copy" data-move-bottom><div class="wrap">
+      {%- if section.blocks.size > 0 -%}
+        <div class="modes" role="tablist" aria-label="{{ section.settings.eyebrow | escape }}">
+          {%- for block in section.blocks -%}
+            {%- assign blink = block.settings.link | default: fallback_link -%}
+            <button type="button" class="mode{% if forloop.first %} on{% endif %}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"{% unless forloop.first %} tabindex="-1"{% endunless %}
+              data-mode data-colour="{{ block.settings.colour }}" data-text="{{ block.settings.text | escape }}" data-link="{{ blink }}" data-label="{{ block.settings.button | default: section.settings.button | escape }}" {{ block.shopify_attributes }}>
+              <span>{{ block.settings.label | escape }}</span><i aria-hidden="true"></i>
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      {%- assign first_label = first.settings.button | default: section.settings.button -%}
+      {%- if first_label != blank -%}
+        <a class="btn btn-ink" href="{{ first_link }}" data-mode-cta><span data-mode-label>{{ first_label | escape }}</span> <span class="arrow">→</span></a>
+      {%- endif -%}
+    </div></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Move your way",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "move" },
+    { "type": "text", "id": "word_1", "label": "Giant word 1", "default": "Move" },
+    { "type": "text", "id": "word_2", "label": "Giant word 2", "default": "your" },
+    { "type": "text", "id": "word_3", "label": "Giant word 3", "default": "way." },
+    { "type": "image_picker", "id": "image", "label": "Two guys cut-out replacement", "info": "Used by modes set to the built-in cut-out." },
+    { "type": "text", "id": "image_alt", "label": "Image description", "default": "Two men in Jumper trunks, one standing in yellow, one sitting in navy" },
+    { "type": "text", "id": "eyebrow", "label": "Heading", "default": "Move your way" },
+    { "type": "textarea", "id": "text", "label": "Text when a mode has none", "default": "Made for jumping, sprawling, sitting through meetings and walking home late. It moves when you move." },
+    { "type": "text", "id": "button", "label": "Button label when a mode has none", "default": "Shop the look" },
+    { "type": "url", "id": "link", "label": "Button link when a mode has none" },
+    { "type": "header", "content": "Mode tabs" },
+    { "type": "checkbox", "id": "autoplay", "label": "Cycle through modes on their own", "default": true },
+    { "type": "range", "id": "interval", "label": "Seconds per mode", "min": 3, "max": 10, "step": 1, "default": 5 }
+  ],
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Mode",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Tab label", "default": "Gym" },
+        {
+          "type": "select",
+          "id": "colour",
+          "label": "Colour",
+          "options": [
+            { "value": "var(--orange)", "label": "Orange" },
+            { "value": "var(--cyan)", "label": "Cyan" },
+            { "value": "var(--purple)", "label": "Purple" },
+            { "value": "var(--pink)", "label": "Pink" },
+            { "value": "var(--lime)", "label": "Lime" },
+            { "value": "var(--yellow)", "label": "Yellow" }
+          ],
+          "default": "var(--orange)"
+        },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Squats, sprints, sweat. Soft stretch that moves with every rep." },
+        { "type": "text", "id": "button", "label": "Button label", "default": "Shop for the gym" },
+        { "type": "url", "id": "link", "label": "Button link", "info": "For example a Gym collection. Empty links to all products." },
+        { "type": "header", "content": "Image" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        {
+          "type": "select",
+          "id": "image_style",
+          "label": "Image style",
+          "options": [
+            { "value": "cutout", "label": "Cut-out of people (transparent PNG or WebP)" },
+            { "value": "product", "label": "Cut-out of a product (floats smaller)" },
+            { "value": "photo", "label": "Framed photo" }
+          ],
+          "default": "cutout"
+        },
+        { "type": "text", "id": "image_alt", "label": "Image description" },
+        {
+          "type": "select",
+          "id": "stock",
+          "label": "Built-in image when none is picked",
+          "options": [
+            { "value": "cutout-gym", "label": "Cut-out: gym duo (maroon trunks)" },
+            { "value": "cutout-office", "label": "Cut-out: office duo (grey and navy trunks)" },
+            { "value": "cutout", "label": "Cut-out: rooftop duo (yellow and navy trunks)" },
+            { "value": "cutout-pool", "label": "Cut-out: pool duo (camo and orange trunks)" },
+            { "value": "court", "label": "Framed photo: court" },
+            { "value": "street", "label": "Framed photo: street" },
+            { "value": "beach", "label": "Framed photo: beach" },
+            { "value": "pool", "label": "Framed photo: pool" },
+            { "value": "hero", "label": "Framed photo: three friends" }
+          ],
+          "default": "cutout-gym"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Move your way",
+      "blocks": [
+        { "type": "chip", "settings": { "label": "Gym", "colour": "var(--orange)", "text": "Squats, sprints, sweat. Soft stretch that moves with every rep.", "button": "Shop for the gym", "stock": "cutout-gym", "image_alt": "Two men in maroon Jumper trunks, one stretching, one sitting on a stone with a towel" } },
+        { "type": "chip", "settings": { "label": "Office", "colour": "var(--cyan)", "text": "Back-to-back meetings and the walk home late. Comfortable enough to forget.", "button": "Shop for the office", "stock": "cutout-office", "image_alt": "Two men in Jumper trunks, one in an open white shirt and tie, one sitting on a stone with a coffee" } },
+        { "type": "chip", "settings": { "label": "Rooftop", "colour": "var(--purple)", "text": "Sundown plans that run past midnight. Loud colour, all night.", "button": "Shop for the rooftop", "stock": "cutout", "image_alt": "Two men in Jumper trunks, one standing in yellow, one sitting in navy" } },
+        { "type": "chip", "settings": { "label": "Pool", "colour": "var(--pink)", "text": "Poolside, then straight to dinner. Same trunks, still loud.", "button": "Shop for the pool", "stock": "cutout-pool", "image_alt": "Two men in Jumper trunks after a swim, one laughing on a stone, one drying his hair" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

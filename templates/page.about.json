@@ -1,0 +1,278 @@
+{
+  "sections": {
+    "hero": {
+      "type": "about-hero",
+      "settings": {
+        "line_1": "We don't",
+        "line_2": "do",
+        "line_3": "boring.",
+        "eyebrow": "About Jumper",
+        "sub": "Not in the gym, not at work, and definitely not under there.",
+        "button_label": "Shop trunks"
+      }
+    },
+    "tapes": {
+      "type": "tapes",
+      "settings": {
+        "text_1": "NO RIDE-UP ✦ NO BORING ✦ NO APOLOGIES",
+        "speed_1": 1,
+        "text_2": "SOFT STRETCH ✦ LOUD BAND ✦ CHEEKY FIT",
+        "speed_2": 0.8,
+        "background": "none",
+        "flush": true
+      }
+    },
+    "manifesto": {
+      "type": "about-manifesto",
+      "settings": {}
+    },
+    "rules": {
+      "type": "about-rules",
+      "blocks": {
+        "r1": {
+          "type": "rule",
+          "settings": {
+            "title": "No ride-up.",
+            "stamp": "Leg day approved",
+            "text": "Stays put through squats, sprints and stairs.",
+            "colour": "lime"
+          }
+        },
+        "r2": {
+          "type": "rule",
+          "settings": {
+            "title": "No boring.",
+            "stamp": "Ever",
+            "text": "Colours that start conversations. Bands that finish them.",
+            "colour": "ink"
+          }
+        },
+        "r3": {
+          "type": "rule",
+          "settings": {
+            "title": "No wedgies.",
+            "stamp": "Pinky promise",
+            "text": "Cut smooth at the back, so nothing creeps.",
+            "colour": "pink"
+          }
+        },
+        "r4": {
+          "type": "rule",
+          "settings": {
+            "title": "No apologies.",
+            "stamp": "Loud is the point",
+            "text": "Loud isn't a phase. It's the whole personality.",
+            "colour": "cyan"
+          }
+        },
+        "r5": {
+          "type": "rule",
+          "settings": {
+            "title": "No sad drawers.",
+            "stamp": "Grin required",
+            "text": "If it doesn't make you grin when you get dressed, it isn't Jumper.",
+            "colour": "yellow"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5"
+      ],
+      "settings": {
+        "eyebrow": "House rules",
+        "heading_1": "Rules we",
+        "heading_2": "don't break.",
+        "text": "Five of them. Every pair follows all five.",
+        "rule_label": "Rule"
+      }
+    },
+    "pillars": {
+      "type": "about-pillars",
+      "blocks": {
+        "p1": {
+          "type": "panel",
+          "settings": {
+            "title": "Born loud.",
+            "text": "Underwear should never be the quiet part of the outfit.",
+            "fallback": "about-hero.jpg",
+            "alt": "Three friends in Jumper trunks in tall grass",
+            "ground": "ink",
+            "spark": "yellow"
+          }
+        },
+        "p2": {
+          "type": "panel",
+          "settings": {
+            "title": "Cut to move.",
+            "text": "Four-way stretch that follows every squat and sprint. Zero ride-up.",
+            "fallback": "about-playloud.jpg",
+            "alt": "A man in Jumper trunks stretching, arms up, between blue gym balls",
+            "ground": "paper",
+            "spark": "cyan"
+          }
+        },
+        "p3": {
+          "type": "panel",
+          "settings": {
+            "title": "Soft all day.",
+            "text": "95% combed cotton, right where it touches your skin.",
+            "fallback": "about-navy-close.jpg",
+            "alt": "Close up of navy Jumper trunks",
+            "ground": "ink",
+            "spark": "orange"
+          }
+        },
+        "p4": {
+          "type": "panel",
+          "settings": {
+            "title": "Let it peek.",
+            "text": "A woven band. Soft on the inside, loud on the outside.",
+            "fallback": "about-maroon-close.jpg",
+            "alt": "Close up of maroon Jumper trunks with the orange woven band",
+            "ground": "paper",
+            "spark": "pink"
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "settings": {
+        "eyebrow": "How it's made",
+        "heading": "Four things in every pair.",
+        "hint": "Keep scrolling",
+        "intro_ground": "lime"
+      }
+    },
+    "get": {
+      "type": "about-get",
+      "blocks": {
+        "w1": {
+          "type": "word",
+          "settings": {
+            "word": "breathable.",
+            "chip": "Breathable",
+            "detail": "Combed cotton at 180 gsm lets air through, so you stay cool all day.",
+            "colour": "lime"
+          }
+        },
+        "w2": {
+          "type": "word",
+          "settings": {
+            "word": "itch-free.",
+            "chip": "Itch-free",
+            "detail": "The woven waistband is brushed soft on the inside. Nothing scratches.",
+            "colour": "pink"
+          }
+        },
+        "w3": {
+          "type": "word",
+          "settings": {
+            "word": "cotton soft.",
+            "chip": "95% cotton",
+            "detail": "95% combed cotton, right where it touches your skin.",
+            "colour": "cyan"
+          }
+        },
+        "w4": {
+          "type": "word",
+          "settings": {
+            "word": "stretchy.",
+            "chip": "4-way stretch",
+            "detail": "5% elastane moves every way you do and snaps back into shape.",
+            "colour": "orange"
+          }
+        }
+      },
+      "block_order": [
+        "w1",
+        "w2",
+        "w3",
+        "w4"
+      ],
+      "settings": {
+        "eyebrow": "What you get",
+        "lead": "Made to be",
+        "button_label": "Shop the trunks"
+      }
+    },
+    "stats": {
+      "type": "about-stats",
+      "blocks": {
+        "s1": {
+          "type": "stat",
+          "settings": {
+            "value": 95,
+            "from": 0,
+            "suffix": "%",
+            "label": "Cotton, the soft kind."
+          }
+        },
+        "s2": {
+          "type": "stat",
+          "settings": {
+            "value": 4,
+            "from": 0,
+            "suffix": "-way",
+            "label": "Stretch that keeps up."
+          }
+        },
+        "s3": {
+          "type": "stat",
+          "settings": {
+            "value": 0,
+            "from": 99,
+            "suffix": "",
+            "label": "Wedgies reported. Zero."
+          }
+        },
+        "s4": {
+          "type": "stat",
+          "settings": {
+            "value": 15,
+            "from": 0,
+            "suffix": "-day",
+            "label": "Exchanges on unworn packs."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4"
+      ],
+      "settings": {
+        "eyebrow": "By the numbers",
+        "heading_1": "Small print,",
+        "heading_2": "big numbers."
+      }
+    },
+    "drop": {
+      "type": "about-drop",
+      "settings": {
+        "eyebrow": "Your move",
+        "line_1": "Go on.",
+        "line_2": "Drop yours.",
+        "button_label": "Shop trunks"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "tapes",
+    "manifesto",
+    "rules",
+    "pillars",
+    "get",
+    "stats",
+    "drop"
+  ]
+}

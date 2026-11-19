@@ -1,0 +1,18 @@
+{%- comment -%}
+  Badge loader from homepage v4: the emblem drops in, the tape sweeps across, the Lime panel lifts.
+  Plays once per session. Choose it in Theme settings → Loading screen.
+{%- endcomment -%}
+<div class="bloader" id="loader" aria-hidden="true">
+  <div class="badge" id="lbadge">
+    <svg class="ring" viewBox="0 0 200 200"><defs><path id="ringL" d="M100,100 m-75,0 a75,75 0 1,1 150,0 a75,75 0 1,1 -150,0"/></defs><text><textPath href="#ringL">{{ settings.badge_ring_text | escape }}</textPath></text></svg>
+    <div class="core">{% render 'mark' %}</div>
+  </div>
+  <div class="ltape" id="ltape"><span class="track">&nbsp;{% for i in (1..5) %}{{ settings.loader_tape_text | escape }} ✦ {% endfor %}</span></div>
+</div>
+<script>
+  (function () {
+    var seen = false, pref = null;
+    try { seen = sessionStorage.getItem('jumper-loader') === '1'; pref = localStorage.getItem('jumperMotion'); } catch (e) {}
+    if (!seen && pref !== 'off') document.documentElement.classList.add('js-load');
+  })();
+</script>

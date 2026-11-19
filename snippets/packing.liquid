@@ -1,0 +1,13 @@
+{%- comment -%}
+  Packing screen. When someone taps Checkout, the trunks in their bag drop into the Jumper Taped Mailer
+  (packaging directions, direction 3), the lid comes down and checkout opens. assets/cart-box.js draws it.
+{%- endcomment -%}
+{%- if settings.cart_show_box -%}
+  {%- capture net -%}{"lid": {{ 'mailer-lid.webp' | asset_url | json }}, "front": {{ 'mailer-front.webp' | asset_url | json }}, "back": {{ 'mailer-back.webp' | asset_url | json }}, "left": {{ 'mailer-left.webp' | asset_url | json }}, "right": {{ 'mailer-right.webp' | asset_url | json }} }{%- endcapture -%}
+  <div class="packing" id="packing" data-cart-box data-net="{{ net | escape }}" data-packing="{{ 'cart.box_packing' | t | escape }}" data-done="{{ 'cart.box_done' | t | escape }}" hidden>
+    <div class="packing-inner">
+      <canvas data-box-canvas role="img" aria-label="{{ 'cart.box_label' | t | escape }}"></canvas>
+      <p class="packing-cap" data-box-cap aria-live="polite">{{ 'cart.box_packing' | t }}</p>
+    </div>
+  </div>
+{%- endif -%}

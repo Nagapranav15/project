@@ -1,0 +1,50 @@
+{%- comment -%}
+  Big numbers that count up when they come into view, on ink.
+{%- endcomment -%}
+<section class="an">
+  <div class="wrap">
+    <div class="an-head">
+      <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div class="an-grid">
+      {%- for block in section.blocks -%}
+        <div class="an-item" {{ block.shopify_attributes }}>
+          <span class="an-num"><span data-count-to="{{ block.settings.value }}">{{ block.settings.value }}</span><small>{{ block.settings.suffix | escape }}</small></span>
+          <span class="an-label">{{ block.settings.label | escape }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About: numbers",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "By the numbers" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Small print, big numbers." }
+  ],
+  "blocks": [
+    {
+      "type": "number",
+      "name": "Number",
+      "settings": [
+        { "type": "number", "id": "value", "label": "Number", "default": 95 },
+        { "type": "text", "id": "suffix", "label": "After the number", "default": "%" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Cotton, the soft kind" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About: numbers",
+      "blocks": [
+        { "type": "number", "settings": { "value": 95, "suffix": "%", "label": "Cotton, the soft kind" } },
+        { "type": "number", "settings": { "value": 0, "suffix": "", "label": "Wedgies reported" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

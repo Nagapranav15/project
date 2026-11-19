@@ -1,42 +1,71 @@
-{%- assign tabs = 'cyan,orange,yellow,pink' | split: ',' -%}
-<section class="page-hero scheme-lime">
-  <div class="container">
-    <p class="t-label section-head__label"><span class="num">{{ search.results_count | default: 0 }}</span> {{ 'search.results' | t }}</p>
-    <h1 class="t-display page-hero__title">{%- if search.performed -%}“{{ search.terms }}”{%- else -%}{{ 'search.title' | t }}{%- endif -%}</h1>
-    <form action="{{ routes.search_url }}" method="get" role="search" class="join__field" style="margin-top: 32px; max-width: 640px; border-color: var(--ink)">
-      <input type="hidden" name="type" value="product,page,article">
-      <label class="visually-hidden" for="SearchQ">{{ 'search.title' | t }}</label>
-      <input id="SearchQ" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}" style="color: var(--paper)">
-      <button class="btn btn--lime-on-ink" type="submit">{{ 'search.submit' | t }}</button>
-    </form>
-    {% render 'character', name: 'stroll', class: 'page-hero__char' %}
+{%- liquid
+  if search.performed
+    assign title = 'search.results_for' | t: terms: search.terms
+  else
+    assign title = 'search.title' | t
+  endif
+-%}
+<section class="phero ink">
+  <div class="wrap">
+    <div style="width:100%">
+      <span class="eyebrow"><i></i>{{ 'search.eyebrow' | t }}</span>
+      <h1><span class="line"><span>{{ title }}</span></span></h1>
+      <form class="search-form" action="{{ routes.search_url }}" method="get" role="search" style="margin-top:28px">
+        <label class="sr" for="q-{{ section.id }}">{{ 'search.title' | t }}</label>
+        <input id="q-{{ section.id }}" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}" autocomplete="off">
+        <input type="hidden" name="options[prefix]" value="last">
+        <button type="submit">{{ 'search.submit' | t }} <span class="arrow">→</span></button>
+      </form>
+      {%- if search.performed -%}<div class="meta"><span>{{ 'search.results_count' | t: count: search.results_count }}</span></div>{%- endif -%}
+    </div>
   </div>
 </section>
-<section class="section scheme-paper">
-  <div class="container">
-    {%- if search.performed -%}
-      {%- paginate search.results by 24 -%}
-        <div class="grid grid--cards">
-          {%- for item in search.results -%}
-            {%- assign t = forloop.index0 | modulo: 4 -%}
-            {%- if item.object_type == 'product' -%}
-              {% render 'product-card', product: item, tab: tabs[t], index: forloop.index0 %}
-            {%- else -%}
-              <a class="card" href="{{ item.url }}" style="--tab: var(--{{ tabs[t] }})">
-                <div class="card__tab"><span class="t-label">{{ item.object_type }}</span></div>
-                <div class="card__body"><h3 class="card__title">{{ item.title }}</h3></div>
-                <p class="t-body" style="padding: 0 12px 16px">{{ item.content | strip_html | truncatewords: 20 }}</p>
-              </a>
-            {%- endif -%}
-          {%- else -%}
-            <div class="empty" style="grid-column: 1 / -1">{% render 'character', name: 'wink' %}<p class="t-subhead">{{ 'search.none' | t: terms: search.terms }}</p></div>
-          {%- endfor -%}
-        </div>
-        {%- if paginate.pages > 1 -%}<nav class="pagination">{{ paginate | default_pagination }}</nav>{%- endif -%}
-      {%- endpaginate -%}
-    {%- else -%}
-      <div class="grid grid--cards">{% render 'demo-grid', limit: 4, tabs: tabs %}</div>
-    {%- endif -%}
-  </div>
-</section>
-{% schema %}{ "name": "Search results" }{% endschema %}
+
+{%- if search.performed -%}
+  {%- paginate search.results by section.settings.per_page -%}
+    <section class="coll srch">
+      <div class="wrap">
+        {% render 'facets', results: search, url: routes.search_url, sort_by: search.sort_by, default_sort: search.default_sort_by, count: search.results_count, terms: search.terms %}
+        {%- if search.results.size > 0 -%}
+          {%- assign products = search.results | where: 'object_type', 'product' -%}
+          {%- assign others = search.results | where: 'object_type', 'article' -%}
+          {%- assign pages = search.results | where: 'object_type', 'page' -%}
+          {%- if products.size > 0 -%}
+            <div class="grid">
+              {%- for product in products -%}{% render 'product-card', product: product, index: forloop.index0 %}{%- endfor -%}
+            </div>
+          {%- endif -%}
+          {%- assign rest = others | concat: pages -%}
+          {%- if rest.size > 0 -%}
+            <div class="acards" style="margin-top:56px">
+              {%- for item in rest -%}
+                <article class="acard" style="--spark:var(--cyan)">
+                  <a class="media" href="{{ item.url }}" tabindex="-1">{%- if item.image -%}{{ item.image | image_url: width: 700 | image_tag: alt: '', loading: 'lazy' }}{%- else -%}<span class="ph">{% render 'mark' %}</span>{%- endif -%}</a>
+                  <div class="info"><span class="eyebrow">{% if item.object_type == 'article' %}{{ 'search.articles' | t }}{% else %}{{ 'search.pages' | t }}{% endif %}</span><h2><a href="{{ item.url }}">{{ item.title | escape }}</a></h2><p>{{ item.content | strip_html | truncatewords: 22 }}</p></div>
+                </article>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+          {% render 'pager', paginate: paginate %}
+        {%- else -%}
+          <div class="empty-state"><b>{{ 'search.none' | t: terms: search.terms }}</b><a class="btn btn-ink" href="{{ routes.all_products_collection_url }}">{{ 'cart.shop' | t }} <span class="arrow">→</span></a></div>
+        {%- endif -%}
+      </div>
+    </section>
+  {%- endpaginate -%}
+{%- else -%}
+  <section class="coll">
+    <div class="wrap">
+      <div class="empty-state"><b>{{ 'search.placeholder' | t }}</b><a class="btn btn-ink" href="{{ routes.all_products_collection_url }}">{{ 'cart.shop' | t }} <span class="arrow">→</span></a></div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Search results",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Results per page", "min": 8, "max": 48, "step": 4, "default": 24 }
+  ]
+}
+{% endschema %}

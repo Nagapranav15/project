@@ -2,28 +2,288 @@
   "sections": {
     "main": {
       "type": "main-collection",
-      "settings": {
-        "fallback_title": "All trunks",
-        "per_page": 24,
-        "tabs": "cyan,orange,yellow,pink",
-        "character": "skate"
-      }
+      "settings": {}
     },
-    "join": {
-      "type": "join-crew",
+    "tapes": {
+      "type": "tapes",
+      "settings": {}
+    },
+    "details": {
+      "type": "product-details",
+      "blocks": {
+        "d1": {
+          "type": "detail",
+          "settings": {
+            "title": "Woven waistband",
+            "text": "Soft brushed inside, loud JUMPER weave outside. It does not roll, fold or dig in.",
+            "x": 52,
+            "y": 64
+          }
+        },
+        "d2": {
+          "type": "detail",
+          "settings": {
+            "title": "Soft stretch body",
+            "text": "95% cotton, 5% elastane at 180 gsm. Breathes like a tee, holds like it means it.",
+            "x": 55,
+            "y": 75
+          }
+        },
+        "d3": {
+          "type": "detail",
+          "settings": {
+            "title": "Leg that stays put",
+            "text": "A 4-inch leg with a grippy hem, cut so it never rides up your thighs.",
+            "x": 33,
+            "y": 71
+          }
+        },
+        "d4": {
+          "type": "detail",
+          "settings": {
+            "title": "Contoured pouch",
+            "text": "Shaped front panel for room where you want it. No squish, no adjusting.",
+            "x": 44,
+            "y": 69
+          }
+        },
+        "d5": {
+          "type": "detail",
+          "settings": {
+            "title": "Colours that pop",
+            "text": "Six loud shades dyed to stay bright wash after wash.",
+            "x": 27,
+            "y": 30
+          }
+        }
+      },
+      "block_order": [
+        "d1",
+        "d2",
+        "d3",
+        "d4",
+        "d5"
+      ],
+      "settings": {}
+    },
+    "size": {
+      "type": "size-chart",
+      "blocks": {
+        "s": {
+          "type": "size",
+          "settings": {
+            "label": "S",
+            "waist_min": 71,
+            "waist_max": 78,
+            "hip_min": 86,
+            "hip_max": 93,
+            "jeans": "28–30"
+          }
+        },
+        "m": {
+          "type": "size",
+          "settings": {
+            "label": "M",
+            "waist_min": 79,
+            "waist_max": 86,
+            "hip_min": 94,
+            "hip_max": 101,
+            "jeans": "31–32"
+          }
+        },
+        "l": {
+          "type": "size",
+          "settings": {
+            "label": "L",
+            "waist_min": 87,
+            "waist_max": 94,
+            "hip_min": 102,
+            "hip_max": 109,
+            "jeans": "33–34"
+          }
+        },
+        "xl": {
+          "type": "size",
+          "settings": {
+            "label": "XL",
+            "waist_min": 95,
+            "waist_max": 102,
+            "hip_min": 110,
+            "hip_max": 117,
+            "jeans": "36–38"
+          }
+        }
+      },
+      "block_order": [
+        "s",
+        "m",
+        "l",
+        "xl"
+      ],
+      "settings": {}
+    },
+    "reviews": {
+      "type": "testimonials",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-navy-wide.jpg",
+            "quote": "Wore them to the gym and straight to work. Forgot I had them on.",
+            "name": "Arjun",
+            "place": "Pune",
+            "rating": 5,
+            "product": "3 pack"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-yellow-wide.jpg",
+            "quote": "The band stays put. Finally a trunk that doesn't roll down mid-squat.",
+            "name": "Kabir",
+            "place": "Delhi",
+            "rating": 5,
+            "product": "Sunshine"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-grey-wide.jpg",
+            "quote": "Got the 5 pack. The box alone made my day, the fit made my week.",
+            "name": "Rohan",
+            "place": "Bengaluru",
+            "rating": 5,
+            "product": "5 pack"
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "fallback": "jumper-hero.jpg",
+            "quote": "Bought one for me, then three more for the group chat. No regrets.",
+            "name": "Vikram",
+            "place": "Mumbai",
+            "rating": 5,
+            "product": "3 pack"
+          }
+        },
+        "r5": {
+          "type": "review",
+          "settings": {
+            "fallback": "scene-beach.jpg",
+            "quote": "Soft like a tee, loud like a festival. My new favourite thing.",
+            "name": "Aditya",
+            "place": "Goa",
+            "rating": 5,
+            "product": "Maroon"
+          }
+        },
+        "r6": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-maroon-wide.jpg",
+            "quote": "Sized up like the chart said and it's perfect. No pinching, no riding.",
+            "name": "Dev",
+            "place": "Hyderabad",
+            "rating": 5,
+            "product": "Maroon"
+          }
+        },
+        "r7": {
+          "type": "review",
+          "settings": {
+            "fallback": "scene-pool.jpg",
+            "quote": "Survived a pool day and a dance floor. Still looks brand new.",
+            "name": "Ishaan",
+            "place": "Chennai",
+            "rating": 5,
+            "product": "Navy"
+          }
+        },
+        "r8": {
+          "type": "review",
+          "settings": {
+            "fallback": "scene-denim.jpg",
+            "quote": "Let the band peek out of my jeans on purpose now. Worth it.",
+            "name": "Neil",
+            "place": "Kolkata",
+            "rating": 5,
+            "product": "Heather"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6",
+        "r7",
+        "r8"
+      ],
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Which size should I get?",
+            "answer": "<p>Go by your waist on the size chart above. Between two sizes? Size up for room, down for a snug hold.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "How do packs work?",
+            "answer": "<p>Pick 3 or 5, mix any colours in one size, and they ship together in the Jumper box.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "What are they made of?",
+            "answer": "<p>95% combed cotton and 5% elastane, with a woven waistband that is brushed soft on the inside.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Can I exchange them?",
+            "answer": "<p>Unworn, sealed packs can be swapped within 15 days. Write in with your order number.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "How do I wash them?",
+            "answer": "<p>Cold, inside out, with similar colours. Skip the dryer to keep the colour loud.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5"
+      ],
       "settings": {
-        "frame_text": "Wear it loud",
-        "label": "The Crew",
-        "heading": "Join the Crew.",
-        "text": "First dibs on new prints, drops and the occasional cheeky surprise.",
-        "button_label": "I'm in",
-        "fine_print": "No spam. Unsubscribe any time.",
-        "character": "surf"
+        "eyebrow": "Before you buy",
+        "heading": "Good questions."
       }
     }
   },
   "order": [
     "main",
-    "join"
+    "tapes",
+    "details",
+    "size",
+    "reviews",
+    "faq"
   ]
 }

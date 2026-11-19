@@ -1,0 +1,31 @@
+{%- comment -%} Returned by /search/suggest for the search overlay. {%- endcomment -%}
+<div data-predictive>
+  {%- if predictive_search.performed -%}
+    {%- assign r = predictive_search.resources -%}
+    {%- if r.products.size > 0 -%}
+      <div>
+        <h3>{{ 'search.products' | t }}</h3>
+        <div class="pred-products">
+          {%- for p in r.products -%}
+            <a class="pred-item" href="{{ p.url }}">
+              {%- if p.featured_media -%}{{ p.featured_media | image_url: width: 120 | image_tag: alt: '', loading: 'lazy' }}{%- else -%}<span class="ph"></span>{%- endif -%}
+              <span><b>{{ p.title | escape }}</b><small>{{ p.price | money_without_trailing_zeros }}</small></span>
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+    {%- if r.queries.size > 0 or r.collections.size > 0 or r.pages.size > 0 or r.articles.size > 0 -%}
+      <div>
+        <h3>{{ 'search.suggestions' | t }}</h3>
+        <div class="pred-links">
+          {%- for q in r.queries -%}<a href="{{ q.url }}">{{ q.styled_text }}</a>{%- endfor -%}
+          {%- for c in r.collections -%}<a href="{{ c.url }}">{{ c.title | escape }}</a>{%- endfor -%}
+          {%- for pg in r.pages -%}<a href="{{ pg.url }}">{{ pg.title | escape }}</a>{%- endfor -%}
+          {%- for a in r.articles -%}<a href="{{ a.url }}">{{ a.title | escape }}</a>{%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+    <div><a class="link pred-all" href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}&options%5Bprefix%5D=last">{{ 'search.view_all' | t }} <span class="arrow">→</span></a></div>
+  {%- endif -%}
+</div>

@@ -1,0 +1,29 @@
+{%- liquid
+  assign t1 = ''
+  assign t2 = ''
+  for i in (1..4)
+    assign t1 = t1 | append: section.settings.text_1 | append: ' ✦ '
+    assign t2 = t2 | append: section.settings.text_2 | append: ' ✦ '
+  endfor
+-%}
+<div class="tapes{% if section.settings.background == 'lime' %} tapes--lime{% endif %}" aria-hidden="true"{% if section.settings.flush %} style="margin-top:0"{% endif %}>
+  <div class="tape t1"><span class="track" data-speed="{{ section.settings.speed_1 }}" data-vel="1">{{ t1 | escape }}&nbsp;</span></div>
+  <div class="tape t2"><span class="track" data-speed="-{{ section.settings.speed_2 }}" data-vel="1">{{ t2 | escape }}&nbsp;</span></div>
+</div>
+
+{% schema %}
+{
+  "name": "Crossing tapes",
+  "settings": [
+    { "type": "text", "id": "text_1", "label": "Ink tape", "default": "WEAR IT LOUD ✦ PLAY LOUD ✦ MOVE YOUR WAY" },
+    { "type": "range", "id": "speed_1", "label": "Ink tape speed", "min": 0.2, "max": 2, "step": 0.1, "default": 1 },
+    { "type": "text", "id": "text_2", "label": "Cyan tape", "default": "SOFT STRETCH ✦ MADE TO MOVE ✦ JOIN THE CREW" },
+    { "type": "range", "id": "speed_2", "label": "Cyan tape speed", "min": 0.2, "max": 2, "step": 0.1, "default": 0.8 },
+    { "type": "checkbox", "id": "flush", "label": "Remove top spacing", "default": false },
+    { "type": "select", "id": "background", "label": "Background", "default": "none", "options": [
+      { "value": "none", "label": "Page colour" }, { "value": "lime", "label": "Lime (carries on from a lime section above)" }
+    ] }
+  ],
+  "presets": [{ "name": "Crossing tapes" }]
+}
+{% endschema %}

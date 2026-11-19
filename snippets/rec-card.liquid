@@ -1,0 +1,97 @@
+{%- comment -%}
+  Product card for "You might also like": badge, up to three photos with dots, two-line name, price with the
+  old price and % off, and a full-width Add to bag. Products with sizes open a size chooser on the card first.
+  Usage: render 'rec-card', product: rec, add_label: '…', pick_label: '…', close_label: '…'
+{%- endcomment -%}
+{%- liquid
+  assign size_name = settings.card_size_option | default: 'Size' | downcase
+  assign size_opt = nil
+  for o in product.options_with_values
+    assign oname = o.name | downcase
+    if oname == size_name or oname == 'size' or oname == 'sizes'
+      assign size_opt = o
+    endif
+  endfor
+  assign hex = product.metafields.custom.swatch.value | default: product.metafields.custom.swatch | default: '#111111'
+  assign tag = ''
+  if product.compare_at_price > product.price
+    assign tag = 'products.sale' | t
+  elsif settings.card_new_tag != blank and product.tags contains settings.card_new_tag
+    assign tag = settings.card_new_tag
+  endif
+  assign off = 0
+  if product.compare_at_price > product.price
+    assign off = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | floor
+  endif
+  assign first_avail = product.selected_or_first_available_variant
+  assign images = product.media | where: 'media_type', 'image'
+-%}
+<article class="ym-card" data-ym-card data-title="{{ product.title | escape }}" data-hex="{{ hex }}">
+  <div class="ym-media">
+    <a class="ym-photos" href="{{ product.url }}" aria-label="{{ product.title | escape }}" data-ym-photos>
+      {%- if images.size > 0 -%}
+        {%- for m in images limit: 3 -%}
+          {%- liquid
+            assign cls = 'ym-img'
+            if forloop.first
+              assign cls = 'ym-img is-on'
+            endif
+            assign alt = m.alt | default: product.title
+          -%}
+          {{ m | image_url: width: 720 | image_tag: class: cls, alt: alt, loading: 'lazy', widths: '360, 540, 720', sizes: '(max-width: 560px) 56vw, (max-width: 1000px) 32vw, 300px' }}
+        {%- endfor -%}
+      {%- else -%}
+        <span class="ym-ph">{% render 'mark' %}</span>
+      {%- endif -%}
+    </a>
+    {%- if tag != blank -%}<span class="ym-badge">{{ tag | escape }}</span>{%- endif -%}
+    {%- if size_opt != nil and product.available -%}
+      {%- assign size_idx = size_opt.position | minus: 1 -%}
+      <div class="ym-pick" data-ym-pick hidden>
+        <div class="ym-pick-head"><span>{{ pick_label | escape }}</span><button type="button" class="ym-x" data-ym-close aria-label="{{ close_label | escape }}">×</button></div>
+        <div class="ym-sizes" role="group" aria-label="{{ 'products.size_for' | t: title: product.title | escape }}">
+          {%- for value in size_opt.values -%}
+            {%- liquid
+              assign vid = ''
+              assign vavail = false
+              for v in product.variants
+                if v.options[size_idx] == value
+                  if vid == ''
+                    assign vid = v.id
+                  endif
+                  if v.available
+                    assign vid = v.id
+                    assign vavail = true
+                    break
+                  endif
+                endif
+              endfor
+            -%}
+            <button type="button" data-ym-size data-variant="{{ vid }}"{% unless vavail %} disabled{% endunless %}>{{ value | escape }}</button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+  {%- if images.size > 1 -%}
+    <div class="ym-dots" role="group" aria-label="{{ product.title | escape }}">
+      {%- for m in images limit: 3 -%}<button type="button" data-ym-dot="{{ forloop.index0 }}" aria-label="{{ forloop.index }} / {{ images.size | at_most: 3 }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"></button>{%- endfor -%}
+    </div>
+  {%- endif -%}
+  <div class="ym-info">
+    <h3 class="ym-name"><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+    <p class="ym-price">
+      <b>{% if product.price_varies %}{%- assign pmin = product.price_min | money_without_trailing_zeros -%}{{ 'products.from' | t: price: pmin }}{% else %}{{ product.price | money_without_trailing_zeros }}{% endif %}</b>
+      {%- if off > 0 -%}<s>{{ product.compare_at_price | money_without_trailing_zeros }}</s><span class="ym-off">{{ off }}% OFF</span>{%- endif -%}
+    </p>
+    {%- if product.available == false -%}
+      <button class="ym-add" type="button" disabled>{{ 'products.sold_out' | t }}</button>
+    {%- elsif size_opt != nil -%}
+      <button class="ym-add" type="button" data-ym-open aria-expanded="false">{{ add_label | escape }}</button>
+    {%- elsif product.has_only_default_variant -%}
+      <button class="ym-add" type="button" data-ym-direct data-variant="{{ first_avail.id }}">{{ add_label | escape }}</button>
+    {%- else -%}
+      <a class="ym-add" href="{{ product.url }}">{{ 'products.choose_options' | t }}</a>
+    {%- endif -%}
+  </div>
+</article>

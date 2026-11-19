@@ -1,16 +1,19 @@
 {
   "name": "jumper-loud-theme",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Jumper — Wear it loud. Shopify OS 2.0 theme + static preview.",
+  "description": "Jumper — Underwear with the volume up. Shopify OS 2.0 theme built from homepage v4, plus a static preview.",
   "scripts": {
-    "preview": "node scripts/preview.mjs",
-    "serve": "node scripts/preview.mjs && npx --yes serve dist -l 4173",
+    "build:box": "esbuild .dev/src/cart-box.js --bundle --minify --format=iife --target=es2019 --legal-comments=none --outfile=assets/cart-box.js",
+    "preview": "npm run build:box && node .dev/preview.mjs",
+    "serve": "node .dev/preview.mjs && node .dev/serve.mjs",
     "shopify:dev": "shopify theme dev",
     "shopify:push": "shopify theme push --unpublished",
-    "zip": "zip -r jumper-loud-theme.zip assets config layout locales sections snippets templates -x '.*'"
+    "zip": "rm -f jumper-loud-theme.zip && zip -r -X jumper-loud-theme.zip assets config layout locales sections snippets templates -x '*.DS_Store'"
   },
   "devDependencies": {
-    "liquidjs": "10.16.1"
+    "esbuild": "0.24.0",
+    "liquidjs": "10.16.1",
+    "three": "0.169.0"
   }
 }

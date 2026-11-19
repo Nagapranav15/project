@@ -1,13 +1,17 @@
-<section class="auth scheme-lime">
-  <div class="auth__card window">
-    <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">activate.exe</span></div>
-    <div class="window__body">
-      <h1 class="t-headline">{{ 'customer.activate' | t }}</h1>
-      {%- form 'activate_customer_password', class: 'form' -%}
-        {%- if form.errors -%}<div class="form-errors">{{ form.errors | default_errors }}</div>{%- endif -%}
-        <div class="field"><label class="t-label" for="ActPass">{{ 'customer.password' | t }}</label><input id="ActPass" type="password" name="customer[password]" autocomplete="new-password"></div>
-        <div class="field"><label class="t-label" for="ActPass2">{{ 'customer.password_confirm' | t }}</label><input id="ActPass2" type="password" name="customer[password_confirmation]" autocomplete="new-password"></div>
-        <button class="btn btn--block" type="submit">{{ 'customer.activate' | t }}</button>
+{%- assign title = 'customer.activate' | t -%}
+{% render 'page-hero', eyebrow: 'Account', title: title, badge: true %}
+<section class="authwrap">
+  <div class="wrap">
+    <div class="panel">
+      <p>{{ 'customer.activate_text' | t }}</p>
+      {%- form 'activate_customer_password', class: 'fx' -%}
+        {%- if form.errors -%}<div class="err" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+        <label>{{ 'customer.password' | t }}<input type="password" name="customer[password]" autocomplete="new-password" required></label>
+        <label>{{ 'customer.password_confirm' | t }}<input type="password" name="customer[password_confirmation]" autocomplete="new-password" required></label>
+        <div class="actions">
+          <button class="btn btn-ink" type="submit">{{ 'customer.activate' | t }} <span class="arrow">→</span></button>
+          <button class="btn btn-ghost" type="submit" name="decline">{{ 'customer.decline' | t }}</button>
+        </div>
       {%- endform -%}
     </div>
   </div>

@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "main-policy", "settings": { "policy": "refund_policy", "eyebrow": "Changed your mind?" } }
+  },
+  "order": ["main"]
+}

@@ -1,7 +1,9 @@
 package.json
 package-lock.json
-scripts/
+.dev/
 dist/
 node_modules/
 vercel.json
 README.md
+.claude/
+*.zip

@@ -1,10 +1,40 @@
 {
   "sections": {
-    "main": {
-      "type": "main-contact"
+    "hero": {
+      "type": "contact-hero",
+      "blocks": {
+        "email": { "type": "card", "settings": { "kind": "email", "label": "Email us", "note": "Best for orders and exchanges", "cursor": "Write in", "colour": "pink" } },
+        "chat": { "type": "card", "settings": { "kind": "whatsapp", "label": "WhatsApp", "value": "+91 98765 43210", "note": "Mon to Sat, 10am to 7pm", "cursor": "Chat", "colour": "cyan" } },
+        "insta": { "type": "card", "settings": { "kind": "instagram", "label": "Slide into our DMs", "value": "@wearjumper", "link": "https://instagram.com/", "cursor": "Slide in", "colour": "orange" } },
+        "visit": { "type": "card", "settings": { "kind": "visit", "label": "Studio", "value": "Pune, India", "note": "Not a shop. Just loud people.", "cursor": "Visit", "colour": "yellow" } }
+      },
+      "block_order": ["email", "chat", "insta", "visit"],
+      "settings": {}
+    },
+    "form": {
+      "type": "contact-form",
+      "settings": {
+        "eyebrow": "Write in",
+        "heading": "Drop us a line.",
+        "text": "Order number handy? Pop it in the message and we will sort it faster."
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "How do the sizes run?", "answer": "<p>True to size. Between two? Size up for room, down for a snug fit. The size guide on every product has the numbers.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "Can I exchange a pack?", "answer": "<p>Yes, within 15 days if the pack is unworn and still sealed. Write in with your order number and we will send the swap.</p>" } },
+        "q3": { "type": "question", "settings": { "question": "When will my order arrive?", "answer": "<p>Most orders ship in 1 to 2 days and land in 3 to 6. You get a tracking link the moment it leaves.</p>" } },
+        "q4": { "type": "question", "settings": { "question": "How do I wash them?", "answer": "<p>Cold, inside out, with similar colours. Skip the dryer and they stay loud for longer.</p>" } },
+        "q5": { "type": "question", "settings": { "question": "Do you ship outside India?", "answer": "<p>Not yet. Join the crew on the home page and you will hear first when we do.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5"],
+      "settings": {}
+    },
+    "tapes": {
+      "type": "tapes",
+      "settings": { "text_1": "SAY HI ✦ WE DON'T BITE ✦ REAL HUMANS", "text_2": "15-DAY EXCHANGES ✦ FAST REPLIES ✦ LOUD ON PURPOSE" }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["hero", "form", "faq", "tapes"]
 }

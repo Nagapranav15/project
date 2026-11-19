@@ -1,65 +1,165 @@
 {%- liquid
-  assign menu = linklists[section.settings.menu]
+  assign menu = section.settings.menu
+  assign foot_menu = section.settings.foot_menu
+  assign home = routes.root_url
+  if home == '/'
+    assign home = ''
+  endif
+  assign about_url = section.settings.about_page.url
+  if section.settings.about_page == blank
+    assign about_url = home | append: '/pages/about'
+  endif
+  assign contact_url = section.settings.contact_page.url
+  if section.settings.contact_page == blank
+    assign contact_url = home | append: '/pages/contact'
+  endif
+  assign has_home = false
+  assign has_about = false
+  assign has_contact = false
+  assign count = 1
+  if menu != blank and menu.links.size > 0
+    assign count = menu.links.size
+    for link in menu.links
+      if link.url == routes.root_url or link.url == home
+        assign has_home = true
+      endif
+      if link.url contains '/pages/about' or link.url == about_url
+        assign has_about = true
+      endif
+      if link.url contains '/pages/contact' or link.url == contact_url
+        assign has_contact = true
+      endif
+    endfor
+  endif
+  assign show_home = false
+  if section.settings.show_home and has_home == false
+    assign show_home = true
+  endif
+  assign home_label = section.settings.home_label | default: 'Home'
+  assign home_current = false
+  if template.name == 'index'
+    assign home_current = true
+  endif
+  assign off = 0
+  if show_home
+    assign off = 1
+    assign count = count | plus: 1
+  endif
+  assign about_label = section.settings.about_label | default: 'About'
+  assign contact_label = section.settings.contact_label | default: 'Contact'
+  assign about_current = false
+  assign contact_current = false
+  if request.path == about_url
+    assign about_current = true
+  endif
+  if request.path == contact_url
+    assign contact_current = true
+  endif
 -%}
-<header class="header" data-header>
-  <div class="header__inner container">
-    <button class="icon-btn header__burger" type="button" data-menu-open aria-controls="MenuDrawer" aria-expanded="false" aria-label="{{ 'accessibility.menu' | t }}">
-      {% render 'icon', icon: 'menu' %}
-    </button>
-
-    <a class="header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
-      {% render 'logo-wordmark', class: 'header__wordmark', label: shop.name %}
-    </a>
-
-    <nav class="header__nav" aria-label="{{ 'accessibility.primary_nav' | t }}">
-      <ul class="header__links" role="list">
-        {%- if menu.links.size > 0 -%}
-          {%- for link in menu.links -%}
-            <li><a class="header__link{% if link.active %} is-active{% endif %}" href="{{ link.url }}" data-text="{{ link.title | escape }}">{{ link.title }}</a></li>
-          {%- endfor -%}
-        {%- else -%}
-          {%- assign fallback = 'Trunks,Briefs,Prints,Crew' | split: ',' -%}
-          {%- for t in fallback -%}
-            <li><a class="header__link" href="{{ routes.all_products_collection_url }}" data-text="{{ t }}">{{ t }}</a></li>
-          {%- endfor -%}
-        {%- endif -%}
-      </ul>
-    </nav>
-
-    <div class="header__actions">
-      <a class="icon-btn header__search" href="{{ routes.search_url }}" aria-label="{{ 'accessibility.search' | t }}">{% render 'icon', icon: 'search' %}</a>
-      {%- if shop.customer_accounts_enabled -%}
-        <a class="icon-btn header__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" aria-label="{{ 'accessibility.account' | t }}">{% render 'icon', icon: 'account' %}</a>
+<header class="header" id="header">
+  <div class="wrap">
+    <a class="logo" href="{{ routes.root_url }}" aria-label="{{ 'accessibility.home' | t }}">{% render 'wordmark', label: shop.name %}</a>
+    <nav class="nav" aria-label="{{ 'accessibility.main_nav' | t }}">
+      {%- if show_home -%}<a href="{{ routes.root_url }}"{% if home_current %} aria-current="page"{% endif %}>{{ home_label | escape }}</a>{%- endif -%}
+      {%- if menu != blank and menu.links.size > 0 -%}
+        {%- for link in menu.links -%}
+          <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+        {%- endfor -%}
+      {%- else -%}
+        <a href="{{ routes.all_products_collection_url }}"{% if template.name == 'collection' %} aria-current="page"{% endif %}>Shop</a>
       {%- endif -%}
-      <a class="header__bag" href="{{ routes.cart_url }}" data-cart-open aria-label="{{ 'accessibility.cart' | t }}">
-        <span class="t-label">{{ 'cart.bag' | t }}</span>
-        <span class="header__count" data-cart-count>{{ cart.item_count }}</span>
-      </a>
+      {%- unless has_about -%}<a href="{{ about_url }}"{% if about_current %} aria-current="page"{% endif %}>{{ about_label | escape }}</a>{%- endunless -%}
+      {%- unless has_contact -%}<a href="{{ contact_url }}"{% if contact_current %} aria-current="page"{% endif %}>{{ contact_label | escape }}</a>{%- endunless -%}
+    </nav>
+    <div class="tools">
+      <a class="icon-btn search-btn" href="{{ routes.search_url }}" id="searchBtn" aria-label="{{ 'accessibility.search' | t }}" role="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></a>
+      {%- if customer -%}
+        <a class="icon-btn acct-btn is-in" href="{{ routes.account_url }}" aria-label="{{ 'customer.account_aria' | t: name: customer.first_name }}"><span class="ini" aria-hidden="true">{{ customer.first_name | default: customer.email | slice: 0 | upcase | escape }}</span></a>
+      {%- else -%}
+        <a class="icon-btn acct-btn" href="{{ routes.account_login_url }}" aria-label="{{ 'customer.login_aria' | t }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+      {%- endif -%}
+      <a class="bag-btn" href="{{ routes.cart_url }}" id="bagBtn" aria-label="{{ 'accessibility.cart' | t }}" role="button"><span class="lbl">{{ 'cart.bag' | t }}</span><span class="count" id="bagCount">{{ cart.item_count }}</span></a>
+      <button class="icon-btn menu-btn" type="button" id="menuBtn" aria-label="{{ 'accessibility.menu' | t }}" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg></button>
     </div>
   </div>
 </header>
 
-<div class="menu-drawer" id="MenuDrawer" data-menu aria-hidden="true">
-  <div class="menu-drawer__top container">
-    {% render 'logo-wordmark', class: 'menu-drawer__wordmark' %}
-    <button class="icon-btn" type="button" data-menu-close aria-label="{{ 'accessibility.close' | t }}">{% render 'icon', icon: 'close' %}</button>
-  </div>
-  <nav class="menu-drawer__nav container" aria-label="{{ 'accessibility.mobile_nav' | t }}">
-    <ul role="list">
-      {%- if menu.links.size > 0 -%}
+<div class="menu" id="menu" role="dialog" aria-label="{{ 'accessibility.menu_label' | t }}" aria-modal="true">
+  <div class="wrap menu-top"><a class="logo" href="{{ routes.root_url }}" data-close>{% render 'wordmark' %}</a><button class="menu-close" type="button" data-close>{{ 'accessibility.close' | t }}</button></div>
+  <div class="wrap menu-body">
+    <ul class="menu-links">
+      {%- if show_home -%}
+        <li><a href="{{ routes.root_url }}" data-pic="0" data-close><small>01</small>{{ home_label | escape }}</a></li>
+      {%- endif -%}
+      {%- if menu != blank and menu.links.size > 0 -%}
         {%- for link in menu.links -%}
-          <li style="--i: {{ forloop.index }}"><a href="{{ link.url }}"><span class="menu-drawer__num t-label">0{{ forloop.index }}</span>{{ link.title }}</a></li>
+          <li><a href="{{ link.url }}" data-pic="{{ forloop.index0 | plus: off | modulo: 4 }}" data-close><small>{{ forloop.index | plus: off | prepend: '0' | slice: -2, 2 }}</small>{{ link.title | escape }}</a></li>
         {%- endfor -%}
       {%- else -%}
-        {%- for t in fallback -%}
-          <li style="--i: {{ forloop.index }}"><a href="{{ routes.all_products_collection_url }}"><span class="menu-drawer__num t-label">0{{ forloop.index }}</span>{{ t }}</a></li>
-        {%- endfor -%}
+        <li><a href="{{ routes.all_products_collection_url }}" data-pic="{{ off | modulo: 4 }}" data-close><small>{{ off | plus: 1 | prepend: '0' | slice: -2, 2 }}</small>Shop</a></li>
       {%- endif -%}
+      {%- unless has_about -%}
+        {%- assign count = count | plus: 1 -%}
+        <li><a href="{{ about_url }}" data-pic="{{ count | minus: 1 | modulo: 4 }}" data-close><small>{{ count | prepend: '0' | slice: -2, 2 }}</small>{{ about_label | escape }}</a></li>
+      {%- endunless -%}
+      {%- unless has_contact -%}
+        {%- assign count = count | plus: 1 -%}
+        <li><a href="{{ contact_url }}" data-pic="{{ count | minus: 1 | modulo: 4 }}" data-close><small>{{ count | prepend: '0' | slice: -2, 2 }}</small>{{ contact_label | escape }}</a></li>
+      {%- endunless -%}
     </ul>
-  </nav>
-  <div class="menu-drawer__foot container">
-    <p class="t-subhead">{{ section.settings.drawer_line }}</p>
-    {% render 'character', name: 'jump', class: 'menu-drawer__char' %}
+    <div class="menu-pic" aria-hidden="true">
+      {%- for i in (1..4) -%}
+        {%- liquid
+          case i
+            when 1
+              assign pic = section.settings.pic_1
+              assign fallback = 'trunk-maroon-wide.jpg'
+            when 2
+              assign pic = section.settings.pic_2
+              assign fallback = 'box-front.webp'
+            when 3
+              assign pic = section.settings.pic_3
+              assign fallback = 'trunk-yellow-wide.jpg'
+            else
+              assign pic = section.settings.pic_4
+              assign fallback = 'jumper-hero.jpg'
+          endcase
+        -%}
+        {%- if pic != blank -%}
+          {%- if forloop.first -%}{%- assign cls = 'on' -%}{%- else -%}{%- assign cls = '' -%}{%- endif -%}
+          {{ pic | image_url: width: 900 | image_tag: alt: '', loading: 'lazy', class: cls }}
+        {%- else -%}
+          <img src="{{ fallback | asset_url }}" alt="" loading="lazy" width="900" height="1125"{% if forloop.first %} class="on"{% endif %}{% if i == 2 %} style="object-fit:contain;background:var(--ink)"{% endif %}>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+  <div class="wrap menu-foot">
+    {%- if foot_menu != blank and foot_menu.links.size > 0 -%}
+      {%- for link in foot_menu.links -%}<a href="{{ link.url }}" data-close>{{ link.title | escape }}</a>{%- endfor -%}
+    {%- else -%}
+      <a href="{{ contact_url }}" data-close>Help and FAQ</a>
+      <a href="{{ routes.account_url }}" data-close>Track order</a>
+      {%- liquid
+        assign faq_url = routes.root_url | append: '#faq' | replace: '//', '/'
+        assign refund_url = shop.refund_policy.url | default: faq_url
+      -%}
+      <a href="{{ refund_url }}" data-close>Exchanges</a>
+      <a href="{{ routes.account_url }}" data-close>Account</a>
+    {%- endif -%}
+  </div>
+</div>
+
+<div class="menu search-ov" id="search" role="dialog" aria-label="{{ 'accessibility.search' | t }}" aria-modal="true">
+  <div class="wrap menu-top"><a class="logo" href="{{ routes.root_url }}">{% render 'wordmark' %}</a><button class="menu-close" type="button" data-close-search>{{ 'accessibility.close' | t }}</button></div>
+  <div class="wrap search-body">
+    <form class="search-form" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="sr" for="searchInput">{{ 'accessibility.search' | t }}</label>
+      <input id="searchInput" type="search" name="q" placeholder="{{ 'search.placeholder' | t }}" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit">{{ 'search.submit' | t }} <span class="arrow">→</span></button>
+    </form>
+    <div class="predictive" id="predictive" aria-live="polite"></div>
   </div>
 </div>
 
@@ -68,8 +168,88 @@
   "name": "Header",
   "class": "section-header",
   "settings": [
-    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
-    { "type": "text", "id": "drawer_line", "label": "Mobile menu line", "default": "Wear it loud." }
-  ]
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main menu",
+      "info": "Leave empty to show Shop. About and Contact are added after it unless the menu already has them."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "label": "Show Home link",
+      "default": true,
+      "info": "Adds Home first in the navbar and the menu overlay, unless the main menu already has it."
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home link label",
+      "default": "Home"
+    },
+    {
+      "type": "page",
+      "id": "about_page",
+      "label": "About page",
+      "info": "Defaults to /pages/about."
+    },
+    {
+      "type": "text",
+      "id": "about_label",
+      "label": "About link label",
+      "default": "About"
+    },
+    {
+      "type": "page",
+      "id": "contact_page",
+      "label": "Contact page",
+      "info": "Defaults to /pages/contact."
+    },
+    {
+      "type": "text",
+      "id": "contact_label",
+      "label": "Contact link label",
+      "default": "Contact"
+    },
+    {
+      "type": "link_list",
+      "id": "foot_menu",
+      "label": "Menu overlay footer links",
+      "info": "Leave empty to show Help, Track order, Exchanges, Account."
+    },
+    {
+      "type": "header",
+      "content": "Menu overlay pictures"
+    },
+    {
+      "type": "paragraph",
+      "content": "Shown as you hover each link (1 to 4)."
+    },
+    {
+      "type": "image_picker",
+      "id": "pic_1",
+      "label": "Picture 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "pic_2",
+      "label": "Picture 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "pic_3",
+      "label": "Picture 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "pic_4",
+      "label": "Picture 4"
+    }
+  ],
+  "enabled_on": {
+    "groups": [
+      "header"
+    ]
+  }
 }
 {% endschema %}

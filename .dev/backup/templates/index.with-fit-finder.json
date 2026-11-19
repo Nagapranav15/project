@@ -1,0 +1,254 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "tapes": {
+      "type": "tapes",
+      "settings": {}
+    },
+    "pack": {
+      "type": "fit-finder",
+      "blocks": {
+        "c1": {
+          "type": "colour",
+          "settings": {
+            "name": "Maroon",
+            "hex": "#5a2230",
+            "day": "weekend",
+            "vibe": "loud",
+            "fallback": "trunk-maroon-close.jpg"
+          }
+        },
+        "c2": {
+          "type": "colour",
+          "settings": {
+            "name": "Sunshine",
+            "hex": "#d9bf2e",
+            "day": "gym",
+            "vibe": "max",
+            "fallback": "trunk-yellow-close.jpg"
+          }
+        },
+        "c3": {
+          "type": "colour",
+          "settings": {
+            "name": "Navy",
+            "hex": "#22285a",
+            "day": "office",
+            "vibe": "quiet",
+            "fallback": "trunk-navy-close.jpg"
+          }
+        },
+        "c4": {
+          "type": "colour",
+          "settings": {
+            "name": "Heather",
+            "hex": "#b9bab5",
+            "day": "all",
+            "vibe": "quiet",
+            "fallback": "trunk-grey-close.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
+      "settings": {}
+    },
+    "move": {
+      "type": "move-your-way",
+      "blocks": {
+        "gym": {
+          "type": "chip",
+          "settings": {
+            "label": "Gym",
+            "colour": "var(--orange)",
+            "text": "Squats, sprints, sweat. Soft stretch that moves with every rep.",
+            "button": "Shop for the gym",
+            "stock": "cutout-gym",
+            "image_alt": "Two men in maroon Jumper trunks, one stretching, one sitting on a stone with a towel"
+          }
+        },
+        "office": {
+          "type": "chip",
+          "settings": {
+            "label": "Office",
+            "colour": "var(--cyan)",
+            "text": "Back-to-back meetings and the walk home late. Comfortable enough to forget.",
+            "button": "Shop for the office",
+            "stock": "cutout-office",
+            "image_alt": "Two men in Jumper trunks, one in an open white shirt and tie, one sitting on a stone with a coffee"
+          }
+        },
+        "rooftop": {
+          "type": "chip",
+          "settings": {
+            "label": "Rooftop",
+            "colour": "var(--purple)",
+            "text": "Sundown plans that run past midnight. Loud colour, all night.",
+            "button": "Shop for the rooftop",
+            "stock": "cutout",
+            "image_alt": "Two men in Jumper trunks, one standing in yellow, one sitting in navy"
+          }
+        },
+        "pool": {
+          "type": "chip",
+          "settings": {
+            "label": "Pool",
+            "colour": "var(--pink)",
+            "text": "Poolside, then straight to dinner. Same trunks, still loud.",
+            "button": "Shop for the pool",
+            "stock": "cutout-pool",
+            "image_alt": "Two men in Jumper trunks after a swim, one laughing on a stone, one drying his hair"
+          }
+        }
+      },
+      "block_order": [
+        "gym",
+        "office",
+        "rooftop",
+        "pool"
+      ],
+      "settings": {}
+    },
+    "proof": {
+      "type": "proof",
+      "blocks": {
+        "f1": {
+          "type": "fact",
+          "settings": {
+            "title": "Soft stretch",
+            "text": "A body that moves with you, gym to rooftop."
+          }
+        },
+        "f2": {
+          "type": "fact",
+          "settings": {
+            "title": "15-day exchanges",
+            "text": "Wrong size? Swap unworn packs, no drama."
+          }
+        },
+        "f3": {
+          "type": "fact",
+          "settings": {
+            "title": "Free shipping",
+            "text": "On every order over Rs. 999, anywhere in India."
+          }
+        },
+        "r1": {
+          "type": "review",
+          "settings": {
+            "quote": "Wore them to the gym and straight to work. Forgot I had them on.",
+            "author": "Sample review · Arjun, Pune",
+            "rating": 5
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "quote": "The band stays put. Finally a trunk that doesn't roll.",
+            "author": "Sample review · Kabir, Delhi",
+            "rating": 5
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "quote": "Got the 5 pack. The box alone made my day.",
+            "author": "Sample review · Rohan, Bengaluru",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "settings": {}
+    },
+    "join": {
+      "type": "join-crew",
+      "blocks": {
+        "p1": {
+          "type": "perk",
+          "settings": {
+            "icon": "↯",
+            "colour": "#CEFF05",
+            "title": "First dibs on every drop",
+            "text": "New colours open to the crew a day before anyone else."
+          }
+        }
+      },
+      "block_order": [
+        "p1"
+      ],
+      "settings": {}
+    },
+    "scenes": {
+      "type": "scenes",
+      "blocks": {
+        "court": {
+          "type": "scene",
+          "settings": {
+            "label": "Court",
+            "colour": "var(--orange)",
+            "title": "Gym and court",
+            "text": "Sport details that echo the print."
+          }
+        },
+        "street": {
+          "type": "scene",
+          "settings": {
+            "label": "Street",
+            "colour": "var(--cyan)",
+            "title": "Office to street",
+            "text": "Waistband peeking, never hidden."
+          }
+        },
+        "beach": {
+          "type": "scene",
+          "settings": {
+            "label": "Beach",
+            "colour": "var(--yellow)",
+            "title": "Travel and beach",
+            "text": "Sun, sand and zero effort."
+          }
+        },
+        "pool": {
+          "type": "scene",
+          "settings": {
+            "label": "Pool",
+            "colour": "var(--pink)",
+            "title": "Social and pool",
+            "text": "Splash-ready and photo-ready."
+          }
+        }
+      },
+      "block_order": [
+        "court",
+        "street",
+        "beach",
+        "pool"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "tapes",
+    "scenes",
+    "pack",
+    "move",
+    "proof",
+    "join"
+  ]
+}

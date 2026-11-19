@@ -1,38 +1,32 @@
-<section class="page-hero scheme-lime">
-  <div class="container">
-    <p class="t-label section-head__label"><span class="num">✦</span> {{ 'customer.account' | t }}</p>
-    <h1 class="t-display page-hero__title">{{ 'customer.hey' | t: name: customer.first_name }}</h1>
-    {% render 'character', name: 'thumbs', class: 'page-hero__char' %}
-  </div>
-</section>
-<section class="section scheme-paper">
-  <div class="container cart-page__grid">
+{%- if customer.first_name != blank -%}{%- assign title = 'customer.hey' | t: name: customer.first_name -%}{%- else -%}{%- assign title = 'customer.hey_anon' | t -%}{%- endif -%}
+{%- capture meta -%}<a href="{{ routes.account_logout_url }}" style="text-decoration:none">{{ 'customer.logout' | t }}</a>{%- endcapture -%}
+{% render 'page-hero', eyebrow: 'Account', title: title, meta: meta, badge: true %}
+<section class="acct">
+  <div class="wrap">
     <div>
-      <h2 class="t-label" style="margin-bottom: 16px">{{ 'customer.orders' | t }}</h2>
+      <h2 style="font-size:clamp(28px,3vw,40px);margin-bottom:20px">{{ 'customer.orders' | t }}</h2>
       {%- paginate customer.orders by 20 -%}
         {%- if customer.orders.size > 0 -%}
-          <table class="account-table">
-            <thead><tr><th class="t-label">{{ 'customer.order' | t }}</th><th class="t-label">{{ 'customer.date' | t }}</th><th class="t-label">{{ 'customer.status' | t }}</th><th class="t-label">{{ 'customer.total' | t }}</th></tr></thead>
-            <tbody>
-              {%- for order in customer.orders -%}
-                <tr><td><a href="{{ order.customer_url }}" style="text-decoration: underline">{{ order.name }}</a></td><td>{{ order.created_at | date: '%d %b %Y' }}</td><td>{{ order.fulfillment_status_label }}</td><td>{{ order.total_price | money }}</td></tr>
-              {%- endfor -%}
-            </tbody>
-          </table>
+          <div style="overflow-x:auto">
+            <table class="otable">
+              <thead><tr><th>{{ 'customer.order' | t }}</th><th>{{ 'customer.date' | t }}</th><th>{{ 'customer.payment' | t }}</th><th>{{ 'customer.fulfillment' | t }}</th><th class="r">{{ 'customer.total' | t }}</th></tr></thead>
+              <tbody>
+                {%- for order in customer.orders -%}
+                  <tr><td><a href="{{ order.customer_url }}">{{ order.name }}</a></td><td>{{ order.created_at | date: '%d %b %Y' }}</td><td><span class="status">{{ order.financial_status_label }}</span></td><td>{{ order.fulfillment_status_label }}</td><td class="r">{{ order.total_price | money_without_trailing_zeros }}</td></tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </div>
+          {% render 'pager', paginate: paginate %}
         {%- else -%}
-          <p class="t-body">{{ 'customer.no_orders' | t }}</p>
+          <div class="empty-state"><b>{{ 'customer.no_orders' | t }}</b><a class="btn btn-ink" href="{{ routes.all_products_collection_url }}">{{ 'cart.shop' | t }} <span class="arrow">→</span></a></div>
         {%- endif -%}
       {%- endpaginate -%}
     </div>
-    <aside class="window">
-      <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">profile.exe</span></div>
-      <div class="window__body" style="padding: 24px; display: grid; gap: 12px">
-        <p class="t-subhead">{{ customer.name }}</p>
-        <p>{{ customer.email }}</p>
-        {%- if customer.default_address -%}<div class="t-body">{{ customer.default_address | format_address }}</div>{%- endif -%}
-        <a class="link-arrow" href="{{ routes.account_addresses_url }}">{{ 'customer.addresses' | t }} ({{ customer.addresses_count }})</a>
-        <a class="btn" href="{{ routes.account_logout_url }}">{{ 'customer.logout' | t }}</a>
-      </div>
-    </aside>
+    <div class="panel" style="--spark:var(--cyan)">
+      <h2>{{ 'customer.default_address' | t }}</h2>
+      {%- if customer.default_address -%}<p>{{ customer.default_address | format_address }}</p>{%- endif -%}
+      <div><a class="btn btn-ink" href="{{ routes.account_addresses_url }}" style="--spark:var(--cyan)">{{ 'customer.view_addresses' | t: count: customer.addresses_count }} <span class="arrow">→</span></a></div>
+    </div>
   </div>
 </section>

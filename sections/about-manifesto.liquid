@@ -1,0 +1,37 @@
+{%- comment -%}
+  A big statement that lights up word by word as you scroll. Words wrapped in *stars* light up as flat highlights,
+  each in the next brand colour (Lime, Pink, Cyan, Orange, Yellow).
+{%- endcomment -%}
+{%- assign words = section.settings.text | split: ' ' -%}
+{%- assign tints = 'var(--lime)|var(--pink)|var(--cyan)|var(--orange)|var(--yellow)' | split: '|' -%}
+{%- assign hi = 0 -%}
+<section class="am" data-manifesto>
+  <div class="am-sticky">
+    <div class="wrap">
+      <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+      <p class="am-text">
+        {%- for w in words -%}
+          {%- if w contains '*' -%}
+            {%- assign t = hi | modulo: 5 -%}
+            <span class="am-w am-hi" style="--k: {{ tints[t] }}">{{ w | remove: '*' | escape }}</span>
+            {%- assign hi = hi | plus: 1 -%}
+          {%- else -%}
+            <span class="am-w">{{ w | escape }}</span>
+          {%- endif -%}
+          {% unless forloop.last %} {% endunless %}
+        {%- endfor -%}
+      </p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About: manifesto",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Why we exist" },
+    { "type": "textarea", "id": "text", "label": "Statement", "default": "Underwear was *boring.* Beige, grey, forgettable. So we made trunks that are *loud* on purpose, soft where it counts and cut to *move.* Wear them to the gym, the office, the rooftop. Let the band *peek.* That is the whole point.", "info": "Wrap a word in *stars* to highlight it. Highlights take turns through the brand colours." }
+  ],
+  "presets": [{ "name": "About: manifesto" }]
+}
+{% endschema %}

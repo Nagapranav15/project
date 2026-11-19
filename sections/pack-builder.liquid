@@ -1,0 +1,182 @@
+{%- comment -%}
+  Build your pack (homepage v4, Direction 1 box).
+  Each colour block links to a product with a Size option. "Add pack to bag" adds one line per colour,
+  tagged with the same _pack id so the bag groups them into one boxed pack. Pack pricing (for example a
+  3 or 5 pack discount) is set with an automatic discount in Shopify admin.
+{%- endcomment -%}
+{%- liquid
+  assign anchor = section.settings.anchor | default: section.id | handleize
+  assign size_name = settings.card_size_option | default: 'Size' | downcase
+  assign sizes = section.settings.sizes | split: ','
+  assign default_size = section.settings.default_size | strip | upcase
+  assign demo_price = section.settings.demo_price | times: 100
+-%}
+{%- capture box_style -%}
+  {%- if section.settings.face_front != blank -%}--box-front:url({{ section.settings.face_front | image_url: width: 900 }});{%- else -%}--box-front:url({{ 'box-front.webp' | asset_url }});{%- endif -%}
+  {%- if section.settings.face_back != blank -%}--box-back:url({{ section.settings.face_back | image_url: width: 900 }});{%- else -%}--box-back:url({{ 'box-back.webp' | asset_url }});{%- endif -%}
+  {%- if section.settings.face_left != blank -%}--box-left:url({{ section.settings.face_left | image_url: width: 400 }});{%- else -%}--box-left:url({{ 'box-left.webp' | asset_url }});{%- endif -%}
+  {%- if section.settings.face_right != blank -%}--box-right:url({{ section.settings.face_right | image_url: width: 400 }});{%- else -%}--box-right:url({{ 'box-right.webp' | asset_url }});{%- endif -%}
+{%- endcapture -%}
+<section class="pack" id="{{ anchor }}" aria-labelledby="title-{{ section.id }}" data-pack>
+  <div class="wrap">
+    <div>
+      {%- if section.settings.eyebrow != blank -%}<span class="eyebrow" style="color:var(--yellow)">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+      <h2 id="title-{{ section.id }}" style="margin-top:14px">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.lead != blank -%}<p class="lead">{{ section.settings.lead | escape }}</p>{%- endif -%}
+      <div class="steps">
+        <div><span class="step-label">{{ section.settings.step_1 | escape }}</span>
+          <div class="seg" role="group" aria-label="{{ section.settings.step_1 | escape }}" data-pack-size>
+            <button type="button" data-n="1" aria-pressed="false">{{ section.settings.label_1 | escape }}</button>
+            <button type="button" data-n="3" aria-pressed="true">{{ section.settings.label_3 | escape }}</button>
+            <button type="button" data-n="5" aria-pressed="false">{{ section.settings.label_5 | escape }}</button>
+          </div></div>
+        <div><span class="step-label">{{ section.settings.step_2 | escape }}</span>
+          <div class="swatches" data-swatches>
+            {%- for block in section.blocks -%}
+              {%- assign cname = block.settings.name | default: block.settings.product.title -%}
+              <button type="button" class="sw" style="background:{{ block.settings.hex }}" data-i="{{ forloop.index0 }}" data-name="{{ cname | escape }}" aria-label="{{ 'pack.add_colour' | t: name: cname | escape }}" {{ block.shopify_attributes }}></button>
+            {%- endfor -%}
+          </div>
+          <div class="picks" data-picks aria-live="polite"></div></div>
+        <div><span class="step-label">{{ section.settings.step_3 | escape }}</span><div class="sizes" data-pack-sizes role="group" aria-label="{{ section.settings.step_3 | escape }}">
+          {%- for s in sizes -%}
+            {%- assign sv = s | strip -%}
+            {%- assign su = sv | upcase -%}
+            <button type="button" aria-pressed="{% if su == default_size %}true{% else %}false{% endif %}" data-size="{{ sv | escape }}">{{ sv | escape }}</button>
+          {%- endfor -%}
+        </div></div>
+        <div class="pack-sum">
+          <button class="btn btn-ink" type="button" data-add-pack disabled>{{ section.settings.button | escape }} <span class="arrow">→</span></button>
+          <span class="pack-status" data-pack-status></span>
+        </div>
+      </div>
+    </div>
+    <div class="stage3d" data-stage aria-label="{{ section.settings.stage_label | escape }}">
+      <div class="floor"></div>
+      <div class="box3d" data-box style="{{ box_style }}">
+        <div class="inside" data-inside></div>
+        <div class="face f-back"></div>
+        <div class="face f-left"></div>
+        <div class="face f-right"></div>
+        <div class="face f-top"></div>
+        <div class="face f-bottom"></div>
+        <div class="face f-front"></div>
+        <div class="film"></div>
+      </div>
+      {%- if section.settings.dragnote != blank -%}<span class="dragnote">{{ section.settings.dragnote | escape }}</span>{%- endif -%}
+    </div>
+  </div>
+  <script type="application/json" data-pack-data>
+    {
+      "demoPrice": {{ demo_price | json }},
+      "saving": {{ section.settings.saving_note | json }},
+      "start": {{ section.settings.start_picks | json }},
+      "colours": [
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign p = block.settings.product
+            assign cname = block.settings.name | default: p.title
+            assign size_idx = -1
+            if p != blank
+              for o in p.options_with_values
+                assign oname = o.name | downcase
+                if oname == size_name or oname == 'size' or oname == 'sizes'
+                  assign size_idx = o.position | minus: 1
+                endif
+              endfor
+            endif
+          -%}
+          {
+            "name": {{ cname | json }},
+            "hex": {{ block.settings.hex | json }},
+            {%- if p != blank -%}
+              "product": {{ p.title | json }},
+              "price": {{ p.price | json }},
+              "variants": {
+                {%- if size_idx >= 0 -%}
+                  {%- assign seen = '|' -%}
+                  {%- assign first_item = true -%}
+                  {%- assign want = block.settings.variant_colour | strip -%}
+                  {%- for v in p.variants -%}
+                    {%- if want != blank -%}
+                      {%- unless v.options contains want -%}{%- continue -%}{%- endunless -%}
+                    {%- endif -%}
+                    {%- assign key = v.options[size_idx] | upcase -%}
+                    {%- assign token = '|' | append: key | append: '|' -%}
+                    {%- if seen contains token -%}{%- continue -%}{%- endif -%}
+                    {%- assign seen = seen | append: key | append: '|' -%}
+                    {%- unless first_item -%},{%- endunless -%}
+                    {%- assign first_item = false -%}
+                    {{ key | json }}: { "id": {{ v.id }}, "available": {{ v.available | json }} }
+                  {%- endfor -%}
+                {%- else -%}
+                  "*": { "id": {{ p.selected_or_first_available_variant.id }}, "available": {{ p.available | json }} }
+                {%- endif -%}
+              }
+            {%- else -%}
+              "product": null,
+              "price": {{ demo_price | json }},
+              "variants": null
+            {%- endif -%}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Pack builder",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "packs" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Build your pack" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Pick three. Or five. We box them." },
+    { "type": "textarea", "id": "lead", "label": "Text", "default": "Mix colours, choose one size, and watch them land in the box. It ships in this exact box." },
+    { "type": "text", "id": "step_1", "label": "Step 1 label", "default": "1. Pack size" },
+    { "type": "text", "id": "label_1", "label": "1 piece label", "default": "1 piece" },
+    { "type": "text", "id": "label_3", "label": "3 pack label", "default": "3 pack" },
+    { "type": "text", "id": "label_5", "label": "5 pack label", "default": "5 pack" },
+    { "type": "text", "id": "step_2", "label": "Step 2 label", "default": "2. Colours" },
+    { "type": "text", "id": "start_picks", "label": "Colours already in the box", "default": "Heather, Navy", "info": "Colour names, comma separated." },
+    { "type": "text", "id": "step_3", "label": "Step 3 label", "default": "3. Size" },
+    { "type": "text", "id": "sizes", "label": "Sizes", "default": "S, M, L, XL", "info": "Must match your products' Size option values." },
+    { "type": "text", "id": "default_size", "label": "Preselected size", "default": "M" },
+    { "type": "text", "id": "button", "label": "Button label", "default": "Add pack to bag" },
+    { "type": "text", "id": "saving_note", "label": "Note after the price", "default": "pack saving to be set" },
+    { "type": "number", "id": "demo_price", "label": "Demo price per piece", "default": 799, "info": "Used only for colours with no product linked yet." },
+    { "type": "header", "content": "Box" },
+    { "type": "text", "id": "stage_label", "label": "Box description", "default": "Your pack in the Jumper box. Drag to turn it." },
+    { "type": "text", "id": "dragnote", "label": "Drag hint", "default": "Drag to turn the box" },
+    { "type": "image_picker", "id": "face_front", "label": "Front face", "info": "Empty uses the Jumper box artwork." },
+    { "type": "image_picker", "id": "face_back", "label": "Back face" },
+    { "type": "image_picker", "id": "face_left", "label": "Left side" },
+    { "type": "image_picker", "id": "face_right", "label": "Right side" }
+  ],
+  "max_blocks": 10,
+  "blocks": [
+    {
+      "type": "colour",
+      "name": "Colour",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Maroon" },
+        { "type": "color", "id": "hex", "label": "Swatch", "default": "#5a2230" },
+        { "type": "product", "id": "product", "label": "Product", "info": "Needs a Size option. Without a product the colour is display only." },
+        { "type": "text", "id": "variant_colour", "label": "Colour option value", "info": "Only if one product holds several colours, for example Maroon." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pack builder",
+      "blocks": [
+        { "type": "colour", "settings": { "name": "Maroon", "hex": "#5a2230" } },
+        { "type": "colour", "settings": { "name": "Sunshine", "hex": "#d9bf2e" } },
+        { "type": "colour", "settings": { "name": "Navy", "hex": "#22285a" } },
+        { "type": "colour", "settings": { "name": "Heather", "hex": "#b9bab5" } },
+        { "type": "colour", "settings": { "name": "Charcoal", "hex": "#3b3d3f" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

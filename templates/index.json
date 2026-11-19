@@ -2,216 +2,92 @@
   "sections": {
     "hero": {
       "type": "hero",
+      "settings": {}
+    },
+    "tapes": {
+      "type": "tapes",
       "settings": {
-        "scheme": "lime",
-        "eyebrow": "Summer trunks",
-        "eyebrow_2": "Drop 01",
-        "heading": "Wear/it/loud.",
-        "subheading": "Underwear with the volume up.",
-        "text": "<p>Soft, stretchy and built for everything the day throws at you. Gym. Office. Rooftop. Same trunks.</p>",
-        "button_label": "Shop new prints",
-        "button_2_label": "Meet the crew",
-        "button_2_link": "#crew",
-        "fallback": "photo-pool.jpg",
-        "image_alt": "Jumper trunks with blue camo waistband at the pool",
-        "chip": "New in",
-        "chip_color": "yellow",
-        "badge_text": "Wear it loud ✦ Play loud ✦ Band first ✦ "
+        "background": "lime"
       }
     },
-    "cross": {
-      "type": "ticker-cross",
-      "settings": {
-        "text_a": "Wear it loud,Play loud,Band first",
-        "text_b": "Soft stretch,Loud bands,Made to move,Free shipping all India",
-        "speed": 30
-      }
-    },
-    "featured": {
-      "type": "featured-collection",
-      "settings": {
-        "scheme": "paper",
-        "number": "01",
-        "label": "New in",
-        "heading": "New prints. Loud on purpose.",
-        "text": "Soft stretch bodies. Woven bands that never hide. Pick a print, pick a size, done.",
-        "limit": 4,
-        "tabs": "cyan,orange,yellow,pink",
-        "link_label": "Shop all trunks"
-      }
-    },
-    "bands": {
-      "type": "band-explorer",
+    "move": {
+      "type": "move-your-way",
       "blocks": {
-        "b1": {
-          "type": "band",
+        "gym": {
+          "type": "chip",
           "settings": {
-            "title": "Blue camo print",
-            "type": "Print",
-            "fallback": "band-blue-camo.jpg",
-            "swatch": "cyan"
+            "label": "Gym",
+            "colour": "var(--orange)",
+            "text": "Squats, sprints, sweat. Soft stretch that moves with every rep.",
+            "button": "Shop for the gym",
+            "stock": "cutout-gym",
+            "image_alt": "Two men in maroon Jumper trunks, one stretching, one sitting on a stone with a towel"
           }
         },
-        "b2": {
-          "type": "band",
+        "office": {
+          "type": "chip",
           "settings": {
-            "title": "Orange wave print",
-            "type": "Print",
-            "fallback": "band-orange-wave.jpg",
-            "swatch": "orange"
+            "label": "Office",
+            "colour": "var(--cyan)",
+            "text": "Back-to-back meetings and the walk home late. Comfortable enough to forget.",
+            "button": "Shop for the office",
+            "stock": "cutout-office",
+            "image_alt": "Two men in Jumper trunks, one in an open white shirt and tie, one sitting on a stone with a coffee"
           }
         },
-        "b3": {
-          "type": "band",
+        "rooftop": {
+          "type": "chip",
           "settings": {
-            "title": "Lime shadow camo",
-            "type": "Print",
-            "fallback": "band-lime-shadow.jpg",
-            "swatch": "lime"
+            "label": "Rooftop",
+            "colour": "var(--purple)",
+            "text": "Sundown plans that run past midnight. Loud colour, all night.",
+            "button": "Shop for the rooftop",
+            "stock": "cutout",
+            "image_alt": "Two men in Jumper trunks, one standing in yellow, one sitting in navy"
           }
         },
-        "b4": {
-          "type": "band",
+        "pool": {
+          "type": "chip",
           "settings": {
-            "title": "Black elastic, orange piping",
-            "type": "Elastic",
-            "fallback": "band-black-orange-piping.jpg",
-            "swatch": "orange"
-          }
-        },
-        "b5": {
-          "type": "band",
-          "settings": {
-            "title": "Orange woven mesh",
-            "type": "Woven",
-            "fallback": "band-orange-mesh.jpg",
-            "swatch": "orange"
-          }
-        },
-        "b6": {
-          "type": "band",
-          "settings": {
-            "title": "Navy woven repeat",
-            "type": "Woven",
-            "fallback": "band-navy-repeat.jpg",
-            "swatch": "ink"
-          }
-        },
-        "b7": {
-          "type": "band",
-          "settings": {
-            "title": "Black woven label",
-            "type": "Woven",
-            "fallback": "band-black-woven.jpg",
-            "swatch": "ink"
-          }
-        },
-        "b8": {
-          "type": "band",
-          "settings": {
-            "title": "White elastic, Ink wordmark",
-            "type": "Elastic",
-            "fallback": "band-white-elastic.jpg",
-            "swatch": "paper"
+            "label": "Pool",
+            "colour": "var(--pink)",
+            "text": "Poolside, then straight to dinner. Same trunks, still loud.",
+            "button": "Shop for the pool",
+            "stock": "cutout-pool",
+            "image_alt": "Two men in Jumper trunks after a swim, one laughing on a stone, one drying his hair"
           }
         }
       },
       "block_order": [
-        "b1",
-        "b2",
-        "b3",
-        "b4",
-        "b5",
-        "b6",
-        "b7",
-        "b8"
+        "gym",
+        "office",
+        "rooftop",
+        "pool"
       ],
-      "settings": {
-        "number": "02",
-        "label": "Waistband signature",
-        "heading": "The band is the billboard.",
-        "text": "Wordmark front and centre, repeated across the band. Waistband peeking, never hidden."
-      }
+      "settings": {}
     },
-    "world": {
-      "type": "crew-world",
-      "blocks": {
-        "w1": {
-          "type": "setting",
-          "settings": {
-            "tag": "Court",
-            "title": "Gym and court",
-            "caption": "Sport details that echo the print.",
-            "fallback": "photo-court.jpg",
-            "tab": "orange"
-          }
-        },
-        "w2": {
-          "type": "setting",
-          "settings": {
-            "tag": "Street",
-            "title": "Office to street",
-            "caption": "Waistband peeking, never hidden.",
-            "fallback": "photo-denim.jpg",
-            "tab": "cyan"
-          }
-        },
-        "w3": {
-          "type": "setting",
-          "settings": {
-            "tag": "Beach",
-            "title": "Travel and beach",
-            "caption": "Sun, sand and zero effort.",
-            "fallback": "photo-beach.jpg",
-            "tab": "yellow"
-          }
-        },
-        "w4": {
-          "type": "setting",
-          "settings": {
-            "tag": "Pool",
-            "title": "Social and pool",
-            "caption": "Splash-ready and photo-ready.",
-            "fallback": "photo-pool.jpg",
-            "tab": "pink"
-          }
-        }
-      },
-      "block_order": [
-        "w1",
-        "w2",
-        "w3",
-        "w4"
-      ],
-      "settings": {
-        "number": "03",
-        "label": "The Crew's world",
-        "heading": "Gym. Office. Rooftop. Same trunks.",
-        "text": "Four settings, one wardrobe. Jumper has to look right in all of them."
-      }
-    },
-    "campaign": {
-      "type": "campaign-banner",
+    "proof": {
+      "type": "proof",
       "blocks": {
         "f1": {
-          "type": "feature",
+          "type": "fact",
           "settings": {
-            "feature": "Woven band",
-            "code": "JMP-01"
+            "title": "Soft stretch",
+            "text": "A body that moves with you, gym to rooftop."
           }
         },
         "f2": {
-          "type": "feature",
+          "type": "fact",
           "settings": {
-            "feature": "Soft stretch body",
-            "code": "JMP-02"
+            "title": "15-day exchanges",
+            "text": "Wrong size? Swap unworn packs, no drama."
           }
         },
         "f3": {
-          "type": "feature",
+          "type": "fact",
           "settings": {
-            "feature": "Loud print",
-            "code": "JMP-03"
+            "title": "Free shipping",
+            "text": "On every order over Rs. 999, anywhere in India."
           }
         }
       },
@@ -220,161 +96,254 @@
         "f2",
         "f3"
       ],
-      "settings": {
-        "heading": "New/prints",
-        "story_label": "Product story",
-        "text": "Woven band, soft stretch body, loud print. Serious product. Bold attitude.",
-        "button_label": "Shop the drop",
-        "chip": "Blue camo",
-        "panel": "cyan"
-      }
-    },
-    "crew": {
-      "type": "banana-crew",
-      "blocks": {
-        "c1": {
-          "type": "character",
-          "settings": {
-            "character": "jump",
-            "name": "Jump",
-            "mood": "Pure joy."
-          }
-        },
-        "c2": {
-          "type": "character",
-          "settings": {
-            "character": "surf",
-            "name": "Surf",
-            "mood": "Beach days."
-          }
-        },
-        "c3": {
-          "type": "character",
-          "settings": {
-            "character": "stroll",
-            "name": "Stroll",
-            "mood": "Every day."
-          }
-        },
-        "c4": {
-          "type": "character",
-          "settings": {
-            "character": "lounge",
-            "name": "Lounge",
-            "mood": "Easy comfort."
-          }
-        },
-        "c5": {
-          "type": "character",
-          "settings": {
-            "character": "skate",
-            "name": "Skate",
-            "mood": "Street energy."
-          }
-        },
-        "c6": {
-          "type": "character",
-          "settings": {
-            "character": "thumbs",
-            "name": "Thumbs up",
-            "mood": "Good to go."
-          }
-        },
-        "c7": {
-          "type": "character",
-          "settings": {
-            "character": "wink",
-            "name": "Wink",
-            "mood": "Cheeky charm."
-          }
-        }
-      },
-      "block_order": [
-        "c1",
-        "c2",
-        "c3",
-        "c4",
-        "c5",
-        "c6",
-        "c7"
-      ],
-      "settings": {
-        "number": "04",
-        "label": "The Banana Crew",
-        "heading": "Pick your mood.",
-        "text": "Seven characters. Same line weight, same cheeky spirit, a new pose for every mood.",
-        "button_label": "Shop the mood"
-      }
-    },
-    "manifesto": {
-      "type": "manifesto",
-      "blocks": {
-        "t1": {
-          "type": "trait",
-          "settings": {
-            "title": "Cheeky",
-            "text": "A wink, never a smirk. Humour that feels like a friend nudging you."
-          }
-        },
-        "t2": {
-          "type": "trait",
-          "settings": {
-            "title": "Bold",
-            "text": "Loud prints, loud bands, loud colour. Jumper never whispers."
-          }
-        },
-        "t3": {
-          "type": "trait",
-          "settings": {
-            "title": "Active",
-            "text": "Made for courts, beaches and pool decks. Always in motion."
-          }
-        },
-        "t4": {
-          "type": "trait",
-          "settings": {
-            "title": "Easy",
-            "text": "Confident without trying. Comfort first, no fuss."
-          }
-        }
-      },
-      "block_order": [
-        "t1",
-        "t2",
-        "t3",
-        "t4"
-      ],
-      "settings": {
-        "scheme": "ink",
-        "number": "05",
-        "label": "The core philosophy",
-        "statement": "*Serious* product. *Bold* attitude. Real quality with a Gen-Z grin. The antithesis of basic, functional inner-wear and of sterile, premium-minimalist labels.",
-        "say": "Wear it loud.",
-        "not": "Our garments are available in a range of vibrant options."
-      }
+      "settings": {}
     },
     "join": {
       "type": "join-crew",
+      "blocks": {
+        "p1": {
+          "type": "perk",
+          "settings": {
+            "icon": "↯",
+            "colour": "#CEFF05",
+            "title": "First dibs on every drop",
+            "text": "New colours open to the crew a day before anyone else."
+          }
+        }
+      },
+      "block_order": [
+        "p1"
+      ],
+      "settings": {}
+    },
+    "scenes": {
+      "type": "scenes",
+      "blocks": {
+        "court": {
+          "type": "scene",
+          "settings": {
+            "label": "Court",
+            "colour": "var(--orange)",
+            "title": "Gym and court",
+            "text": "Sport details that echo the print."
+          }
+        },
+        "street": {
+          "type": "scene",
+          "settings": {
+            "label": "Street",
+            "colour": "var(--cyan)",
+            "title": "Office to street",
+            "text": "Waistband peeking, never hidden."
+          }
+        },
+        "beach": {
+          "type": "scene",
+          "settings": {
+            "label": "Beach",
+            "colour": "var(--yellow)",
+            "title": "Travel and beach",
+            "text": "Sun, sand and zero effort."
+          }
+        },
+        "pool": {
+          "type": "scene",
+          "settings": {
+            "label": "Pool",
+            "colour": "var(--pink)",
+            "title": "Social and pool",
+            "text": "Splash-ready and photo-ready."
+          }
+        }
+      },
+      "block_order": [
+        "court",
+        "street",
+        "beach",
+        "pool"
+      ],
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "How do Jumper trunks fit?",
+            "answer": "<p>True to size, with a 4-inch leg that stays put. Check the size chart on any product page; between two sizes, go up for room or down for hold.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "What are they made of?",
+            "answer": "<p>95% cotton for softness and 5% elastane for 4-way stretch, finished with a woven JUMPER waistband that is brushed soft on the inside.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Will the waistband roll or dig in?",
+            "answer": "<p>No. The band is woven flat and wide, so it sits smooth all day. Let it peek, that is the point.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Can I mix colours in a pack?",
+            "answer": "<p>Yes. Pick 3 or 5 in any colours, all in one size, and they ship together in the Jumper box.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "How fast is delivery?",
+            "answer": "<p>Shipping is free on every order over Rs. 999, anywhere in India. You get a tracking link as soon as your order leaves us.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "What if the size is wrong?",
+            "answer": "<p>Unworn packs can be exchanged within 15 days. Write in with your order number and we will sort the swap.</p>"
+          }
+        },
+        "q7": {
+          "type": "question",
+          "settings": {
+            "question": "How should I wash them?",
+            "answer": "<p>Machine wash cold with similar colours and skip the tumble dryer. The colour and the band stay loud for longer.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7"
+      ],
       "settings": {
-        "frame_text": "Wear it loud",
-        "label": "The Crew",
-        "heading": "Join the Crew.",
-        "text": "First dibs on new prints, drops and the occasional cheeky surprise.",
-        "button_label": "I'm in",
-        "fine_print": "No spam. Unsubscribe any time.",
-        "character": "wink"
+        "eyebrow": "Good to know",
+        "heading": "Questions? Answered."
       }
+    },
+    "reviews": {
+      "type": "testimonials",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-navy-wide.jpg",
+            "quote": "Wore them to the gym and straight to work. Forgot I had them on.",
+            "name": "Arjun",
+            "place": "Pune",
+            "rating": 5,
+            "product": "3 pack"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-yellow-wide.jpg",
+            "quote": "The band stays put. Finally a trunk that doesn't roll down mid-squat.",
+            "name": "Kabir",
+            "place": "Delhi",
+            "rating": 5,
+            "product": "Sunshine"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-grey-wide.jpg",
+            "quote": "Got the 5 pack. The box alone made my day, the fit made my week.",
+            "name": "Rohan",
+            "place": "Bengaluru",
+            "rating": 5,
+            "product": "5 pack"
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "fallback": "jumper-hero.jpg",
+            "quote": "Bought one for me, then three more for the group chat. No regrets.",
+            "name": "Vikram",
+            "place": "Mumbai",
+            "rating": 5,
+            "product": "3 pack"
+          }
+        },
+        "r5": {
+          "type": "review",
+          "settings": {
+            "fallback": "scene-beach.jpg",
+            "quote": "Soft like a tee, loud like a festival. My new favourite thing.",
+            "name": "Aditya",
+            "place": "Goa",
+            "rating": 5,
+            "product": "Maroon"
+          }
+        },
+        "r6": {
+          "type": "review",
+          "settings": {
+            "fallback": "trunk-maroon-wide.jpg",
+            "quote": "Sized up like the chart said and it's perfect. No pinching, no riding.",
+            "name": "Dev",
+            "place": "Hyderabad",
+            "rating": 5,
+            "product": "Maroon"
+          }
+        },
+        "r7": {
+          "type": "review",
+          "settings": {
+            "fallback": "scene-pool.jpg",
+            "quote": "Survived a pool day and a dance floor. Still looks brand new.",
+            "name": "Ishaan",
+            "place": "Chennai",
+            "rating": 5,
+            "product": "Navy"
+          }
+        },
+        "r8": {
+          "type": "review",
+          "settings": {
+            "fallback": "scene-denim.jpg",
+            "quote": "Let the band peek out of my jeans on purpose now. Worth it.",
+            "name": "Neil",
+            "place": "Kolkata",
+            "rating": 5,
+            "product": "Heather"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6",
+        "r7",
+        "r8"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "hero",
-    "cross",
-    "featured",
-    "bands",
-    "world",
-    "campaign",
-    "crew",
-    "manifesto",
-    "join"
+    "tapes",
+    "scenes",
+    "move",
+    "proof",
+    "reviews",
+    "join",
+    "faq"
   ]
 }

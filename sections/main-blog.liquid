@@ -1,26 +1,36 @@
-<section class="page-hero scheme-ink">
-  <div class="container">
-    <p class="t-label section-head__label"><span class="num">{{ blog.articles_count }}</span> {{ 'blog.stories' | t }}</p>
-    <h1 class="t-display page-hero__title" style="color: var(--lime)">{{ blog.title }}</h1>
-  </div>
-</section>
-<section class="section scheme-paper">
-  <div class="container">
-    {%- paginate blog.articles by 9 -%}
-      <div class="blog-grid">
+{%- assign title = blog.title | escape -%}
+{%- capture meta -%}{%- if blog.all_tags.size > 0 -%}<a href="{{ blog.url }}" style="text-decoration:none">{{ 'blog.all' | t }}</a>{%- for tg in blog.all_tags -%}<a href="{{ blog.url }}/tagged/{{ tg | handle }}" style="text-decoration:none{% if current_tags contains tg %};border-bottom:2px solid currentColor{% endif %}">{{ tg | escape }}</a>{%- endfor -%}{%- endif -%}{%- endcapture -%}
+{% render 'page-hero', eyebrow: section.settings.eyebrow, title: title, meta: meta, badge: true %}
+{%- paginate blog.articles by section.settings.per_page -%}
+  <section class="coll">
+    <div class="wrap">
+      <div class="acards">
         {%- for article in blog.articles -%}
-          <a class="post-card reveal" href="{{ article.url }}" style="--i: {{ forloop.index0 | modulo: 3 }}">
-            <figure class="post-card__media">
-              {%- if article.image -%}{{ article.image | image_url: width: 900 | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 33vw, 90vw' }}{%- else -%}<img src="{{ 'photo-beach.jpg' | asset_url }}" alt="" loading="lazy">{%- endif -%}
-            </figure>
-            <p class="t-label">{{ article.published_at | date: '%d %b %Y' }}</p>
-            <h2 class="post-card__title">{{ article.title }}</h2>
-            <p class="t-body">{{ article.excerpt_or_content | strip_html | truncatewords: 22 }}</p>
-          </a>
+          {%- assign i = forloop.index0 | modulo: 4 -%}
+          <article class="acard" style="--spark:{% case i %}{% when 0 %}var(--pink){% when 1 %}var(--cyan){% when 2 %}var(--orange){% else %}var(--purple){% endcase %}">
+            <a class="media" href="{{ article.url }}" tabindex="-1">{%- if article.image -%}{{ article.image | image_url: width: 900 | image_tag: alt: article.image.alt, loading: 'lazy', widths: '400, 600, 900', sizes: '(max-width: 560px) 100vw, 33vw' }}{%- else -%}<span class="ph">{% render 'mark' %}</span>{%- endif -%}</a>
+            <div class="info">
+              <span class="eyebrow">{{ article.published_at | date: '%d %b %Y' }}</span>
+              <h2><a href="{{ article.url }}">{{ article.title | escape }}</a></h2>
+              <p>{%- if article.excerpt != blank -%}{{ article.excerpt | strip_html | truncatewords: 26 }}{%- else -%}{{ article.content | strip_html | truncatewords: 26 }}{%- endif -%}</p>
+              <a class="link" href="{{ article.url }}" style="justify-self:start">{{ 'blog.read' | t }} <span class="arrow">→</span></a>
+            </div>
+          </article>
+        {%- else -%}
+          <div class="empty-state" style="grid-column:1/-1"><b>{{ 'collections.empty' | t }}</b></div>
         {%- endfor -%}
       </div>
-      {%- if paginate.pages > 1 -%}<nav class="pagination">{{ paginate | default_pagination }}</nav>{%- endif -%}
-    {%- endpaginate -%}
-  </div>
-</section>
-{% schema %}{ "name": "Blog" }{% endschema %}
+      {% render 'pager', paginate: paginate %}
+    </div>
+  </section>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Blog",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Journal" },
+    { "type": "range", "id": "per_page", "label": "Stories per page", "min": 3, "max": 24, "step": 3, "default": 9 }
+  ]
+}
+{% endschema %}

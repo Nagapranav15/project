@@ -1,98 +1,50 @@
-{%- assign tabs = section.settings.tabs | remove: ' ' | split: ',' -%}
-<section class="page-hero scheme-lime">
-  <div class="container">
-    <p class="t-label section-head__label"><span class="num">{{ collection.products_count | default: 0 }}</span> {{ 'collections.styles' | t }}</p>
-    <h1 class="t-display page-hero__title">{{ collection.title | default: section.settings.fallback_title }}</h1>
-    {%- if collection.description != blank -%}<div class="t-body page-hero__desc rte">{{ collection.description }}</div>{%- endif -%}
-    {% render 'character', name: section.settings.character, class: 'page-hero__char' %}
-  </div>
-</section>
+{%- liquid
+  assign t = collection.title | escape
+  assign count_text = 'collections.count' | t: count: collection.products_count
+  assign meta = '<span>' | append: count_text | append: '</span>'
+  if section.settings.show_meta and section.settings.fact != blank
+    assign fact = section.settings.fact | escape
+    assign meta = meta | append: '<span>' | append: fact | append: '</span>'
+  endif
+-%}
+{%- capture crumbs -%}<a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a><span aria-hidden="true">/</span><span>{{ t }}</span>{%- endcapture -%}
+{% render 'page-hero', eyebrow: section.settings.eyebrow, title: t, lede: collection.description, meta: meta, badge: section.settings.show_badge, crumbs: crumbs %}
 
-<section class="section scheme-paper" style="padding-top: 0">
-  <div class="container">
-    {%- paginate collection.products by section.settings.per_page -%}
-      <form class="toolbar" id="CollectionFilters" data-auto-submit>
-        <div class="filters">
-          {%- for filter in collection.filters -%}
-            {%- if filter.type == 'list' or filter.type == 'boolean' -%}
-              <details class="filter-group">
-                <summary class="filter-pill{% if filter.active_values.size > 0 %} is-active{% endif %}">{{ filter.label }}{% if filter.active_values.size > 0 %} ({{ filter.active_values.size }}){% endif %}</summary>
-                <div class="filter-group__panel">
-                  {%- for value in filter.values -%}
-                    <label>
-                      <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}>
-                      {{ value.label }} <span style="color: var(--mute-on-paper)">({{ value.count }})</span>
-                    </label>
-                  {%- endfor -%}
-                </div>
-              </details>
-            {%- elsif filter.type == 'price_range' -%}
-              <details class="filter-group">
-                <summary class="filter-pill">{{ filter.label }}</summary>
-                <div class="filter-group__panel">
-                  <label>{{ 'collections.from' | t }} <input class="select" style="background: none; padding-right: 14px; width: 120px" type="number" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | money_without_currency | remove: ',' }}" placeholder="0"></label>
-                  <label>{{ 'collections.to' | t }} <input class="select" style="background: none; padding-right: 14px; width: 120px" type="number" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | money_without_currency | remove: ',' }}" placeholder="{{ filter.range_max | money_without_currency | remove: ',' }}"></label>
-                </div>
-              </details>
-            {%- endif -%}
+{%- paginate collection.products by section.settings.per_page -%}
+  <section class="coll">
+    <div class="wrap">
+      {% render 'facets', results: collection, url: collection.url, sort_by: collection.sort_by, default_sort: collection.default_sort_by, count: collection.products_count %}
+      {%- if collection.products.size > 0 -%}
+        <div class="grid">
+          {%- for product in collection.products -%}
+            {% render 'product-card', product: product, index: forloop.index0 %}
           {%- endfor -%}
-          {%- assign active_count = 0 -%}
-          {%- for filter in collection.filters -%}{%- assign active_count = active_count | plus: filter.active_values.size -%}{%- endfor -%}
-          {%- if active_count > 0 -%}<a class="filter-pill" href="{{ collection.url }}?sort_by={{ collection.sort_by }}">{{ 'collections.clear' | t }} ✕</a>{%- endif -%}
         </div>
-        <label class="visually-hidden" for="SortBy">{{ 'collections.sort' | t }}</label>
-        <select class="select" id="SortBy" name="sort_by">
-          {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
-          {%- for option in collection.sort_options -%}
-            <option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>
-          {%- endfor -%}
-        </select>
-      </form>
-
-      <div class="grid grid--cards">
-        {%- for product in collection.products -%}
-          {%- assign t = forloop.index0 | modulo: tabs.size -%}
-          {% render 'product-card', product: product, tab: tabs[t], index: forloop.index0, eager: forloop.first %}
-        {%- else -%}
-          {%- if collection.filters.size > 0 and active_count > 0 -%}
-            <div class="empty" style="grid-column: 1 / -1">
-              {% render 'character', name: 'thumbs' %}
-              <p class="t-subhead">{{ 'collections.no_match' | t }}</p>
-              <a class="btn" href="{{ collection.url }}">{{ 'collections.clear' | t }}</a>
-            </div>
+        {% render 'pager', paginate: paginate %}
+      {%- else -%}
+        <div class="empty-state">
+          {%- if collection.filters.size > 0 and collection.products_count > 0 -%}
+            <b>{{ 'collections.no_match' | t }}</b>
+            <a class="btn btn-ink" href="{{ collection.url }}?sort_by={{ collection.sort_by }}">{{ 'collections.clear' | t }} <span class="arrow">→</span></a>
           {%- else -%}
-            {% render 'demo-grid', limit: 8, tabs: tabs %}
+            <b>{{ 'collections.empty' | t }}</b>
+            <a class="btn btn-ink" href="{{ routes.root_url }}">{{ 'general.404_home' | t }} <span class="arrow">→</span></a>
           {%- endif -%}
-        {%- endfor -%}
-      </div>
-
-      {%- if paginate.pages > 1 -%}
-        <nav class="pagination" aria-label="{{ 'general.pagination' | t }}">
-          {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" aria-label="{{ 'general.previous' | t }}">←</a>{%- endif -%}
-          {%- for part in paginate.parts -%}
-            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>{%- elsif part.title == paginate.current_page -%}<span class="is-current" aria-current="page">{{ part.title }}</span>{%- else -%}<span>{{ part.title }}</span>{%- endif -%}
-          {%- endfor -%}
-          {%- if paginate.next -%}<a href="{{ paginate.next.url }}" aria-label="{{ 'general.next' | t }}">→</a>{%- endif -%}
-        </nav>
+        </div>
       {%- endif -%}
-    {%- endpaginate -%}
-  </div>
-</section>
-<script>
-  document.querySelectorAll('[data-auto-submit]').forEach((f) => f.addEventListener('change', () => f.submit()));
-</script>
+    </div>
+  </section>
+{%- endpaginate -%}
 
 {% schema %}
 {
-  "name": "Collection grid",
+  "name": "Collection",
   "settings": [
-    { "type": "text", "id": "fallback_title", "label": "Fallback title", "default": "All trunks" },
-    { "type": "range", "id": "per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 24 },
-    { "type": "text", "id": "tabs", "label": "Card tab colours", "default": "cyan,orange,yellow,pink" },
-    { "type": "select", "id": "character", "label": "Header character", "default": "skate", "options": [
-      { "value": "surf", "label": "Surf" }, { "value": "stroll", "label": "Stroll" }, { "value": "lounge", "label": "Lounge" },
-      { "value": "skate", "label": "Skate" }, { "value": "thumbs", "label": "Thumbs up" }, { "value": "wink", "label": "Wink" }, { "value": "jump", "label": "Jump" }
-    ]}
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Shop" },
+    { "type": "checkbox", "id": "show_badge", "label": "Show spinning badge", "default": true },
+    { "type": "checkbox", "id": "show_meta", "label": "Show fact under the title", "default": true },
+    { "type": "text", "id": "fact", "label": "Fact", "default": "Free shipping over Rs. 999" },
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 16 }
   ]
 }
 {% endschema %}

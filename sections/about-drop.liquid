@@ -1,0 +1,30 @@
+{%- comment -%}
+  Closing call to action: trunk photos drop into a pile when the section scrolls into view.
+{%- endcomment -%}
+{%- capture pile -%}{{ 'about-maroon-close.jpg' | asset_url }}|{{ 'about-yellow-close.jpg' | asset_url }}|{{ 'about-navy-close.jpg' | asset_url }}|{{ 'about-grey-close.jpg' | asset_url }}|{{ 'about-charcoal-close.jpg' | asset_url }}{%- endcapture -%}
+<section class="drop" id="{{ section.settings.anchor | default: 'drop' | handleize }}" aria-labelledby="ctaTitle-{{ section.id }}" data-about-drop data-pile="{{ pile | escape }}">
+  <div class="pile" data-pile-box aria-hidden="true"></div>
+  <div class="wrap drop-in">
+    {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+    <h2 id="ctaTitle-{{ section.id }}" class="split" data-scroll>
+      {%- if section.settings.line_1 != blank -%}<span class="line"><span>{{ section.settings.line_1 | escape }}</span></span>{%- endif -%}
+      {%- if section.settings.line_2 != blank -%}<span class="line"><span><em>{{ section.settings.line_2 | escape }}</em></span></span>{%- endif -%}
+    </h2>
+    {%- if section.settings.button_label != blank -%}<a class="btn btn-ink" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" style="--spark:var(--pink)">{{ section.settings.button_label | escape }} <span class="arrow">→</span></a>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About closing",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "drop" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Your move" },
+    { "type": "text", "id": "line_1", "label": "Heading line 1", "default": "Go on." },
+    { "type": "text", "id": "line_2", "label": "Heading line 2 (highlighted)", "default": "Drop yours." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop trunks" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "About closing" }]
+}
+{% endschema %}

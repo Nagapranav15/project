@@ -1,0 +1,88 @@
+{%- comment -%}
+  Four things in every pair: on desktop the section pins and the panels scroll sideways with a progress bar.
+  On phones the panels stack.
+{%- endcomment -%}
+<section class="pillars" id="{{ section.settings.anchor | default: 'pillars' | handleize }}" aria-labelledby="pilTitle-{{ section.id }}" data-about-pillars>
+  <div class="pil-pin" data-pil-pin>
+    <div class="pil-track" data-pil-track>
+      <div class="pil intro pil--{{ section.settings.intro_ground }}">
+        <div class="pil-in">
+          {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+          <h2 id="pilTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+          {%- if section.settings.hint != blank -%}<p class="pil-hint">{{ section.settings.hint | escape }} <span class="arrow">→</span></p>{%- endif -%}
+        </div>
+      </div>
+      {%- for block in section.blocks -%}
+        <article class="pil pil--{{ block.settings.ground }}" style="--spark: var(--{{ block.settings.spark }})" {{ block.shopify_attributes }}>
+          <div class="pil-in"><span class="pil-n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span><h3>{{ block.settings.title | escape }}</h3>{%- if block.settings.text != blank -%}<p>{{ block.settings.text | escape }}</p>{%- endif -%}</div>
+          <div class="pil-art">
+            <figure>
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 920 | image_tag: alt: block.settings.alt, loading: 'lazy', widths: '460, 690, 920', sizes: '(min-width: 861px) 440px, 86vw' }}
+              {%- else -%}
+                <img src="{{ block.settings.fallback | asset_url }}" alt="{{ block.settings.alt | escape }}" loading="lazy" width="576" height="720">
+              {%- endif -%}
+            </figure>
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+    <div class="pil-progress" aria-hidden="true"><i data-pil-bar></i></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About sideways panels",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "pillars" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "How it's made" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Four things in every pair." },
+    { "type": "text", "id": "hint", "label": "Scroll hint", "default": "Keep scrolling" },
+    { "type": "select", "id": "intro_ground", "label": "First panel background", "default": "lime", "options": [
+      { "value": "lime", "label": "Lime" }, { "value": "ink", "label": "Ink" }, { "value": "paper", "label": "Paper" }
+    ] }
+  ],
+  "blocks": [
+    {
+      "type": "panel",
+      "name": "Panel",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Born loud." },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Underwear should never be the quiet part of the outfit." },
+        { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "select", "id": "fallback", "label": "Photo until one is picked", "default": "about-hero.jpg", "options": [
+          { "value": "about-hero.jpg", "label": "The crew in the grass" },
+          { "value": "about-playloud.jpg", "label": "Gym stretch" },
+          { "value": "about-navy-close.jpg", "label": "Navy close up" },
+          { "value": "about-maroon-close.jpg", "label": "Maroon close up" },
+          { "value": "about-yellow-close.jpg", "label": "Sunshine close up" },
+          { "value": "about-grey-close.jpg", "label": "Heather close up" },
+          { "value": "about-charcoal-close.jpg", "label": "Charcoal close up" },
+          { "value": "about-twilight.jpg", "label": "Twilight" }
+        ] },
+        { "type": "text", "id": "alt", "label": "Photo description", "default": "Three friends in Jumper trunks in tall grass" },
+        { "type": "select", "id": "ground", "label": "Background", "default": "paper", "options": [
+          { "value": "paper", "label": "Paper" }, { "value": "ink", "label": "Ink" }, { "value": "lime", "label": "Lime" }
+        ] },
+        { "type": "select", "id": "spark", "label": "Supporting colour (block and number)", "default": "pink", "info": "Brand pairings: Yellow and Orange on Ink, Cyan and Pink on Paper, Purple on Lime.", "options": [
+          { "value": "yellow", "label": "Yellow" }, { "value": "cyan", "label": "Cyan" }, { "value": "orange", "label": "Orange" },
+          { "value": "pink", "label": "Pink" }, { "value": "purple", "label": "Purple" }, { "value": "lime", "label": "Lime" }
+        ] }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About sideways panels",
+      "blocks": [
+        { "type": "panel", "settings": { "title": "Born loud.", "text": "Underwear should never be the quiet part of the outfit.", "fallback": "about-hero.jpg", "alt": "Three friends in Jumper trunks in tall grass", "ground": "ink", "spark": "yellow" } },
+        { "type": "panel", "settings": { "title": "Cut to move.", "text": "Four-way stretch that follows every squat and sprint. Zero ride-up.", "fallback": "about-playloud.jpg", "alt": "A man in Jumper trunks stretching, arms up, between blue gym balls", "ground": "paper", "spark": "cyan" } },
+        { "type": "panel", "settings": { "title": "Soft all day.", "text": "95% combed cotton, right where it touches your skin.", "fallback": "about-navy-close.jpg", "alt": "Close up of navy Jumper trunks", "ground": "ink", "spark": "orange" } },
+        { "type": "panel", "settings": { "title": "Let it peek.", "text": "A woven band. Soft on the inside, loud on the outside.", "fallback": "about-maroon-close.jpg", "alt": "Close up of maroon Jumper trunks with the orange woven band", "ground": "paper", "spark": "pink" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

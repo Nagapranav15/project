@@ -3,85 +3,150 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "title": {
-          "type": "title"
-        },
-        "price": {
-          "type": "price"
-        },
-        "tab": {
-          "type": "print_tab"
-        },
-        "buy": {
-          "type": "buy",
+        "fit": {
+          "type": "tab",
           "settings": {
-            "show_dynamic_checkout": true
+            "title": "Fit",
+            "content": "<p>True to size. Between sizes? Size up for room, down for hold.</p>"
           }
         },
-        "perks": {
-          "type": "perks",
+        "care": {
+          "type": "tab",
           "settings": {
-            "perk_1": "Free shipping all India",
-            "perk_2": "15-day easy exchange",
-            "perk_3": "Soft stretch, all day"
-          }
-        },
-        "desc": {
-          "type": "description",
-          "settings": {
-            "fallback": "<p>Soft stretch body. Loud woven band. Made to move.</p>"
-          }
-        },
-        "spec": {
-          "type": "spec",
-          "settings": {
-            "fit": "Trunk",
-            "body": "Soft stretch fabric",
-            "band": "Woven, wordmark repeated",
-            "care": "Machine wash cool. Wear loud."
+            "title": "Care",
+            "content": "<p>Machine wash cold with like colours. Do not tumble dry. The band stays loud longer that way.</p>"
           }
         },
         "ship": {
-          "type": "collapsible",
+          "type": "tab",
           "settings": {
-            "heading": "Shipping and exchanges",
-            "content": "<p>Free shipping all India. Dispatch in 24 hours. Exchange unworn packs within 15 days.</p>"
+            "title": "Shipping and exchanges",
+            "content": "<p>Free shipping on every order over Rs. 999, anywhere in India. Wrong size? Swap unworn packs within 15 days, no drama.</p>"
+          }
+        },
+        "size_s": {
+          "type": "size",
+          "settings": {
+            "label": "S",
+            "waist_min": 71,
+            "waist_max": 78,
+            "hip_min": 86,
+            "hip_max": 93,
+            "jeans": "28–30"
+          }
+        },
+        "size_m": {
+          "type": "size",
+          "settings": {
+            "label": "M",
+            "waist_min": 79,
+            "waist_max": 86,
+            "hip_min": 94,
+            "hip_max": 101,
+            "jeans": "31–32"
+          }
+        },
+        "size_l": {
+          "type": "size",
+          "settings": {
+            "label": "L",
+            "waist_min": 87,
+            "waist_max": 94,
+            "hip_min": 102,
+            "hip_max": 109,
+            "jeans": "33–34"
+          }
+        },
+        "size_xl": {
+          "type": "size",
+          "settings": {
+            "label": "XL",
+            "waist_min": 95,
+            "waist_max": 102,
+            "hip_min": 110,
+            "hip_max": 117,
+            "jeans": "36–38"
           }
         }
       },
       "block_order": [
-        "title",
-        "price",
-        "tab",
-        "buy",
-        "perks",
-        "desc",
-        "spec",
-        "ship"
+        "fit",
+        "care",
+        "ship",
+        "size_s",
+        "size_m",
+        "size_l",
+        "size_xl"
       ],
       "settings": {
-        "tab": "cyan"
+        "show_badge": false
       }
     },
-    "bands": {
-      "type": "ticker-cross",
-      "settings": {
-        "text_a": "Band first,Wear it loud,Play loud",
-        "text_b": "Soft stretch,Loud bands,Made to move",
-        "speed": 30
-      }
+    "tapes": {
+      "type": "tapes",
+      "settings": {}
     },
-    "recos": {
+    "recs": {
       "type": "product-recommendations",
-      "settings": {
-        "label": "Complete the drawer",
-        "heading": "Pairs well with."
-      }
+      "settings": {}
+    },
+    "reviews": {
+      "type": "product-reviews",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Forgot I had them on",
+            "text": "Wore them to the gym and straight to work. Band stays put, fabric is soft, nothing rides up.",
+            "author": "Arjun, Pune",
+            "date": "Oct 2026"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Finally a trunk that stays",
+            "text": "The waistband is brushed soft on the inside, so no itch at all. Ordered two more.",
+            "author": "Kabir, Delhi",
+            "date": "Oct 2026"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "rating": 4,
+            "title": "Soft, a touch snug",
+            "text": "Great stretch and the colour is loud in the best way. Size up if you are between sizes.",
+            "author": "Rohan, Bengaluru",
+            "date": "Sep 2026"
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "The box alone made my day",
+            "text": "Showed up taped like a caution box. Trunks fit like they were made for me.",
+            "author": "Vikram, Mumbai",
+            "date": "Sep 2026"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "main",
-    "bands",
-    "recos"
+    "tapes",
+    "recs",
+    "reviews"
   ]
 }

@@ -1,17 +1,23 @@
-<section class="auth scheme-lime">
-  <div class="auth__card window">
-    <div class="window__bar"><span class="window__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-label">join_the_crew.exe</span></div>
-    <div class="window__body">
-      <h1 class="t-headline">{{ 'customer.create' | t }}</h1>
-      {%- form 'create_customer', class: 'form' -%}
-        {%- if form.errors -%}<div class="form-errors" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
-        <div class="field"><label class="t-label" for="RegFirst">{{ 'customer.first_name' | t }}</label><input id="RegFirst" name="customer[first_name]" autocomplete="given-name"></div>
-        <div class="field"><label class="t-label" for="RegLast">{{ 'customer.last_name' | t }}</label><input id="RegLast" name="customer[last_name]" autocomplete="family-name"></div>
-        <div class="field"><label class="t-label" for="RegEmail">{{ 'customer.email' | t }}</label><input id="RegEmail" type="email" name="customer[email]" autocomplete="email" required></div>
-        <div class="field"><label class="t-label" for="RegPass">{{ 'customer.password' | t }}</label><input id="RegPass" type="password" name="customer[password]" autocomplete="new-password" required></div>
-        <button class="btn btn--block" type="submit">{{ 'customer.create' | t }} {% render 'icon', icon: 'arrow' %}</button>
+<section class="auth">
+  <div class="wrap auth-grid">
+    {%- assign brand_heading = 'customer.register_title' | t -%}
+    {% render 'auth-brand', heading: brand_heading %}
+    <div class="auth-card">
+      <nav class="auth-tabs" aria-label="{{ 'customer.account_aria' | t: name: '' | strip }}">
+        <a href="{{ routes.account_login_url }}">{{ 'customer.login' | t }}</a>
+        <a href="{{ routes.account_register_url }}" aria-current="page">{{ 'customer.create' | t }}</a>
+      </nav>
+      {%- form 'create_customer', class: 'fx' -%}
+        {%- if form.errors -%}<div class="err" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+        <div class="row2">
+          <label>{{ 'customer.first_name' | t }}<input type="text" name="customer[first_name]" autocomplete="given-name" value="{{ form.first_name }}"></label>
+          <label>{{ 'customer.last_name' | t }}<input type="text" name="customer[last_name]" autocomplete="family-name" value="{{ form.last_name }}"></label>
+        </div>
+        <label>{{ 'customer.email' | t }}<input type="email" name="customer[email]" autocomplete="email" autocapitalize="off" value="{{ form.email }}" required></label>
+        <label>{{ 'customer.password' | t }}<input type="password" name="customer[password]" autocomplete="new-password" required></label>
+        <label class="chk"><input type="checkbox" name="customer[accepts_marketing]" value="true" checked> First dibs on drops by email</label>
+        <div class="actions"><button class="btn btn-ink" type="submit">{{ 'customer.create' | t }} <span class="arrow">→</span></button><a href="{{ routes.account_login_url }}">{{ 'customer.have_account' | t }} {{ 'customer.login' | t }}</a></div>
       {%- endform -%}
-      <div class="auth__links"><a href="{{ routes.account_login_url }}">{{ 'customer.login' | t }}</a></div>
     </div>
   </div>
 </section>

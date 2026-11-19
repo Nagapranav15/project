@@ -1,0 +1,18 @@
+{%- comment -%} Space for Shopify app blocks (reviews, UGC, size guides) on any template. {%- endcomment -%}
+<section class="apps-sec">
+  <div class="wrap">
+    {%- for block in section.blocks -%}
+      <div {{ block.shopify_attributes }}>{% render block %}</div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Apps",
+  "tag": "div",
+  "settings": [],
+  "blocks": [{ "type": "@app" }],
+  "presets": [{ "name": "Apps" }]
+}
+{% endschema %}

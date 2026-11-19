@@ -3,17 +3,19 @@
     "color_lime": "#CEFF05",
     "color_ink": "#111111",
     "color_paper": "#F7F7F7",
-    "color_yellow": "#FEF337",
+    "color_pink": "#FF2E9B",
     "color_cyan": "#01C6FD",
     "color_orange": "#FE8800",
-    "color_pink": "#FF2E9B",
+    "color_yellow": "#FEF337",
     "color_purple": "#C502FF",
     "show_loader": true,
+    "loader_style": "inflate",
     "enable_motion": true,
-    "show_custom_cursor": true,
     "free_shipping_threshold": 999,
-    "social_instagram": "https://instagram.com",
-    "social_youtube": "https://youtube.com"
+    "card_size_option": "Size",
+    "card_new_tag": "New in",
+    "show_draft_badge": false,
+    "cart_show_box": true
   },
   "presets": {
     "Default": {}

@@ -1,0 +1,38 @@
+{%- comment -%}
+  Closing call to action on lime. A photo hides under the page and peeks through a circle that follows the
+  cursor (on touch it drifts on its own). The button leans toward the cursor. Holds the 3D model credit.
+{%- endcomment -%}
+<section class="ac" data-peek data-cursor="{{ section.settings.cursor_label | escape }}">
+  <div class="ac-peek" aria-hidden="true">
+    {%- if section.settings.image != blank -%}
+      {{ section.settings.image | image_url: width: 1800 | image_tag: alt: '', loading: 'lazy', widths: '800, 1200, 1800' }}
+    {%- else -%}
+      <img src="{{ 'jumper-hero.jpg' | asset_url }}" alt="" width="1600" height="1067" loading="lazy">
+    {%- endif -%}
+  </div>
+  <div class="ac-inner wrap">
+    <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+    <h2 class="ac-title"><span>{{ section.settings.line_1 | escape }}</span><span>{{ section.settings.line_2 | escape }}</span></h2>
+    {%- if section.settings.button_label != blank -%}
+      <a class="btn btn-ink ac-btn" data-magnetic href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">{{ section.settings.button_label | escape }} <span class="arrow">→</span></a>
+    {%- endif -%}
+    {%- if section.settings.credit != blank -%}<div class="ac-credit">{{ section.settings.credit }}</div>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About: closing",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Your move" },
+    { "type": "text", "id": "line_1", "label": "Line 1", "default": "Go on." },
+    { "type": "text", "id": "line_2", "label": "Line 2", "default": "Drop yours." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop trunks" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "image_picker", "id": "image", "label": "Peek photo" },
+    { "type": "text", "id": "cursor_label", "label": "Cursor label", "default": "Peek" },
+    { "type": "richtext", "id": "credit", "label": "Credits", "info": "The 3D trunk is licensed CC BY 4.0, so keep its credit on the page." }
+  ],
+  "presets": [{ "name": "About: closing" }]
+}
+{% endschema %}

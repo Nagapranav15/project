@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "main-policy", "settings": { "policy": "privacy_policy", "eyebrow": "The small print" } }
+  },
+  "order": ["main"]
+}

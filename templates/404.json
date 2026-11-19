@@ -1,10 +1,7 @@
 {
   "sections": {
-    "main": {
-      "type": "main-404"
-    }
+    "main": { "type": "main-404", "settings": {} },
+    "tapes": { "type": "tapes", "settings": { "background": "lime" } }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main", "tapes"]
 }

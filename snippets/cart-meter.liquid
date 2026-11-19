@@ -1,0 +1,24 @@
+{%- if settings.free_shipping_threshold > 0 -%}
+  {%- liquid
+    assign threshold = settings.free_shipping_threshold | times: 100
+    assign left = threshold | minus: cart.total_price
+    if left < 0
+      assign left = 0
+    endif
+    assign ratio = cart.total_price | times: 1.0 | divided_by: threshold
+    if ratio > 1
+      assign ratio = 1
+    endif
+    assign left_money = left | money_without_trailing_zeros
+  -%}
+  <div class="meter">
+    <span id="meterText">
+      {%- if left > 0 -%}
+        {{ 'cart.free_left_html' | t: amount: left_money }}
+      {%- else -%}
+        {{ 'cart.free_unlocked_html' | t }}
+      {%- endif -%}
+    </span>
+    <div class="bar"><i id="meterBar" style="transform:scaleX({{ ratio }})"></i></div>
+  </div>
+{%- endif -%}

@@ -1,0 +1,56 @@
+{%- comment -%}
+  By the numbers: each number counts up (or down) when it scrolls into view.
+{%- endcomment -%}
+<section class="stats" id="{{ section.settings.anchor | default: 'stats' | handleize }}" aria-labelledby="statsTitle-{{ section.id }}" data-about-stats>
+  <div class="wrap">
+    <div class="sec-top"><div>
+      {%- if section.settings.eyebrow != blank -%}<span class="eyebrow" style="color:var(--lime)">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+      <h2 id="statsTitle-{{ section.id }}" class="split" data-scroll style="margin-top:14px">
+        {%- if section.settings.heading_1 != blank -%}<span class="line"><span>{{ section.settings.heading_1 | escape }}</span></span>{%- endif -%}
+        {%- if section.settings.heading_2 != blank -%}<span class="line"><span>{{ section.settings.heading_2 | escape }}</span></span>{%- endif -%}
+      </h2>
+    </div></div>
+    <div class="sgridn">
+      {%- for block in section.blocks -%}
+        <div class="stat" {{ block.shopify_attributes }}><b>{{ block.settings.prefix | escape }}<span class="cnt" data-from="{{ block.settings.from }}" data-to="{{ block.settings.value }}">{{ block.settings.value }}</span>{{ block.settings.suffix | escape }}</b><span>{{ block.settings.label | escape }}</span></div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About numbers",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "stats" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "By the numbers" },
+    { "type": "text", "id": "heading_1", "label": "Heading line 1", "default": "Small print," },
+    { "type": "text", "id": "heading_2", "label": "Heading line 2", "default": "big numbers." }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Number",
+      "settings": [
+        { "type": "text", "id": "prefix", "label": "Before the number" },
+        { "type": "number", "id": "value", "label": "Number", "default": 95 },
+        { "type": "number", "id": "from", "label": "Count from", "default": 0, "info": "The number counts from here to the number above." },
+        { "type": "text", "id": "suffix", "label": "After the number", "default": "%" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Cotton, the soft kind." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About numbers",
+      "blocks": [
+        { "type": "stat", "settings": { "value": 95, "from": 0, "suffix": "%", "label": "Cotton, the soft kind." } },
+        { "type": "stat", "settings": { "value": 4, "from": 0, "suffix": "-way", "label": "Stretch that keeps up." } },
+        { "type": "stat", "settings": { "value": 0, "from": 99, "suffix": "", "label": "Wedgies reported. Zero." } },
+        { "type": "stat", "settings": { "value": 15, "from": 0, "suffix": "-day", "label": "Exchanges on unworn packs." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

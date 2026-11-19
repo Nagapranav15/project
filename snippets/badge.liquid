@@ -1,0 +1,6 @@
+{%- comment -%} Spinning emblem. Usage: render 'badge', id: 'ringX', class: 'x' {%- endcomment -%}
+{%- assign ring_id = id | default: 'ring' -%}
+<div class="badge{% if class %} {{ class }}{% endif %}" aria-hidden="true">
+  <svg class="ring" viewBox="0 0 200 200"><defs><path id="{{ ring_id }}" d="M100,100 m-75,0 a75,75 0 1,1 150,0 a75,75 0 1,1 -150,0"/></defs><text><textPath href="#{{ ring_id }}">{{ text | default: settings.badge_ring_text | escape }}</textPath></text></svg>
+  <div class="core">{% render 'mark' %}</div>
+</div>

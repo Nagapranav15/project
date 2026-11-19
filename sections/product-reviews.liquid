@@ -1,0 +1,325 @@
+{%- comment -%}
+  Product reviews, written by customers.
+  Where they come from: metaobject entries of the type "review" that point at this product (Content > Metaobjects),
+  plus any Review blocks added here in the theme editor (the sample ones in the template).
+  Writing: only a logged-in customer sees the form. It sends the review to the store's contact inbox; nothing is
+  published until the owner adds it as a metaobject entry, so it is moderated by design.
+  Metaobject fields used: product (product), rating (integer 1-5), title, body, author, date (text), photos (list of files, optional).
+  Photos: customers pick them in the write form; they upload to the endpoint set below and arrive in the review email as links.
+{%- endcomment -%}
+{%- liquid
+  assign total = 0
+  assign sum = 0
+  assign c1 = 0
+  assign c2 = 0
+  assign c3 = 0
+  assign c4 = 0
+  assign c5 = 0
+  for m in shop.metaobjects.review.values
+    if m.product.value.id == product.id
+      assign rt = m.rating.value | plus: 0
+      assign total = total | plus: 1
+      assign sum = sum | plus: rt
+      case rt
+        when 1
+          assign c1 = c1 | plus: 1
+        when 2
+          assign c2 = c2 | plus: 1
+        when 3
+          assign c3 = c3 | plus: 1
+        when 4
+          assign c4 = c4 | plus: 1
+        when 5
+          assign c5 = c5 | plus: 1
+      endcase
+    endif
+  endfor
+  for block in section.blocks
+    assign rt = block.settings.rating
+    assign total = total | plus: 1
+    assign sum = sum | plus: rt
+    case rt
+      when 1
+        assign c1 = c1 | plus: 1
+      when 2
+        assign c2 = c2 | plus: 1
+      when 3
+        assign c3 = c3 | plus: 1
+      when 4
+        assign c4 = c4 | plus: 1
+      when 5
+        assign c5 = c5 | plus: 1
+    endcase
+  endfor
+  assign avg = 0
+  assign avg_round = 0
+  if total > 0
+    assign avg = sum | times: 1.0 | divided_by: total | round: 1
+    assign avg_round = sum | times: 1.0 | divided_by: total | round: 0
+  endif
+  assign login_url = routes.account_login_url | append: '?return_url=' | append: product.url | append: '%23reviews'
+-%}
+<section class="rv" id="reviews" data-reviews>
+  <div class="wrap">
+    <div class="rv-head">
+      <div>
+        <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+        <h2>{{ section.settings.heading | escape }}</h2>
+      </div>
+      <button type="button" class="btn btn-ink" data-rv-open aria-haspopup="dialog">{{ section.settings.write_label | escape }} <span class="arrow">→</span></button>
+    </div>
+
+    {%- if total > 0 -%}
+      <div class="rv-sum">
+        <div class="rv-score">
+          <b>{{ avg }}</b>
+          <span class="rv-stars" aria-label="{{ avg }} / 5">{% for i in (1..5) %}<i{% if i > avg_round %} class="off"{% endif %}>★</i>{% endfor %}</span>
+          <small>{{ section.settings.based_on | escape }} {{ total }} {% if total == 1 %}{{ 'products.review_one' | t }}{% else %}{{ 'products.review_many' | t }}{% endif %}</small>
+        </div>
+        <ul class="rv-bars">
+          {%- for n in (1..5) reversed -%}
+            {%- liquid
+              case n
+                when 5
+                  assign cn = c5
+                when 4
+                  assign cn = c4
+                when 3
+                  assign cn = c3
+                when 2
+                  assign cn = c2
+                else
+                  assign cn = c1
+              endcase
+              assign pct = cn | times: 100 | divided_by: total
+            -%}
+            <li><span>{{ n }} ★</span><span class="rv-bar" aria-hidden="true"><i style="width: {{ pct }}%"></i></span><span>{{ cn }}</span></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      <div class="rv-filters" role="group" aria-label="{{ 'products.filter_label' | t | escape }}">
+        <button type="button" class="rv-chip" data-rv-filter="0" aria-pressed="true">{{ section.settings.all_label | escape }} <b>{{ total }}</b></button>
+        {%- for n in (1..5) reversed -%}
+          {%- liquid
+            case n
+              when 5
+                assign cn = c5
+              when 4
+                assign cn = c4
+              when 3
+                assign cn = c3
+              when 2
+                assign cn = c2
+              else
+                assign cn = c1
+            endcase
+          -%}
+          {%- if cn > 0 -%}<button type="button" class="rv-chip" data-rv-filter="{{ n }}" aria-pressed="false">{{ n }} ★ <b>{{ cn }}</b></button>{%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="rv-list" data-rv-list data-page="{{ section.settings.per_page }}">
+        {%- for m in shop.metaobjects.review.values -%}
+          {%- if m.product.value.id == product.id -%}
+            {%- assign rt = m.rating.value | plus: 0 -%}
+            <article class="rv-card" data-rating="{{ rt }}">
+              <div class="rv-tab"><span class="rv-stars" aria-label="{{ rt }} / 5">{% for i in (1..5) %}<i{% if i > rt %} class="off"{% endif %}>★</i>{% endfor %}</span><em>{{ section.settings.buyer_tag | escape }}</em></div>
+              <div class="rv-body">
+                {%- if m.title != blank -%}<h3>{{ m.title | escape }}</h3>{%- endif -%}
+                <p>{{ m.body | escape }}</p>
+                {%- if m.photos.value.size > 0 -%}
+                  <div class="rv-photos-row">
+                    {%- for ph in m.photos.value limit: 4 -%}
+                      <button type="button" class="rv-ph" data-full="{{ ph | image_url: width: 1400 }}" aria-label="{{ 'products.photo_view' | t | escape }}">{{ ph | image_url: width: 240 | image_tag: alt: '', loading: 'lazy', width: 72, height: 72 }}</button>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </div>
+              <footer><span class="rv-av" aria-hidden="true">{{ m.author | slice: 0 | upcase | escape }}</span><span class="rv-who"><b>{{ m.author | escape }}</b>{% if m.date != blank %}<small>{{ m.date | escape }}</small>{% endif %}</span></footer>
+            </article>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- for block in section.blocks -%}
+          <article class="rv-card" data-rating="{{ block.settings.rating }}" {{ block.shopify_attributes }}>
+            <div class="rv-tab"><span class="rv-stars" aria-label="{{ block.settings.rating }} / 5">{% for i in (1..5) %}<i{% if i > block.settings.rating %} class="off"{% endif %}>★</i>{% endfor %}</span><em>{{ section.settings.buyer_tag | escape }}</em></div>
+            <div class="rv-body">
+              {%- if block.settings.title != blank -%}<h3>{{ block.settings.title | escape }}</h3>{%- endif -%}
+              <p>{{ block.settings.text | escape }}</p>
+              {%- if block.settings.image_1 != blank or block.settings.image_2 != blank -%}
+                <div class="rv-photos-row">
+                  {%- for n in (1..2) -%}
+                    {%- if n == 1 -%}{%- assign ph = block.settings.image_1 -%}{%- else -%}{%- assign ph = block.settings.image_2 -%}{%- endif -%}
+                    {%- if ph != blank -%}
+                      <button type="button" class="rv-ph" data-full="{{ ph | image_url: width: 1400 }}" aria-label="{{ 'products.photo_view' | t | escape }}">{{ ph | image_url: width: 240 | image_tag: alt: '', loading: 'lazy', width: 72, height: 72 }}</button>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+            <footer><span class="rv-av" aria-hidden="true">{{ block.settings.author | slice: 0 | upcase | escape }}</span><span class="rv-who"><b>{{ block.settings.author | escape }}</b>{% if block.settings.date != blank %}<small>{{ block.settings.date | escape }}</small>{% endif %}</span>{% if section.settings.sample_tag != blank %}<u>{{ section.settings.sample_tag | escape }}</u>{% endif %}</footer>
+          </article>
+        {%- endfor -%}
+        <button type="button" class="rv-cta" data-rv-open aria-haspopup="dialog">
+          <span class="rv-cta-k">{{ section.settings.cta_kicker | escape }}</span>
+          <b>{{ section.settings.cta_title | escape }}</b>
+          <span class="btn btn-ink">{{ section.settings.write_label | escape }} <span class="arrow">→</span></span>
+        </button>
+      </div>
+      <div class="rv-more"><button type="button" class="btn btn-ghost" data-rv-more hidden>{{ section.settings.more_label | escape }}</button></div>
+    {%- else -%}
+      <p class="rv-empty">{{ section.settings.empty_text | escape }}</p>
+    {%- endif -%}
+  </div>
+
+  <dialog class="rv-lb" data-rv-lb aria-label="{{ 'products.photo_view' | t | escape }}">
+    <button type="button" class="menu-close" data-rv-lbclose>{{ 'accessibility.close' | t }}</button>
+  </dialog>
+
+  <dialog class="rv-dlg" id="rv-dialog" aria-label="{{ section.settings.write_label | escape }}" data-rv-dialog>
+    <div class="rv-dhead"><h3>{{ section.settings.write_label | escape }}</h3><button type="button" class="menu-close" data-rv-close>{{ 'accessibility.close' | t }}</button></div>
+    <div class="rv-dbody">
+      {%- if customer -%}
+        {%- form 'contact', id: 'rv-form', class: 'rv-form', return_to: product.url -%}
+          {%- if form.posted_successfully? -%}
+            <p class="ok" role="status" data-rv-ok>{{ section.settings.thanks | escape }}</p>
+          {%- endif -%}
+          {%- if form.errors -%}<div class="err" role="alert" data-rv-ok>{{ form.errors | default_errors }}</div>{%- endif -%}
+          {%- unless form.posted_successfully? -%}
+          <p class="rv-as">{{ section.settings.posting_as | escape }} <b>{{ customer.first_name | default: customer.name | escape }}</b></p>
+          <input type="hidden" name="contact[name]" value="{{ customer.name | default: customer.first_name | escape }}">
+          <input type="hidden" name="contact[email]" value="{{ customer.email | escape }}">
+          <input type="hidden" name="contact[Product]" value="{{ product.title | escape }}">
+          <input type="hidden" name="contact[Product URL]" value="{{ shop.url }}{{ product.url }}">
+          <fieldset class="rv-rate">
+            <legend>{{ section.settings.rating_label | escape }}</legend>
+            <div class="rv-pick">
+              {%- for n in (1..5) reversed -%}
+                <input type="radio" name="contact[Rating]" id="rv-r{{ n }}" value="{{ n }}" required><label for="rv-r{{ n }}" title="{{ n }} / 5"><span class="sr">{{ n }} / 5</span>★</label>
+              {%- endfor -%}
+            </div>
+          </fieldset>
+          <label>{{ section.settings.title_label | escape }}<input type="text" name="contact[Title]" maxlength="80" required></label>
+          <label>{{ section.settings.body_label | escape }}<textarea name="contact[body]" rows="5" maxlength="1200" required minlength="20"></textarea></label>
+          {%- if section.settings.upload_url != blank -%}
+            <div class="rv-photos" data-rv-photos data-upload="{{ section.settings.upload_url | escape }}" data-max="3" data-uploading="{{ section.settings.uploading_text | escape }}" data-failed="{{ section.settings.upload_failed | escape }}">
+              <span class="rv-plabel">{{ section.settings.photos_label | escape }}</span>
+              <div class="rv-pthumbs" data-rv-thumbs></div>
+              <label class="rv-padd"><input type="file" accept="image/*" multiple data-rv-file hidden>{{ section.settings.add_photos | escape }}</label>
+              <p class="rv-note">{{ section.settings.photos_note | escape }}</p>
+              <p class="rv-perr" role="alert" data-rv-perr hidden></p>
+            </div>
+          {%- endif -%}
+          <p class="rv-note">{{ section.settings.moderation_note | escape }}</p>
+          <button class="btn btn-ink" type="submit" data-rv-submit>{{ section.settings.submit_label | escape }} <span class="arrow">→</span></button>
+          {%- else -%}
+          <button class="btn btn-ink" type="button" data-rv-close>{{ 'accessibility.close' | t }}</button>
+          {%- endunless -%}
+        {%- endform -%}
+      {%- else -%}
+        {%- comment -%} Sign in without leaving the page. return_to brings the customer straight back to the reviews. {%- endcomment -%}
+        <div class="rv-auth" data-rv-auth>
+          <img class="rv-logo" src="{{ 'favicon-180.png' | asset_url }}" alt="" width="72" height="72">
+          <h4>{{ section.settings.auth_brand | default: shop.name | escape }}</h4>
+          <p class="rv-tag">{{ section.settings.auth_tagline | escape }}</p>
+          <div class="rv-tabs" role="tablist">
+            <button type="button" role="tab" aria-selected="true" data-rv-view="login">{{ section.settings.login_label | escape }}</button>
+            <button type="button" role="tab" aria-selected="false" data-rv-view="register">{{ section.settings.register_label | escape }}</button>
+          </div>
+          <p class="rv-why">{{ section.settings.login_text | escape }}</p>
+
+          <div data-rv-pane="login">
+            {%- form 'customer_login', class: 'rv-form', id: 'rv-login-form' -%}
+              <input type="hidden" name="return_to" value="{{ product.url }}#reviews">
+              <label>{{ 'customer.email' | t }}<input type="email" name="customer[email]" autocomplete="email" required></label>
+              <label>{{ 'customer.password' | t }}<input type="password" name="customer[password]" autocomplete="current-password" required></label>
+              <button class="btn btn-ink rv-go" type="submit">{{ section.settings.continue_label | escape }} <span class="arrow">→</span></button>
+              <a class="rv-small" href="{{ routes.account_login_url }}#recover">{{ 'customer.forgot' | t }}</a>
+            {%- endform -%}
+          </div>
+
+          <div data-rv-pane="register" hidden>
+            {%- form 'create_customer', class: 'rv-form', id: 'rv-register-form' -%}
+              <input type="hidden" name="return_to" value="{{ product.url }}#reviews">
+              <div class="rv-two">
+                <label>{{ 'customer.first_name' | t }}<input type="text" name="customer[first_name]" autocomplete="given-name" required></label>
+                <label>{{ 'customer.last_name' | t }}<input type="text" name="customer[last_name]" autocomplete="family-name"></label>
+              </div>
+              <label>{{ 'customer.email' | t }}<input type="email" name="customer[email]" autocomplete="email" required></label>
+              <label>{{ 'customer.password' | t }}<input type="password" name="customer[password]" autocomplete="new-password" minlength="5" required></label>
+              <label class="rv-check"><input type="checkbox" name="customer[accepts_marketing]" value="true" checked><span>{{ section.settings.marketing_label | escape }}</span></label>
+              <button class="btn btn-ink rv-go" type="submit">{{ section.settings.create_button | escape }} <span class="arrow">→</span></button>
+            {%- endform -%}
+          </div>
+
+          <p class="rv-legal">{{ section.settings.legal_start | escape }}
+            {%- if shop.terms_of_service.url != blank %} <a href="{{ shop.terms_of_service.url }}">{{ 'customer.terms' | t }}</a>{% endif -%}
+            {%- if shop.privacy_policy.url != blank %} &amp; <a href="{{ shop.privacy_policy.url }}">{{ 'customer.privacy' | t }}</a>{% endif -%}.</p>
+          <a class="rv-small rv-alt" href="{{ login_url }}">{{ section.settings.hosted_label | escape }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </dialog>
+</section>
+
+{% schema %}
+{
+  "name": "Product reviews",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Reviews" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What the crew says" },
+    { "type": "text", "id": "write_label", "label": "Write button", "default": "Write a review" },
+    { "type": "text", "id": "based_on", "label": "Summary line start", "default": "Based on" },
+    { "type": "text", "id": "buyer_tag", "label": "Tag on each review", "default": "Jumper crew" },
+    { "type": "text", "id": "sample_tag", "label": "Sample tag", "default": "Sample review", "info": "Shown on the reviews added here as blocks. Clear it once they are real." },
+    { "type": "text", "id": "empty_text", "label": "No reviews yet", "default": "No reviews yet. Be the first to write one." },
+    { "type": "text", "id": "all_label", "label": "All filter", "default": "All" },
+    { "type": "range", "id": "per_page", "label": "Reviews shown first", "min": 3, "max": 12, "step": 1, "default": 6 },
+    { "type": "text", "id": "more_label", "label": "Show more button", "default": "Show more reviews" },
+    { "type": "text", "id": "cta_kicker", "label": "Your-turn tile: small line", "default": "Your turn" },
+    { "type": "text", "id": "cta_title", "label": "Your-turn tile: headline", "default": "Got a pair? Tell the crew." },
+    { "type": "header", "content": "Sign-in box (shown when logged out)" },
+    { "type": "text", "id": "auth_brand", "label": "Brand name", "info": "Empty uses the shop name." },
+    { "type": "text", "id": "auth_tagline", "label": "Tagline", "default": "Underwear with the volume up." },
+    { "type": "textarea", "id": "login_text", "label": "Why log in", "default": "Log in to write a review. Only Jumper customers can, so every review comes from a real person." },
+    { "type": "text", "id": "login_label", "label": "Log in tab", "default": "Log in" },
+    { "type": "text", "id": "register_label", "label": "Create account tab", "default": "Create account" },
+    { "type": "text", "id": "continue_label", "label": "Log in button", "default": "Continue" },
+    { "type": "text", "id": "create_button", "label": "Create account button", "default": "Create account" },
+    { "type": "text", "id": "marketing_label", "label": "Marketing checkbox", "default": "Keep me posted about drops and offers" },
+    { "type": "text", "id": "legal_start", "label": "Legal line start", "default": "By continuing, you agree to our" },
+    { "type": "text", "id": "hosted_label", "label": "Backup link", "default": "Trouble here? Log in on the account page", "info": "For stores that use Shopify's new customer accounts (sign-in by email code), where the box cannot take a password." },
+    { "type": "header", "content": "Review photos" },
+    { "type": "paragraph", "content": "Shopify's contact form cannot carry attachments, so customer photos go to a small upload endpoint first (see extras/review-photo-worker.js in the project). Until a URL is set, the photo picker stays hidden. Published reviews can show photos either way: add them to the review's Photos field, or to a Review block below." },
+    { "type": "text", "id": "upload_url", "label": "Photo upload endpoint", "info": "https://… address that accepts a POST with a file and answers {\"url\": \"…\"}. Leave empty to turn customer photo uploads off." },
+    { "type": "text", "id": "photos_label", "label": "Photos label", "default": "Add photos (optional)" },
+    { "type": "text", "id": "add_photos", "label": "Add button", "default": "+ Add photos" },
+    { "type": "text", "id": "photos_note", "label": "Photos note", "default": "Up to 3 photos. We shrink them for you." },
+    { "type": "text", "id": "uploading_text", "label": "While uploading", "default": "Uploading photos…" },
+    { "type": "text", "id": "upload_failed", "label": "Upload failed", "default": "A photo did not upload. Remove it or try again." },
+    { "type": "header", "content": "Write a review (logged-in customers only)" },
+    { "type": "text", "id": "posting_as", "label": "Posting as", "default": "Posting as" },
+    { "type": "text", "id": "rating_label", "label": "Rating label", "default": "Your rating" },
+    { "type": "text", "id": "title_label", "label": "Title label", "default": "Headline" },
+    { "type": "text", "id": "body_label", "label": "Review label", "default": "Your review" },
+    { "type": "text", "id": "moderation_note", "label": "Note under the form", "default": "We read every review before it goes live." },
+    { "type": "text", "id": "submit_label", "label": "Submit button", "default": "Send review" },
+    { "type": "text", "id": "thanks", "label": "Thank you", "default": "Thanks. Your review is with the crew and goes live once approved." }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "range", "id": "rating", "label": "Rating", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "text", "id": "title", "label": "Headline", "default": "Forgot I had them on" },
+        { "type": "textarea", "id": "text", "label": "Review", "default": "Wore them to the gym and straight to work." },
+        { "type": "image_picker", "id": "image_1", "label": "Customer photo 1" },
+        { "type": "image_picker", "id": "image_2", "label": "Customer photo 2" },
+        { "type": "text", "id": "author", "label": "Name", "default": "Arjun, Pune" },
+        { "type": "text", "id": "date", "label": "Date", "default": "Oct 2026" }
+      ]
+    }
+  ]
+}
+{% endschema %}

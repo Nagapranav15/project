@@ -1,0 +1,84 @@
+{%- comment -%}
+  About page opener, the cheeky version: a headline with a marker-highlighted word (wrap it in *stars*), a short
+  story, one tilted photo wearing two label stickers, then four tilted colour cards for what Jumper stands for.
+  Desktop: text left, photo right. Phones: the photo comes first, then the text.
+{%- endcomment -%}
+<section class="ab">
+  <div class="wrap ab-grid">
+    <div class="ab-media">
+      <div class="ab-frame">
+      {%- if section.settings.image != blank -%}
+        {{ section.settings.image | image_url: width: 1400 | image_tag: alt: section.settings.image.alt, loading: 'eager', widths: '600, 900, 1200, 1400', sizes: '(max-width: 900px) 100vw, 46vw' }}
+      {%- else -%}
+        <img src="{{ 'scene-beach.jpg' | asset_url }}" alt="Black Jumper trunks on the beach" width="1121" height="1403" loading="eager">
+      {%- endif -%}
+      </div>
+      {%- if section.settings.sticker_1 != blank -%}<span class="ab-stick ab-stick--a">{{ section.settings.sticker_1 | escape }}</span>{%- endif -%}
+      {%- if section.settings.sticker_2 != blank -%}<span class="ab-stick ab-stick--b">{{ section.settings.sticker_2 | escape }}</span>{%- endif -%}
+    </div>
+    <div class="ab-copy">
+      {%- if section.settings.eyebrow != blank -%}<span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+      {%- assign hwords = section.settings.heading | split: ' ' -%}
+      {%- assign hi = 0 -%}
+      {%- assign tints = 'var(--lime)|var(--pink)|var(--cyan)|var(--orange)|var(--yellow)' | split: '|' -%}
+      <h1>{% for w in hwords %}{% if w contains '*' %}{% assign t = hi | modulo: 5 %}<mark class="ab-hi" style="--k: {{ tints[t] }}">{{ w | remove: '*' | escape }}</mark>{% assign hi = hi | plus: 1 %}{% else %}{{ w | escape }}{% endif %}{% unless forloop.last %} {% endunless %}{% endfor %}</h1>
+      {%- if section.settings.lede != blank -%}<p class="ab-lede">{{ section.settings.lede | escape }}</p>{%- endif -%}
+      {%- if section.settings.text != blank -%}<div class="ab-text rte">{{ section.settings.text }}</div>{%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a class="btn btn-ink" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">{{ section.settings.button_label | escape }} <span class="arrow">→</span></a>
+      {%- endif -%}
+    </div>
+  </div>
+  {%- if section.blocks.size > 0 -%}
+    <div class="wrap">
+      <ol class="ab-points">
+        {%- for block in section.blocks -%}
+          <li style="--k: {% cycle 'var(--lime)', 'var(--pink)', 'var(--cyan)', 'var(--orange)' %}" {{ block.shopify_attributes }}>
+            <span class="ab-no">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+            <h2>{{ block.settings.heading | escape }}</h2>
+            {%- if block.settings.text != blank -%}<p>{{ block.settings.text | escape }}</p>{%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "About: intro",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Photo", "info": "Empty uses the Jumper beach photo." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "About Jumper" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We don't do *boring.*", "info": "Wrap a word in *stars* to highlight it in a brand colour." },
+    { "type": "textarea", "id": "lede", "label": "Intro", "default": "Not in the gym, not at work, and definitely not under there." },
+    { "type": "richtext", "id": "text", "label": "Story", "default": "<p>Jumper started with one rule: underwear should never be the quiet part of the outfit. Soft combed cotton, a woven band you actually want to show, and four colours that do the talking.</p>" },
+    { "type": "text", "id": "sticker_1", "label": "Sticker 1", "default": "Peek-a-boo band", "info": "Label stuck on the photo. Leave empty to remove." },
+    { "type": "text", "id": "sticker_2", "label": "Sticker 2", "default": "No ride-up. No apologies." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop trunks" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Point",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Born loud." },
+        { "type": "textarea", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About: intro",
+      "blocks": [
+        { "type": "point", "settings": { "heading": "Born loud.", "text": "Underwear should never be the quiet part of the outfit." } },
+        { "type": "point", "settings": { "heading": "Cut to move.", "text": "Four-way stretch that follows every squat and sprint. Zero ride-up." } },
+        { "type": "point", "settings": { "heading": "Soft all day.", "text": "95% combed cotton, right where it touches your skin." } },
+        { "type": "point", "settings": { "heading": "Let it peek.", "text": "A woven band, soft inside and loud outside. That is the point." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

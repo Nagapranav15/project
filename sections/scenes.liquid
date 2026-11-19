@@ -1,0 +1,102 @@
+{%- comment -%}
+  Four settings, one wardrobe: staggered photo cards with a coloured label bar, title and line under each.
+{%- endcomment -%}
+{%- assign anchor = section.settings.anchor | default: section.id | handleize -%}
+<section class="scenes" id="{{ anchor }}" aria-labelledby="title-{{ section.id }}">
+  <div class="wrap">
+    <div class="sec-top">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+        <h2 id="title-{{ section.id }}" style="margin-top:14px">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.text != blank -%}<p>{{ section.settings.text | escape }}</p>{%- endif -%}
+      </div>
+      {%- if section.settings.link_label != blank -%}<a class="link" href="{{ section.settings.link | default: routes.all_products_collection_url }}">{{ section.settings.link_label | escape }} <span class="arrow">→</span></a>{%- endif -%}
+    </div>
+    <div class="scene-grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign n = forloop.index0 | modulo: 4
+          case n
+            when 0
+              assign fallback = 'scene-court.jpg'
+            when 1
+              assign fallback = 'scene-denim.jpg'
+            when 2
+              assign fallback = 'scene-beach.jpg'
+            else
+              assign fallback = 'scene-pool.jpg'
+          endcase
+          assign link = block.settings.link | default: routes.all_products_collection_url
+        -%}
+        <article class="scene" style="--spark:{{ block.settings.colour }}" {{ block.shopify_attributes }}>
+          <a class="scene-media" href="{{ link }}">
+            <span class="scene-img">
+              {%- if block.settings.image != blank -%}
+                {%- assign alt = block.settings.image.alt | default: block.settings.title -%}
+                {{ block.settings.image | image_url: width: 900 | image_tag: alt: alt, loading: 'lazy', widths: '400, 600, 900', sizes: '(max-width: 560px) 78vw, (max-width: 1000px) 50vw, 25vw' }}
+              {%- else -%}
+                <img src="{{ fallback | asset_url }}" alt="{{ block.settings.title | escape }}" loading="lazy" width="1024" height="1366">
+              {%- endif -%}
+            </span>
+            <span class="scene-bar"><span>{{ block.settings.label | escape }}</span><span class="arrow" aria-hidden="true">→</span></span>
+          </a>
+          <h3><a href="{{ link }}">{{ block.settings.title | escape }}</a></h3>
+          {%- if block.settings.text != blank -%}<p>{{ block.settings.text | escape }}</p>{%- endif -%}
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Scene cards",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "new-in" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "New in" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Loud on purpose." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Four settings, one wardrobe. Jumper has to look right in all of them." },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Shop all trunks" },
+    { "type": "url", "id": "link", "label": "Link", "info": "Empty links to all products." }
+  ],
+  "max_blocks": 8,
+  "blocks": [
+    {
+      "type": "scene",
+      "name": "Scene",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image", "info": "3:4 portrait. Empty uses the Drop 01 photo." },
+        { "type": "text", "id": "label", "label": "Label", "default": "Court" },
+        {
+          "type": "select",
+          "id": "colour",
+          "label": "Label colour",
+          "options": [
+            { "value": "var(--orange)", "label": "Orange" },
+            { "value": "var(--cyan)", "label": "Cyan" },
+            { "value": "var(--yellow)", "label": "Yellow" },
+            { "value": "var(--pink)", "label": "Pink" },
+            { "value": "var(--lime)", "label": "Lime" },
+            { "value": "var(--purple)", "label": "Purple" }
+          ],
+          "default": "var(--orange)"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Gym and court" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Sport details that echo the print." },
+        { "type": "url", "id": "link", "label": "Link", "info": "Empty links to all products." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scene cards",
+      "blocks": [
+        { "type": "scene", "settings": { "label": "Court", "colour": "var(--orange)", "title": "Gym and court", "text": "Sport details that echo the print." } },
+        { "type": "scene", "settings": { "label": "Street", "colour": "var(--cyan)", "title": "Office to street", "text": "Waistband peeking, never hidden." } },
+        { "type": "scene", "settings": { "label": "Beach", "colour": "var(--yellow)", "title": "Travel and beach", "text": "Sun, sand and zero effort." } },
+        { "type": "scene", "settings": { "label": "Pool", "colour": "var(--pink)", "title": "Social and pool", "text": "Splash-ready and photo-ready." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

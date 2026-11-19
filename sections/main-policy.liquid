@@ -1,0 +1,86 @@
+{%- comment -%}
+  One store policy as its own page, in the home style: lime header, a sticky contents list built from the
+  policy's headings, a reading-progress bar, and chips to the other policies. The text is the policy written in
+  Settings > Policies, so it stays in one place; the page's own content is used if that policy is empty.
+{%- endcomment -%}
+{%- liquid
+  case section.settings.policy
+    when 'refund_policy'
+      assign policy = shop.refund_policy
+    when 'shipping_policy'
+      assign policy = shop.shipping_policy
+    when 'terms_of_service'
+      assign policy = shop.terms_of_service
+    when 'contact_information'
+      assign policy = shop.contact_information
+    else
+      assign policy = shop.privacy_policy
+  endcase
+  assign body = policy.body | default: page.content
+  assign title = policy.title | default: page.title | escape
+  assign links = 'privacy_policy,refund_policy,shipping_policy,terms_of_service,contact_information' | split: ','
+-%}
+<div class="pol-progress" aria-hidden="true"><span data-pol-bar></span></div>
+{% render 'page-hero', eyebrow: section.settings.eyebrow, title: title, lede: section.settings.lede, badge: true %}
+<section class="pol" data-policy>
+  <div class="wrap">
+    <aside class="pol-side">
+      <nav class="pol-toc" aria-label="{{ section.settings.toc_label | escape }}" data-pol-toc hidden>
+        <span class="eyebrow">{{ section.settings.toc_label | escape }}</span>
+        <ol></ol>
+      </nav>
+      {%- if section.settings.show_nav -%}
+        <nav class="pol-others" aria-label="{{ section.settings.others_label | escape }}">
+          <span class="eyebrow">{{ section.settings.others_label | escape }}</span>
+          <div class="chips">
+            {%- for key in links -%}
+              {%- liquid
+                case key
+                  when 'refund_policy'
+                    assign other = shop.refund_policy
+                  when 'shipping_policy'
+                    assign other = shop.shipping_policy
+                  when 'terms_of_service'
+                    assign other = shop.terms_of_service
+                  when 'contact_information'
+                    assign other = shop.contact_information
+                  else
+                    assign other = shop.privacy_policy
+                endcase
+              -%}
+              {%- if other != blank and key != section.settings.policy -%}<a class="chip" href="{{ other.url }}">{{ other.title | escape }}</a>{%- endif -%}
+            {%- endfor -%}
+          </div>
+        </nav>
+      {%- endif -%}
+    </aside>
+    <article class="pol-body prose-card rte" data-pol-body>
+      {%- if body != blank -%}
+        {{ body }}
+      {%- else -%}
+        <p>{{ section.settings.empty_text | escape }}</p>
+      {%- endif -%}
+    </article>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Policy",
+  "settings": [
+    { "type": "select", "id": "policy", "label": "Policy", "default": "privacy_policy", "options": [
+      { "value": "privacy_policy", "label": "Privacy policy" },
+      { "value": "refund_policy", "label": "Refund policy" },
+      { "value": "shipping_policy", "label": "Shipping policy" },
+      { "value": "terms_of_service", "label": "Terms of service" },
+      { "value": "contact_information", "label": "Contact information" }
+    ], "info": "Edit the wording in Settings > Policies." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The small print" },
+    { "type": "textarea", "id": "lede", "label": "Intro", "default": "The serious bit, written plainly. Questions? Write in and a real human answers." },
+    { "type": "text", "id": "toc_label", "label": "Contents label", "default": "On this page" },
+    { "type": "checkbox", "id": "show_nav", "label": "Show links to the other policies", "default": true },
+    { "type": "text", "id": "others_label", "label": "Other policies label", "default": "Other policies" },
+    { "type": "text", "id": "empty_text", "label": "Text when the policy is empty", "default": "This policy is on its way." }
+  ]
+}
+{% endschema %}

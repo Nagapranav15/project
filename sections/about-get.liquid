@@ -1,0 +1,72 @@
+{%- comment -%}
+  What you get: the last word of the heading cycles on its own; the chips pick a word and swap the detail line.
+  Each block is one word, its chip and its detail line.
+{%- endcomment -%}
+{%- assign first = section.blocks.first -%}
+<section class="get" id="{{ section.settings.anchor | default: 'get' | handleize }}" aria-labelledby="getTitle-{{ section.id }}" data-about-get>
+  <div class="get-bg" aria-hidden="true">
+    {%- if section.settings.image != blank -%}
+      {{ section.settings.image | image_url: width: 1400 | image_tag: alt: '', loading: 'lazy', widths: '700, 1000, 1400' }}
+    {%- else -%}
+      <img src="{{ 'about-twilight.jpg' | asset_url }}" alt="" loading="lazy" width="960" height="1200">
+    {%- endif -%}
+  </div>
+  <div class="wrap get-grid">
+    <div class="get-copy">
+      {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+      <h2 id="getTitle-{{ section.id }}" class="gx-title"><span class="gx-lead">{{ section.settings.lead | escape }}</span>
+        <span class="gx-slot" aria-live="polite">
+          {%- for block in section.blocks -%}<span class="gx-word{% if forloop.first %} is-on{% endif %}" style="--k: var(--{{ block.settings.colour }})" {{ block.shopify_attributes }}>{{ block.settings.word | escape }}</span>{%- endfor -%}
+        </span></h2>
+      {%- if section.blocks.size > 0 -%}
+        <div class="gx-chips" role="group" aria-label="{{ section.settings.chips_label | escape }}">
+          {%- for block in section.blocks -%}<button type="button" data-detail="{{ block.settings.detail | escape }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" style="--k: var(--{{ block.settings.colour }})">{{ block.settings.chip | escape }}</button>{%- endfor -%}
+        </div>
+        <p class="gx-detail" data-gx-detail>{{ first.settings.detail | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}<a class="btn btn-ink" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" style="--spark:var(--lime)">{{ section.settings.button_label | escape }} <span class="arrow">→</span></a>{%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About what you get",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "get" },
+    { "type": "image_picker", "id": "image", "label": "Background photo", "info": "Empty uses the twilight photo." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "What you get" },
+    { "type": "text", "id": "lead", "label": "Heading start", "default": "Made to be" },
+    { "type": "text", "id": "chips_label", "label": "Chips label (screen readers)", "default": "Product highlights" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop the trunks" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "word",
+      "name": "Word",
+      "settings": [
+        { "type": "text", "id": "word", "label": "Word in the heading", "default": "breathable." },
+        { "type": "text", "id": "chip", "label": "Chip", "default": "Breathable" },
+        { "type": "textarea", "id": "detail", "label": "Detail line", "default": "Combed cotton at 180 gsm lets air through, so you stay cool all day." },
+        { "type": "select", "id": "colour", "label": "Colour", "default": "lime", "options": [
+          { "value": "lime", "label": "Lime" }, { "value": "pink", "label": "Pink" }, { "value": "cyan", "label": "Cyan" },
+          { "value": "orange", "label": "Orange" }, { "value": "yellow", "label": "Yellow" }
+        ] }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About what you get",
+      "blocks": [
+        { "type": "word", "settings": { "word": "breathable.", "chip": "Breathable", "detail": "Combed cotton at 180 gsm lets air through, so you stay cool all day.", "colour": "lime" } },
+        { "type": "word", "settings": { "word": "itch-free.", "chip": "Itch-free", "detail": "The woven waistband is brushed soft on the inside. Nothing scratches.", "colour": "pink" } },
+        { "type": "word", "settings": { "word": "cotton soft.", "chip": "95% cotton", "detail": "95% combed cotton, right where it touches your skin.", "colour": "cyan" } },
+        { "type": "word", "settings": { "word": "stretchy.", "chip": "4-way stretch", "detail": "5% elastane moves every way you do and snaps back into shape.", "colour": "orange" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

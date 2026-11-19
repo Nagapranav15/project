@@ -1,44 +1,58 @@
-{%- assign tabs = 'pink,cyan,orange,yellow' | split: ',' -%}
-<section class="section scheme-paper" style="border-top: 2px solid var(--ink)">
-  <div class="container">
-    <header class="section-head">
-      <div>
-        <p class="t-label section-head__label"><span class="num">+</span> {{ section.settings.label }}</p>
-        <h2 class="t-headline">{{ section.settings.heading }}</h2>
-      </div>
-    </header>
-    <div class="grid grid--cards" data-recos data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=4">
-      {%- if recommendations.performed and recommendations.products_count > 0 -%}
-        {%- for rec in recommendations.products -%}
-          {%- assign t = forloop.index0 | modulo: tabs.size -%}
-          {% render 'product-card', product: rec, tab: tabs[t], index: forloop.index0 %}
-        {%- endfor -%}
-      {%- elsif recommendations.performed == false -%}
-        {%- comment -%} Filled by JS via the Section Rendering API {%- endcomment -%}
-      {%- else -%}
-        {% render 'demo-grid', limit: 4, tabs: tabs %}
-      {%- endif -%}
+{%- comment -%}
+  "You might also like": a centred heading, one sideways row of product cards (arrows on desktop, swipe on phones)
+  and two links underneath. Shopify fills the row with related products; theme.js loads them after the page.
+{%- endcomment -%}
+{%- liquid
+  assign coll = product.collections.first
+  assign link_1 = section.settings.link_1 | default: coll.url | default: routes.all_products_collection_url
+  assign label_1 = section.settings.label_1
+  if label_1 == blank and coll != blank
+    assign label_1 = coll.title | prepend: 'More '
+  endif
+-%}
+<section class="ymal recs" data-recs data-ymal aria-labelledby="title-{{ section.id }}">
+  <div class="wrap">
+    <div class="ym-head">
+      {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+      <h2 id="title-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
     </div>
+    <div class="ym-stage">
+      <button type="button" class="ym-arrow ym-prev" data-ym-prev aria-label="{{ section.settings.prev_label | escape }}" disabled><span aria-hidden="true">←</span></button>
+      <div class="ym-rail" data-ym-rail data-recs-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}&intent=related">
+        {%- if recommendations.performed and recommendations.products_count > 0 -%}
+          {%- for rec in recommendations.products -%}
+            {% render 'rec-card', product: rec, add_label: section.settings.add_label, pick_label: section.settings.pick_label, close_label: section.settings.close_label %}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+      <button type="button" class="ym-arrow ym-next" data-ym-next aria-label="{{ section.settings.next_label | escape }}"><span aria-hidden="true">→</span></button>
+    </div>
+    {%- if label_1 != blank or section.settings.label_2 != blank -%}
+      <div class="ym-links">
+        {%- if label_1 != blank -%}<a class="ym-link" href="{{ link_1 }}">{{ label_1 | escape }} <span class="arrow" aria-hidden="true">→</span></a>{%- endif -%}
+        {%- if section.settings.label_2 != blank -%}<a class="ym-link" href="{{ section.settings.link_2 | default: routes.all_products_collection_url }}">{{ section.settings.label_2 | escape }} <span class="arrow" aria-hidden="true">→</span></a>{%- endif -%}
+      </div>
+    {%- endif -%}
   </div>
 </section>
-<script>
-  (() => {
-    const el = document.currentScript.previousElementSibling.querySelector('[data-recos]');
-    if (!el || el.children.length) return;
-    fetch(el.dataset.url).then((r) => r.text()).then((html) => {
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      const fresh = doc.querySelector('[data-recos]');
-      if (fresh && fresh.children.length) { el.innerHTML = fresh.innerHTML; el.querySelectorAll('.reveal').forEach((n) => n.classList.add('is-in')); }
-    });
-  })();
-</script>
 
 {% schema %}
 {
-  "name": "Pairs well with",
+  "name": "You might also like",
   "settings": [
-    { "type": "text", "id": "label", "label": "Label", "default": "Complete the drawer" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Pairs well with." }
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Pairs well" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "You might also like" },
+    { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 10, "step": 1, "default": 8 },
+    { "type": "text", "id": "add_label", "label": "Button label", "default": "Add to bag" },
+    { "type": "text", "id": "pick_label", "label": "Size chooser title", "default": "Pick your size" },
+    { "type": "text", "id": "close_label", "label": "Close label (screen readers)", "default": "Close" },
+    { "type": "text", "id": "prev_label", "label": "Previous label (screen readers)", "default": "Previous products" },
+    { "type": "text", "id": "next_label", "label": "Next label (screen readers)", "default": "More products" },
+    { "type": "header", "content": "Links under the row" },
+    { "type": "text", "id": "label_1", "label": "First link label", "info": "Empty uses \"More\" plus the product's first collection." },
+    { "type": "url", "id": "link_1", "label": "First link", "info": "Empty uses the product's first collection." },
+    { "type": "text", "id": "label_2", "label": "Second link label", "default": "Shop all trunks" },
+    { "type": "url", "id": "link_2", "label": "Second link" }
   ]
 }
 {% endschema %}

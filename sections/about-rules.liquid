@@ -1,0 +1,69 @@
+{%- comment -%}
+  House rules: a sticky heading with a live counter, and coloured cards that stack on top of each other as you scroll.
+{%- endcomment -%}
+{%- assign total = section.blocks.size -%}
+<section class="rules" id="{{ section.settings.anchor | default: 'rules' | handleize }}" aria-labelledby="rulesTitle-{{ section.id }}" data-about-rules>
+  <div class="wrap rules-grid">
+    <div class="rules-head">
+      {%- if section.settings.eyebrow != blank -%}<span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>{%- endif -%}
+      <h2 id="rulesTitle-{{ section.id }}" class="split" data-scroll>
+        {%- if section.settings.heading_1 != blank -%}<span class="line"><span>{{ section.settings.heading_1 | escape }}</span></span>{%- endif -%}
+        {%- if section.settings.heading_2 != blank -%}<span class="line"><span>{{ section.settings.heading_2 | escape }}</span></span>{%- endif -%}
+      </h2>
+      {%- if section.settings.text != blank -%}<p>{{ section.settings.text | escape }}</p>{%- endif -%}
+      {%- if total > 0 -%}<div class="rules-count" aria-hidden="true"><b data-rule-no>01</b><span>/{{ total | prepend: '0' | slice: -2, 2 }}</span></div>{%- endif -%}
+    </div>
+    <div class="rules-stack">
+      {%- for block in section.blocks -%}
+        <article class="rule rule--{{ block.settings.colour }}" style="--i: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <span class="rn">{{ section.settings.rule_label | escape }} {{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <h3>{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.stamp != blank -%}<span class="stamp">{{ block.settings.stamp | escape }}</span>{%- endif -%}
+          {%- if block.settings.text != blank -%}<p>{{ block.settings.text | escape }}</p>{%- endif -%}
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About house rules",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "rules" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "House rules" },
+    { "type": "text", "id": "heading_1", "label": "Heading line 1", "default": "Rules we" },
+    { "type": "text", "id": "heading_2", "label": "Heading line 2", "default": "don't break." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Five of them. Every pair follows all five." },
+    { "type": "text", "id": "rule_label", "label": "Card label", "default": "Rule" }
+  ],
+  "blocks": [
+    {
+      "type": "rule",
+      "name": "Rule",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Rule", "default": "No ride-up." },
+        { "type": "text", "id": "stamp", "label": "Stamp", "default": "Leg day approved" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Stays put through squats, sprints and stairs." },
+        { "type": "select", "id": "colour", "label": "Card colour", "default": "lime", "options": [
+          { "value": "lime", "label": "Lime" }, { "value": "ink", "label": "Ink" }, { "value": "pink", "label": "Pink" },
+          { "value": "cyan", "label": "Cyan" }, { "value": "yellow", "label": "Yellow" }, { "value": "orange", "label": "Orange" }
+        ] }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About house rules",
+      "blocks": [
+        { "type": "rule", "settings": { "title": "No ride-up.", "stamp": "Leg day approved", "text": "Stays put through squats, sprints and stairs.", "colour": "lime" } },
+        { "type": "rule", "settings": { "title": "No boring.", "stamp": "Ever", "text": "Colours that start conversations. Bands that finish them.", "colour": "ink" } },
+        { "type": "rule", "settings": { "title": "No wedgies.", "stamp": "Pinky promise", "text": "Cut smooth at the back, so nothing creeps.", "colour": "pink" } },
+        { "type": "rule", "settings": { "title": "No apologies.", "stamp": "Loud is the point", "text": "Loud isn't a phase. It's the whole personality.", "colour": "cyan" } },
+        { "type": "rule", "settings": { "title": "No sad drawers.", "stamp": "Grin required", "text": "If it doesn't make you grin when you get dressed, it isn't Jumper.", "colour": "yellow" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

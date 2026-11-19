@@ -1,0 +1,111 @@
+{%- comment -%}
+  Toolbar, active filter chips and the filter drawer for collections and search (Shopify storefront filtering).
+  Usage: render 'facets', results: collection, url: collection.url, sort_by: collection.sort_by, default_sort: collection.default_sort_by, count: n, terms: search.terms
+{%- endcomment -%}
+{%- liquid
+  assign active = 0
+  for filter in results.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != nil or filter.max_value.value != nil
+        assign active = active | plus: 1
+      endif
+    else
+      assign active = active | plus: filter.active_values.size
+    endif
+  endfor
+  assign current_sort = sort_by | default: default_sort
+-%}
+<div class="toolbar">
+  <div class="left">
+    {%- if results.filters.size > 0 -%}
+      <button class="tbtn" type="button" data-open-filters aria-controls="filters">{{ 'collections.filter' | t }}{% if active > 0 %} <span class="n">{{ active }}</span>{% endif %}</button>
+    {%- endif -%}
+    <span class="count">{{ 'collections.count' | t: count: count }}</span>
+  </div>
+  {%- if results.sort_options.size > 0 -%}
+    <div class="right">
+      <div class="selectwrap">
+        <label for="sort-{{ section.id }}">{{ 'collections.sort' | t }}</label>
+        <select id="sort-{{ section.id }}" data-sort>
+          {%- for o in results.sort_options -%}<option value="{{ o.value | escape }}"{% if o.value == current_sort %} selected{% endif %}>{{ o.name | escape }}</option>{%- endfor -%}
+        </select>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{%- if active > 0 -%}
+  <div class="active-filters">
+    {%- for filter in results.filters -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+          {%- assign lo = filter.min_value.value | default: 0 | money_without_trailing_zeros -%}
+          {%- assign hi = filter.max_value.value | default: filter.range_max | money_without_trailing_zeros -%}
+          <a href="{{ filter.url_to_remove }}" aria-label="{{ 'collections.remove_filter' | t: label: filter.label | escape }}">{{ lo }}–{{ hi }} ✕</a>
+        {%- endif -%}
+      {%- else -%}
+        {%- for v in filter.active_values -%}
+          <a href="{{ v.url_to_remove }}" aria-label="{{ 'collections.remove_filter' | t: label: v.label | escape }}">{{ v.label | escape }} ✕</a>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if terms != blank -%}
+      <a class="clear" href="{{ routes.search_url }}?q={{ terms | url_encode }}&options%5Bprefix%5D=last">{{ 'collections.clear' | t }}</a>
+    {%- else -%}
+      <a class="clear" href="{{ url }}?sort_by={{ current_sort }}">{{ 'collections.clear' | t }}</a>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{%- if results.filters.size > 0 -%}
+  <aside class="drawer fdrawer" id="filters" aria-label="{{ 'collections.filter' | t }}" aria-hidden="true">
+    <div class="dhead"><h2>{{ 'collections.filter' | t }}</h2><button class="menu-close" type="button" data-close-filters>{{ 'accessibility.close' | t }}</button></div>
+    <form action="{{ url }}" method="get">
+      {%- if terms != blank -%}
+        <input type="hidden" name="q" value="{{ terms | escape }}">
+        <input type="hidden" name="options[prefix]" value="last">
+      {%- endif -%}
+      <input type="hidden" name="sort_by" value="{{ current_sort }}">
+      <div class="fbody">
+        {%- for filter in results.filters -%}
+          {%- liquid
+            assign n = filter.active_values.size
+            if filter.type == 'price_range'
+              assign n = 0
+              if filter.min_value.value != nil or filter.max_value.value != nil
+                assign n = 1
+              endif
+            endif
+          -%}
+          <details class="fgroup"{% if n > 0 or forloop.index <= 2 %} open{% endif %}>
+            <summary>{{ filter.label | escape }}{% if n > 0 %}<span class="n">{{ n }}</span>{% endif %}</summary>
+            {%- case filter.type -%}
+              {%- when 'price_range' -%}
+                <div class="frange">
+                  <label>{{ 'collections.from' | t }} {{ cart.currency.symbol }}<input type="number" inputmode="decimal" name="{{ filter.min_value.param_name }}" min="0" max="{{ filter.range_max | money_without_currency | remove: ',' }}" placeholder="0"{% if filter.min_value.value %} value="{{ filter.min_value.value | money_without_currency | remove: ',' }}"{% endif %}></label>
+                  <label>{{ 'collections.to' | t }} {{ cart.currency.symbol }}<input type="number" inputmode="decimal" name="{{ filter.max_value.param_name }}" min="0" max="{{ filter.range_max | money_without_currency | remove: ',' }}" placeholder="{{ filter.range_max | money_without_currency | remove: ',' }}"{% if filter.max_value.value %} value="{{ filter.max_value.value | money_without_currency | remove: ',' }}"{% endif %}></label>
+                </div>
+              {%- else -%}
+                <div class="fopts">
+                  {%- for v in filter.values -%}
+                    <label>
+                      <input type="checkbox" name="{{ v.param_name }}" value="{{ v.value | escape }}"{% if v.active %} checked{% endif %}{% if v.count == 0 and v.active == false %} disabled{% endif %}>
+                      <span>{%- if v.swatch.color -%}<i class="dot" style="background:{{ v.swatch.color }}"></i>{%- endif -%}{{ v.label | escape }} <small>{{ v.count }}</small></span>
+                    </label>
+                  {%- endfor -%}
+                </div>
+            {%- endcase -%}
+          </details>
+        {%- endfor -%}
+      </div>
+      <div class="ffoot">
+        {%- if terms != blank -%}
+          <a class="btn btn-ghost" href="{{ routes.search_url }}?q={{ terms | url_encode }}&options%5Bprefix%5D=last">{{ 'collections.reset' | t }}</a>
+        {%- else -%}
+          <a class="btn btn-ghost" href="{{ url }}?sort_by={{ current_sort }}">{{ 'collections.reset' | t }}</a>
+        {%- endif -%}
+        <button class="btn btn-ink" type="submit">{{ 'collections.apply' | t }}</button>
+      </div>
+    </form>
+  </aside>
+{%- endif -%}

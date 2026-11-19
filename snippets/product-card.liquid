@@ -1,88 +1,147 @@
 {%- comment -%}
-  Product card. Paper card, one supporting-colour tab, Ink quick-add with Lime type.
-  Params:
-    product   – Shopify product (optional)
-    tab       – supporting colour token: yellow | cyan | orange | pink | purple
-    index     – position, used for stagger
-    demo      – pipe string "title|price|image|hover_image|print" when no product is assigned
-    eager     – boolean, load first image eagerly
+  Product card from homepage v4: border, hover lift with a per-card spark, close-up swaps to the on-body shot,
+  size buttons and Quick add right on the card.
+  Usage: render 'product-card', product: product, index: forloop.index0
+         render 'product-card', demo: 'maroon', index: 0   (placeholder when a section has no products yet)
 {%- endcomment -%}
 {%- liquid
-  assign tab_color = tab | default: 'cyan'
-  assign load = 'lazy'
-  if eager
-    assign load = 'eager'
-  endif
-  if product != blank
-    assign title = product.title
-    assign url = product.url
-    assign print_name = product.metafields.custom.print | default: product.type | default: 'New print'
-    assign first_image = product.featured_media.preview_image
-    assign second_image = product.media[1].preview_image
-  else
-    assign d = demo | split: '|'
-    assign title = d[0]
-    assign url = routes.all_products_collection_url
-    assign print_name = d[4]
-  endif
+  assign i = index | default: 0 | modulo: 4
+  case i
+    when 0
+      assign spark = 'var(--pink)'
+    when 1
+      assign spark = 'var(--cyan)'
+    when 2
+      assign spark = 'var(--orange)'
+    else
+      assign spark = 'var(--purple)'
+  endcase
+  assign size_name = settings.card_size_option | default: 'Size' | downcase
 -%}
-<article class="card reveal" style="--tab: var(--{{ tab_color }}); --i: {{ index | default: 0 }}" data-tilt>
-  <a class="card__media{% if second_image != blank or d[3] != blank %} card__media--swap{% endif %}" href="{{ url }}" aria-label="{{ title | escape }}" data-cursor-text="View">
-    {%- if product != blank -%}
-      {%- if first_image != blank -%}
-        {{ first_image | image_url: width: 900 | image_tag: loading: load, widths: '360, 540, 720, 900', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 40vw, 80vw', class: 'card__img card__img--main', alt: title }}
+{%- if product != blank -%}
+  {%- liquid
+    assign size_opt = nil
+    for o in product.options_with_values
+      assign oname = o.name | downcase
+      if oname == size_name or oname == 'size' or oname == 'sizes'
+        assign size_opt = o
+      endif
+    endfor
+    assign hex = product.metafields.custom.swatch.value | default: product.metafields.custom.swatch
+    assign colour = product.metafields.custom.colour_label.value | default: product.metafields.custom.colour_label
+    if colour == blank
+      for o in product.options_with_values
+        assign oname = o.name | downcase
+        if oname == 'color' or oname == 'colour'
+          assign colour = o.selected_value | default: o.values.first
+        endif
+      endfor
+    endif
+    assign tag = ''
+    if product.compare_at_price > product.price
+      assign tag = 'products.sale' | t
+    elsif settings.card_new_tag != blank and product.tags contains settings.card_new_tag
+      assign tag = settings.card_new_tag
+    endif
+    assign img2 = product.media[1]
+    assign first_avail = product.selected_or_first_available_variant
+  -%}
+  <article class="card" style="--spark:{{ spark }}" data-card data-title="{{ product.title | escape }}" data-hex="{{ hex | default: '#111111' }}">
+    <a class="media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+      {%- if tag != blank -%}<span class="tag">{{ tag | escape }}</span>{%- endif -%}
+      {%- if product.featured_media -%}
+        {%- assign alt = product.featured_media.alt | default: product.title -%}
+        {{ product.featured_media | image_url: width: 900 | image_tag: class: 'close', alt: alt, loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(max-width: 560px) 78vw, (max-width: 1000px) 50vw, 25vw' }}
+        {%- if img2 -%}
+          {{ img2 | image_url: width: 900 | image_tag: class: 'wide', alt: '', loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(max-width: 560px) 78vw, (max-width: 1000px) 50vw, 25vw' }}
+        {%- endif -%}
       {%- else -%}
-        <img class="card__img card__img--main" src="{{ 'product-fan.jpg' | asset_url }}" alt="{{ title | escape }}" loading="{{ load }}">
+        <span class="ph">{% render 'mark' %}</span>
       {%- endif -%}
-      {%- if second_image != blank -%}
-        {{ second_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 990px) 25vw, 80vw', class: 'card__img card__img--alt', alt: '' }}
+    </a>
+    <div class="info">
+      <div class="row">
+        <h3><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+        <span class="price{% if product.compare_at_price > product.price %} sale{% endif %}">
+          {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money_without_trailing_zeros }}</s>{%- endif -%}
+          {%- if product.price_varies -%}{%- assign pmin = product.price_min | money_without_trailing_zeros -%}{{ 'products.from' | t: price: pmin }}{%- else -%}{{ product.price | money_without_trailing_zeros }}{%- endif -%}
+        </span>
+      </div>
+      {%- if colour != blank -%}
+        <span class="colour">{% if hex != blank %}<i style="background:{{ hex }}"></i>{% endif %}{{ colour | escape }}</span>
       {%- endif -%}
-    {%- else -%}
-      <img class="card__img card__img--main" src="{{ d[2] | asset_url }}" alt="{{ title | escape }}" loading="{{ load }}" decoding="async">
-      {%- if d[3] != blank -%}
-        <img class="card__img card__img--alt" src="{{ d[3] | asset_url }}" alt="" loading="lazy" decoding="async">
-      {%- endif -%}
-    {%- endif -%}
-
-    {%- if product.available == false -%}
-      <span class="chip chip--ink card__chip">{{ 'products.sold_out' | t }}</span>
-    {%- elsif product.compare_at_price > product.price -%}
-      <span class="chip chip--pink card__chip">{{ 'products.sale' | t }}</span>
-    {%- elsif index == 0 -%}
-      <span class="chip chip--lime card__chip">{{ 'products.new_in' | t }}</span>
-    {%- endif -%}
-  </a>
-
-  <div class="card__tab"><span class="t-label">{{ print_name }}</span>{% render 'sparkle', class: 'card__spark' %}</div>
-
-  <div class="card__body">
-    <h3 class="card__title"><a href="{{ url }}">{{ title }}</a></h3>
-    <div class="card__price">
-      {%- if product != blank -%}
-        {% render 'price', product: product %}
+      {%- if product.available == false -%}
+        <button class="qa soldout" type="button" disabled>{{ 'products.sold_out' | t }}</button>
+      {%- elsif size_opt != nil -%}
+        {%- assign size_idx = size_opt.position | minus: 1 -%}
+        <div class="sizes" role="group" aria-label="{{ 'products.size_for' | t: title: product.title | escape }}">
+          {%- for value in size_opt.values -%}
+            {%- liquid
+              assign vid = ''
+              assign vavail = false
+              for v in product.variants
+                if v.options[size_idx] == value
+                  if vid == ''
+                    assign vid = v.id
+                  endif
+                  if v.available
+                    assign vid = v.id
+                    assign vavail = true
+                    break
+                  endif
+                endif
+              endfor
+            -%}
+            <button type="button" aria-pressed="false" data-variant="{{ vid }}"{% unless vavail %} disabled{% endunless %}>{{ value | escape }}</button>
+          {%- endfor -%}
+        </div>
+        <button class="qa" type="button">{{ 'products.quick_add' | t }}</button>
+      {%- elsif product.has_only_default_variant -%}
+        <button class="qa" type="button" data-variant="{{ first_avail.id }}">{{ 'products.quick_add' | t }}</button>
       {%- else -%}
-        <span class="price">{{ d[1] }}</span>
+        <a class="qa choose" href="{{ product.url }}">{{ 'products.choose_options' | t }}</a>
       {%- endif -%}
     </div>
-  </div>
-
-  <div class="card__quick">
-    <span class="t-label card__quick-label">{{ 'products.quick_add' | t }}</span>
-    {%- if product != blank -%}
-      {%- form 'product', product, class: 'card__sizes', data-product-form: '' -%}
-        {%- for variant in product.variants limit: 6 -%}
-          <button class="size-btn" type="submit" name="id" value="{{ variant.id }}"{% unless variant.available %} disabled{% endunless %} aria-label="{{ 'products.add_variant' | t: variant: variant.title | escape }}">
-            {{- variant.title | replace: 'Default Title', '+' | truncate: 4, '' -}}
-          </button>
-        {%- endfor -%}
-      {%- endform -%}
-    {%- else -%}
-      <div class="card__sizes">
-        {%- assign sizes = 'S,M,L,XL' | split: ',' -%}
-        {%- for s in sizes -%}
-          <button class="size-btn" type="button" data-demo-add data-title="{{ title | escape }}" data-price="{{ d[1] | escape }}" data-image="{{ d[2] | asset_url }}" data-size="{{ s }}">{{ s }}</button>
-        {%- endfor -%}
-      </div>
-    {%- endif -%}
-  </div>
-</article>
+  </article>
+{%- else -%}
+  {%- liquid
+    case demo
+      when 'yellow'
+        assign d_name = 'Sunshine Trunk'
+        assign d_colour = 'Yellow, ink band'
+        assign d_hex = '#d9bf2e'
+        assign d_tag = 'New in'
+      when 'navy'
+        assign d_name = 'Navy Trunk'
+        assign d_colour = 'Navy, ink band'
+        assign d_hex = '#22285a'
+        assign d_tag = ''
+      when 'grey'
+        assign d_name = 'Heather Trunk'
+        assign d_colour = 'Grey, white band'
+        assign d_hex = '#b9bab5'
+        assign d_tag = ''
+      else
+        assign d_name = 'Maroon Trunk'
+        assign d_colour = 'Maroon, orange band'
+        assign d_hex = '#5a2230'
+        assign d_tag = 'New in'
+    endcase
+    assign d_id = demo | default: 'maroon'
+    assign close_src = 'trunk-' | append: d_id | append: '-close.jpg'
+    assign wide_src = 'trunk-' | append: d_id | append: '-wide.jpg'
+  -%}
+  <article class="card" style="--spark:{{ spark }}" data-card data-demo data-title="{{ d_name }}" data-hex="{{ d_hex }}" data-img="{{ close_src | asset_url }}">
+    <a class="media" href="{{ routes.all_products_collection_url }}" aria-label="{{ d_name }}">
+      {%- if d_tag != blank -%}<span class="tag">{{ d_tag }}</span>{%- endif -%}
+      <img class="close" src="{{ close_src | asset_url }}" alt="{{ 'products.close_up' | t: title: d_name }}" loading="lazy" width="900" height="1125">
+      <img class="wide" src="{{ wide_src | asset_url }}" alt="" loading="lazy" width="900" height="1125">
+    </a>
+    <div class="info">
+      <div class="row"><h3><a href="{{ routes.all_products_collection_url }}">{{ d_name }}</a></h3><span class="price">{{ demo_price | default: 79900 | money_without_trailing_zeros }}</span></div>
+      <span class="colour"><i style="background:{{ d_hex }}"></i>{{ d_colour }}</span>
+      <div class="sizes" role="group" aria-label="{{ 'products.size_for' | t: title: d_name }}"><button type="button" aria-pressed="false">S</button><button type="button" aria-pressed="false">M</button><button type="button" aria-pressed="false">L</button><button type="button" aria-pressed="false">XL</button></div>
+      <button class="qa" type="button">{{ 'products.quick_add' | t }}</button>
+    </div>
+  </article>
+{%- endif -%}

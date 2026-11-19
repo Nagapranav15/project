@@ -1,0 +1,88 @@
+{%- comment -%}
+  Reviews as photo cards in two rows that scroll in opposite directions; hover a row to pause it.
+  Each card takes a customer photo; until one is picked, a photo from the theme stands in.
+{%- endcomment -%}
+<section class="ts">
+  <div class="wrap ts-head">
+    <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+    <h2>{{ section.settings.heading | escape }}</h2>
+    {%- if section.settings.summary != blank -%}<p class="ts-summary">{{ section.settings.summary | escape }}</p>{%- endif -%}
+  </div>
+  {%- for row in (0..1) -%}
+    <div class="ts-row{% if row == 1 %} ts-row--rev{% endif %}" style="--speed: {{ section.settings.speed }}s">
+      <div class="ts-track">
+        {%- for pass in (0..1) -%}
+          {%- for block in section.blocks -%}
+            {%- assign mod = forloop.index0 | modulo: 2 -%}
+            {%- if mod == row -%}
+              <figure class="ts-card" style="--r: {% cycle '-1.5', '1', '-0.5', '1.5' %}deg"{% if pass == 1 %} aria-hidden="true"{% else %} {{ block.shopify_attributes }}{% endif %}>
+                <div class="ts-photo">
+                  {%- if block.settings.image != blank -%}
+                    {{ block.settings.image | image_url: width: 600 | image_tag: alt: '', loading: 'lazy', widths: '300, 450, 600' }}
+                  {%- else -%}
+                    <img src="{{ block.settings.fallback | asset_url }}" alt="" width="576" height="720" loading="lazy">
+                  {%- endif -%}
+                  {%- if block.settings.product != blank -%}<span class="ts-product">{{ block.settings.product | escape }}</span>{%- endif -%}
+                </div>
+                <figcaption>
+                  <span class="ts-stars" aria-label="{{ block.settings.rating }} / 5">{% for i in (1..5) %}<i{% if i > block.settings.rating %} class="off"{% endif %}>★</i>{% endfor %}</span>
+                  <blockquote>“{{ block.settings.quote | escape }}”</blockquote>
+                  <span class="ts-who"><b>{{ block.settings.name | escape }}</b>{% if block.settings.place != blank %} · {{ block.settings.place | escape }}{% endif %}</span>
+                  {%- if section.settings.tag != blank -%}<span class="ts-tag">{{ section.settings.tag | escape }}</span>{%- endif -%}
+                </figcaption>
+              </figure>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "max_blocks": 16,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The crew says" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Loud people. Real talk." },
+    { "type": "text", "id": "summary", "label": "Summary line", "info": "For example your average rating and number of reviews." },
+    { "type": "text", "id": "tag", "label": "Card tag", "default": "Sample review", "info": "Replace the sample reviews with real ones, then change or clear this tag." },
+    { "type": "range", "id": "speed", "label": "Seconds per loop", "min": 20, "max": 120, "step": 5, "default": 60 }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Customer photo" },
+        { "type": "select", "id": "fallback", "label": "Photo until one is picked", "default": "trunk-navy-wide.jpg", "options": [
+          { "value": "trunk-navy-wide.jpg", "label": "Poolside" },
+          { "value": "trunk-yellow-wide.jpg", "label": "Sunset" },
+          { "value": "trunk-grey-wide.jpg", "label": "Studio duo" },
+          { "value": "trunk-maroon-wide.jpg", "label": "Field" },
+          { "value": "jumper-hero.jpg", "label": "The crew" },
+          { "value": "scene-beach.jpg", "label": "Beach" },
+          { "value": "scene-denim.jpg", "label": "Denim" },
+          { "value": "scene-pool.jpg", "label": "Pool" },
+          { "value": "scene-court.jpg", "label": "Court" }
+        ] },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "Wore them to the gym and straight to work. Forgot I had them on." },
+        { "type": "text", "id": "name", "label": "Name", "default": "Arjun" },
+        { "type": "text", "id": "place", "label": "Place", "default": "Pune" },
+        { "type": "range", "id": "rating", "label": "Stars", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "text", "id": "product", "label": "Product tag", "default": "3 pack" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        { "type": "review" },
+        { "type": "review", "settings": { "fallback": "trunk-yellow-wide.jpg", "quote": "The band stays put. Finally a trunk that doesn't roll.", "name": "Kabir", "place": "Delhi" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

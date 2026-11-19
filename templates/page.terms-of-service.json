@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "main-policy", "settings": { "policy": "terms_of_service", "eyebrow": "The rules" } }
+  },
+  "order": ["main"]
+}

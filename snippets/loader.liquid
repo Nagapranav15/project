@@ -1,25 +1,23 @@
 {%- comment -%}
-  Loading screen: "morph inflating" JUMPER.
-  Uses the master wordmark artwork, split into its six letters with clip regions. Each letter
-  puffs up (blur + moving alpha threshold, continuous so it never steps) and stretches to fill the screen with a soft staggered overshoot,
-  wobbles, then deflates back to the exact logo before the panel wipes away.
-  Lime on Ink, an approved logo colourway. Shown on first visit and on every hard refresh.
+  Loading screen, lime on ink. Modelled on Jitter's "Morph: Inflating Text" loop.
+    1. Type     "JUMPER" set small in the hero heading style (brand font, weight 500, uppercase, tight tracking).
+    2. Inflate  left to right, each letter swells and morphs into its puffy logo letter (a soft liquid morph,
+                one bouncy overshoot), pushing its neighbours along. Logo letters are the six complete shapes
+                from Jumper-Deconstructed.ai (snippets/wordmark-letters).
+    3. Wobble   the inflated word breathes for a beat.
+    4. Deflate  letters sag back into plain type, and the loop runs again while the page is still loading.
+    5. Exit     once loaded, the inflated word shakes it, then the panel is yanked down like a pair of pants
+                (lime waistband on its top edge) and the site shows through.
+  Shown on first visit and on every reload. ?loader forces it, ?noloader skips it, ?loaderT=1.2 freezes a frame,
+  ?loaderExit plays the exit straight away.
 {%- endcomment -%}
 <div class="loader" data-loader aria-hidden="true">
   <div class="loader__under"></div>
   <div class="loader__panel">
-    <div class="loader__src" hidden>{% render 'logo-wordmark' %}</div>
+    <div class="loader__band"><span>JUMPER JUMPER JUMPER JUMPER JUMPER JUMPER JUMPER JUMPER JUMPER JUMPER JUMPER JUMPER</span></div>
+    <div class="loader__src" hidden>{% render 'wordmark-letters' %}</div>
     <svg class="loader__stage" data-loader-stage xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="loaderPuff" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-          <feMorphology operator="erode" radius="1" in="SourceGraphic" result="thin"/>
-          <feMorphology operator="dilate" radius="1" in="thin" result="clean"/>
-          <feGaussianBlur in="clean" stdDeviation="0.4" result="soft" data-puff-blur/>
-          <feColorMatrix in="soft" mode="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2 -0.5" result="goo" data-puff-matrix/>
-          <feFlood flood-color="#CEFF05" result="tint"/>
-          <feComposite in="tint" in2="goo" operator="in"/>
-        </filter>
-      </defs>
+      <defs data-loader-defs></defs>
       <g data-loader-word></g>
     </svg>
     <div class="loader__bar"><span data-loader-bar></span></div>
@@ -39,141 +37,210 @@
     html.classList.add('is-loading');
 
     const NS = 'http://www.w3.org/2000/svg';
+    const LIME = '#CEFF05';
     const svg = el.querySelector('[data-loader-stage]');
+    const defs = el.querySelector('[data-loader-defs]');
     const word = el.querySelector('[data-loader-word]');
-    const d = el.querySelector('.loader__src path').getAttribute('d');
-    const matrix = el.querySelector('[data-puff-matrix]');
-    const blur = el.querySelector('[data-puff-blur]');
     const bar = el.querySelector('[data-loader-bar]');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const make = (tag, attrs, parent) => {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    };
 
-    // Wordmark units: 712 x 163. Clip polygons follow the joins between letters.
-    const LETTERS = [
-      { clip: '-20,-20 127,-20 126,77 124.5,120 124.5,190 -20,190', x0: 0, x1: 126, y0: 11, y1: 163, h: 0.97 },
-      { clip: '127,-20 234.3,-20 234.3,190 124.5,190 124.5,120 126,77', x0: 124.5, x1: 234.3, y0: 20, y1: 150, h: 0.9 },
-      { clip: '234.3,-20 371,-20 371,80 377,88 377,190 234.3,190', x0: 234.3, x1: 377, y0: 3, y1: 160, h: 1 },
-      { clip: '371,-20 485.2,-20 483.6,60 480,190 339.6,190 341.6,90 371,80', x0: 341, x1: 485.6, y0: 0, y1: 163, h: 0.95 },
-      { clip: '485.2,-20 564,-20 570.2,104 571.4,145 572.2,190 480,190 483.6,60', x0: 481, x1: 572.6, y0: 18, y1: 150, h: 0.88 },
-      { clip: '564,-20 740,-20 740,190 572.2,190 571.4,145 570.2,104', x0: 564.5, x1: 712, y0: 0, y1: 158, h: 0.98 }
-    ];
-    const defs = svg.querySelector('defs');
-    const base = document.createElementNS(NS, 'path');
-    base.setAttribute('id', 'loaderWordmark');
-    base.setAttribute('d', d);
-    defs.appendChild(base);
-    const nodes = LETTERS.map((L, i) => {
-      const cp = document.createElementNS(NS, 'clipPath');
-      cp.setAttribute('id', `loaderClip${i}`);
-      const poly = document.createElementNS(NS, 'polygon');
-      poly.setAttribute('points', L.clip);
-      cp.appendChild(poly);
-      defs.appendChild(cp);
-      const wrap = document.createElementNS(NS, 'g');
-      const g = document.createElementNS(NS, 'g');
-      wrap.appendChild(g);
-      const use = document.createElementNS(NS, 'use');
-      use.setAttribute('href', '#loaderWordmark');
-      use.setAttribute('clip-path', `url(#loaderClip${i})`);
-      use.setAttribute('fill', '#CEFF05');
-      g.appendChild(use);
-      word.appendChild(wrap);
-      g.wrap = wrap;
-      return g;
+    // The six logo letters come straight from the artwork file, each a complete shape.
+    const ORDER = ['J', 'U', 'M', 'P', 'E', 'R'];
+    const FAMILY = (getComputedStyle(html).getPropertyValue('--font') || '"Obv", "Archivo", sans-serif').trim();
+    const src = {};
+    el.querySelectorAll('.loader__src [data-letter]').forEach((n) => { src[n.dataset.letter] = n.querySelector('path').getAttribute('d'); });
+
+    // One group per letter holding its typed glyph and its logo shape. While a letter morphs, a goo filter
+    // (blur, then a hard alpha threshold) melts the two into one soft shape, so it reads as a single inflating form.
+    const letters = ORDER.map((ch, i) => {
+      const f = make('filter', { id: `loaderGoo${i}`, x: '-50%', y: '-50%', width: '200%', height: '200%', 'color-interpolation-filters': 'sRGB' }, defs);
+      const blur = make('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: '0' }, f);
+      make('feColorMatrix', { values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10' }, f);
+      const g = make('g', {}, word);
+      const text = make('text', {
+        'font-family': FAMILY, 'font-weight': '500', 'font-size': '100', x: '0', y: '0',
+        fill: LIME, stroke: LIME, 'stroke-width': '0', 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', opacity: '0'
+      }, g);
+      text.textContent = ch;
+      const path = make('path', {
+        d: src[ch], 'fill-rule': 'evenodd', fill: LIME, stroke: LIME, 'stroke-width': '0',
+        'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', opacity: '0'
+      }, g);
+      const b = path.getBBox();
+      return { g, text, path, blur, filtered: false, L: { x0: b.x, x1: b.x + b.width, y0: b.y, y1: b.y + b.height } };
     });
+    const art = {
+      x0: Math.min(...letters.map(({ L }) => L.x0)), x1: Math.max(...letters.map(({ L }) => L.x1)),
+      y0: Math.min(...letters.map(({ L }) => L.y0)), y1: Math.max(...letters.map(({ L }) => L.y1))
+    };
+    const artW = art.x1 - art.x0, artH = art.y1 - art.y0;
 
-    let vw, vh, k0, ox, oy, slots;
+    // Ink boxes of the typed letters (hero H1: weight 500, letter-spacing -0.02em), measured at 100px.
+    const TRACK = -0.02;
+    let glyphs = null;
+    const measureType = () => {
+      const c = document.createElement('canvas').getContext('2d');
+      c.font = `500 100px ${FAMILY}`;
+      let x = 0;
+      glyphs = ORDER.map((ch, i) => {
+        const m = c.measureText(ch);
+        const g = { x, l: m.actualBoundingBoxLeft, r: m.actualBoundingBoxRight, a: m.actualBoundingBoxAscent, d: m.actualBoundingBoxDescent };
+        x += m.width + (i < ORDER.length - 1 ? TRACK * 100 : 0);
+        return g;
+      });
+    };
+
+    // Boxes (width, height, centre relative to the screen centre) for the plain type and for the inflated logo.
+    const PLAIN = 0.4;                                // plain word width, as a share of the inflated word
+    let vw, vh, P = null, G = null, logoH = 0;
     const layout = () => {
       vw = svg.clientWidth || innerWidth; vh = svg.clientHeight || innerHeight;
       svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
-      const natW = Math.min(vw * 0.62, 560);
-      k0 = natW / 712; ox = (vw - natW) / 2; oy = (vh - 163 * k0) / 2;
-      const margin = vw * 0.03, gap = Math.max(14, vw * 0.028);
-      const total = LETTERS.reduce((s, L) => s + (L.x1 - L.x0), 0);
-      const avail = vw - margin * 2 - gap * 5;
-      let x = margin;
-      slots = LETTERS.map((L) => {
-        const w = avail * (L.x1 - L.x0) / total;
-        const H = vh * 0.94 * L.h;
-        const s = { x, w, y: (vh - H) / 2, H };
-        x += w + gap;
-        return s;
-      });
+      const k = Math.min(vw * 0.62, 560) / artW;
+      logoH = artH * k;
+      G = letters.map(({ L }) => ({
+        w: (L.x1 - L.x0) * k, h: (L.y1 - L.y0) * k,
+        cx: ((L.x0 + L.x1) / 2 - (art.x0 + art.x1) / 2) * k, cy: ((L.y0 + L.y1) / 2 - (art.y0 + art.y1) / 2) * k
+      }));
+      if (!glyphs) return;
+      const left = glyphs[0].x - glyphs[0].l, right = glyphs[5].x + glyphs[5].r;
+      const asc = Math.max(...glyphs.map((g) => g.a)), desc = Math.max(0, ...glyphs.map((g) => g.d));
+      const s = (PLAIN * artW * k) / (right - left);
+      P = glyphs.map((g) => ({
+        w: (g.l + g.r) * s, h: (g.a + g.d) * s,
+        cx: (g.x + (g.r - g.l) / 2 - (left + right) / 2) * s, cy: ((asc - desc) / 2 + (g.d - g.a) / 2) * s
+      }));
     };
     layout();
     addEventListener('resize', layout);
 
     const lerp = (a, b, t) => a + (b - a) * t;
     const clamp = (t) => Math.max(0, Math.min(1, t));
-    const outQuart = (t) => 1 - Math.pow(1 - t, 4);
-    const inOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
     const smooth = (t) => t * t * (3 - 2 * t);
-    // one soft overshoot, no ringing
-    const outBack = (t) => { const c = 1.15, c3 = c + 1; return 1 + c3 * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+    const outQuint = (t) => 1 - Math.pow(1 - t, 5);
+    // the swell: one bouncy overshoot (about 10%), then it settles
+    const pop = (t) => { const c = 2.2, c3 = c + 1; return 1 + c3 * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
 
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const INTRO = 0.55;           // logo fades in at rest
-    const CYCLE = 3.0;            // inflate → breathe → deflate
-    const UP = 1.05, UP_STAGGER = 0.055;
-    const DOWN_AT = 1.8, DOWN = 0.85, DOWN_STAGGER = 0.045;
+    // seconds, per loop
+    const LEAD = 0.45;                                // first time only: the plain type fades up
+    const MORPH_AT = 0.3, MORPH = 0.42, STAGGER = 0.08;  // each letter inflates (all done at 1.12)
+    const HOLD_AT = 1.12, DEFLATE_AT = 1.75;          // wobble, then deflate back to plain (done at 2.57)
+    const CYCLE = 2.75;
+    const SHAKE = 0.75;                               // the exit: shake it, then the pants come down
     let loaded = document.readyState === 'complete';
     addEventListener('load', () => { loaded = true; });
-    const t0 = performance.now();
-    let finishing = false, barShown = 0;
+    let t0 = null, finishing = false, barShown = 0, exitAt = 0, prevT = 0;
+    const exitPreview = location.search.includes('loaderExit');
 
-    word.setAttribute('filter', 'url(#loaderPuff)');
+    const place = (n, box, cx, cy, w, h) => {
+      n.setAttribute('transform', `translate(${cx.toFixed(2)} ${cy.toFixed(2)}) scale(${(w / box.w).toFixed(5)} ${(h / box.h).toFixed(5)}) translate(${(-box.mx).toFixed(2)} ${(-box.my).toFixed(2)})`);
+    };
+
     const frozen = parseFloat(new URLSearchParams(location.search).get('loaderT'));
     const draw = (time) => {
       if ((svg.clientWidth || innerWidth) !== vw || (svg.clientHeight || innerHeight) !== vh) layout();
+      // nothing to draw into yet (a window with no size): try again next frame
+      if (!vw || !vh || !P || !(logoH > 0)) { requestAnimationFrame(draw); return; }
       const tt = isNaN(frozen) ? (time - t0) / 1000 : frozen;
-      const intro = outQuart(clamp(tt / INTRO));
-      const ct = tt < INTRO ? -1 : (tt - INTRO) % CYCLE;
-      const cx = vw / 2, cy = vh / 2, pop = 0.94 + 0.06 * intro;
-      let puffSum = 0;
-      nodes.forEach((g, i) => {
-        const L = LETTERS[i], S = slots[i];
-        let p = 0;
-        if (ct >= 0 && !reduce) {
-          const up = outBack(clamp((ct - i * UP_STAGGER) / UP));
-          const down = inOutCubic(clamp((ct - DOWN_AT - i * DOWN_STAGGER) / DOWN));
-          p = up * (1 - down);
-          // slow breath while fully inflated, faded in and out so it never jumps
-          const env = smooth(clamp((ct - 1.05) / 0.3)) * (1 - smooth(clamp((ct - DOWN_AT + 0.25) / 0.3)));
-          p *= 1 + 0.014 * env * Math.sin((ct - 1.05) * 5 + i * 0.7);
-        }
-        puffSum += clamp(p);
-        const w = L.x1 - L.x0, h = L.y1 - L.y0;
-        const sx = lerp(k0, S.w / w, p);
-        const sy = lerp(k0, S.H / h, p);
-        const left = lerp(ox + L.x0 * k0, S.x, p);
-        const top = lerp(oy + L.y0 * k0, S.y, p);
-        g.setAttribute('transform',
-          `translate(${cx} ${cy}) scale(${pop.toFixed(4)}) translate(${-cx} ${-cy}) translate(${(left - L.x0 * sx).toFixed(2)} ${(top - L.y0 * sy).toFixed(2)}) scale(${sx.toFixed(4)} ${sy.toFixed(4)})`);
-      });
-      word.style.opacity = intro.toFixed(3);
+      const intro = reduce ? 1 : outQuint(clamp(tt / LEAD));
+      let ct = reduce ? HOLD_AT : (tt < LEAD ? 0 : (tt - LEAD) % CYCLE);
 
-      // Puff is continuous: blur grows and the alpha threshold drops, so letters swell and round off.
-      // At rest the threshold is soft (anti-aliased), so the logo stays crisp.
-      const puff = smooth(clamp(puffSum / nodes.length));
-      const unit = Math.min(vw, vh) / 900;
-      const A = lerp(2, 22, puff), edge = lerp(0.5, 0.26, puff);
-      blur.setAttribute('stdDeviation', (0.4 + puff * 9 * unit).toFixed(2));
-      matrix.setAttribute('values', `0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 ${A.toFixed(3)} ${(-(A * edge - 0.5)).toFixed(3)}`);
-
-      const target = loaded ? clamp(tt / (INTRO + CYCLE)) : Math.min(0.85, tt / 6);
-      barShown += (target - barShown) * 0.08;
-      bar.style.transform = `scaleX(${barShown.toFixed(4)})`;
-
-      // finish only when the logo is back at rest at the end of a cycle and the page has loaded
-      const atRest = reduce ? tt > 0.6 : (tt > INTRO + CYCLE - 0.1 && (ct > CYCLE - 0.1 || ct < 0.02));
-      if (isNaN(frozen) && !finishing && loaded && atRest) {
+      // Once the page has loaded, the next time the word reaches the end of its wobble (fully inflated) it stays
+      // inflated, shakes it, and the panel is yanked down (the CSS does the drop). With ?loaderT, ?loaderExit
+      // freezes a frame of the shake instead (the shake starts at 2.2s).
+      const beat = (t) => Math.floor((t - LEAD - DEFLATE_AT) / CYCLE);
+      if (!exitAt && !reduce) {
+        if (isNaN(frozen) ? loaded && beat(tt) > beat(prevT) : exitPreview && tt >= LEAD + DEFLATE_AT) exitAt = isNaN(frozen) ? tt : LEAD + DEFLATE_AT;
+      }
+      prevT = tt;
+      const sh = exitAt ? clamp((tt - exitAt) / SHAKE) : 0;
+      if (exitAt) ct = DEFLATE_AT;
+      if ((reduce ? tt > 0.6 && loaded : exitAt && sh >= 1) && isNaN(frozen) && !finishing) {
         finishing = true;
         el.classList.add('is-done');
         html.classList.remove('is-loading');
         try { sessionStorage.setItem('jumper-loaded', '1'); } catch (e) {}
-        setTimeout(() => el.remove(), 1400);
+        setTimeout(() => el.remove(), 1700);
         return;
       }
+
+      // morph progress per letter: q is linear time, e is the bouncy size curve; deflating runs it backwards
+      // with a small undershoot, so each letter sags a touch below plain before it settles
+      const q = ORDER.map((_, i) => {
+        const up = clamp((ct - MORPH_AT - i * STAGGER) / MORPH), down = clamp((ct - DEFLATE_AT - i * STAGGER) / MORPH);
+        return down > 0 ? 1 - down : up;
+      });
+      const e = ORDER.map((_, i) => {
+        const up = clamp((ct - MORPH_AT - i * STAGGER) / MORPH), down = clamp((ct - DEFLATE_AT - i * STAGGER) / MORPH);
+        return down > 0 ? 1 - pop(down) : (up > 0 ? pop(up) : 0);
+      });
+      const w = e.map((v, i) => lerp(P[i].w, G[i].w, v));
+      // letters sit side by side; each gap eases from the type's spacing to the logo's, so a growing letter pushes the rest
+      const cx = [0];
+      for (let i = 1; i < ORDER.length; i++) {
+        const gap = (a, b) => (b[i].cx - a[i - 1].cx) - (a[i - 1].w + b[i].w) / 2;
+        const m = clamp((q[i - 1] + q[i]) / 2);
+        cx.push(cx[i - 1] + w[i - 1] / 2 + lerp(gap(P, P), gap(G, G), m) + w[i] / 2);
+      }
+      const shift = (cx[0] - w[0] / 2 + cx[5] + w[5] / 2) / 2;
+
+      // the wobble while inflated
+      const hold = clamp((ct - HOLD_AT) / (DEFLATE_AT - HOLD_AT));
+      const wob = Math.sin(Math.PI * hold) * 0.045;
+      // shake it: the word swings side to side, letters bounce in turn, and it all dies down
+      const amp = Math.sin(Math.PI * Math.min(1, sh * 1.6)) * (1 - sh * 0.4);
+      const swing = Math.sin(sh * Math.PI * 2 * 3.5) * amp;
+      word.setAttribute('transform', `translate(${(vw / 2 + swing * logoH * 0.12).toFixed(2)} ${(vh / 2 + (1 - intro) * logoH * 0.25).toFixed(2)}) skewX(${(swing * -12).toFixed(2)})`);
+      word.setAttribute('opacity', intro.toFixed(3));
+
+      letters.forEach((Lt, i) => {
+        const p = P[i], gl = G[i], gi = glyphs[i], L = Lt.L;
+        const bounce = exitAt ? Math.sin(sh * Math.PI * 2 * 3.5 + i * 1.1) * amp : 0;
+        const h = lerp(p.h, gl.h, e[i]) * (1 + wob * Math.sin(ct * 9 + i * 1.7) + 0.08 * bounce);
+        const x = cx[i] - shift, y = lerp(p.cy, gl.cy, clamp(e[i])) - (i % 2 ? 1 : -1) * bounce * gl.h * 0.07;
+        place(Lt.text, { w: gi.l + gi.r, h: gi.a + gi.d, mx: (gi.r - gi.l) / 2, my: (gi.d - gi.a) / 2 }, x, y, w[i], h);
+        place(Lt.path, { w: L.x1 - L.x0, h: L.y1 - L.y0, mx: (L.x0 + L.x1) / 2, my: (L.y0 + L.y1) / 2 }, x, y, w[i], h);
+
+        // the crossfade happens inside the goo, so the two shapes melt into one
+        const swap = smooth(clamp((q[i] - 0.15) / 0.55));
+        Lt.text.setAttribute('opacity', (1 - swap).toFixed(3));
+        Lt.path.setAttribute('opacity', swap.toFixed(3));
+        const bulge = Math.sin(Math.PI * q[i]);
+        const puff = gl.h * (0.03 * clamp(e[i]) + 0.05 * bulge);   // rounded, inflated edges
+        Lt.text.setAttribute('stroke-width', puff.toFixed(2));
+        Lt.path.setAttribute('stroke-width', puff.toFixed(2));
+        const goo = gl.h * 0.07 * bulge;
+        if (goo > 0.4) {
+          Lt.blur.setAttribute('stdDeviation', goo.toFixed(2));
+          if (!Lt.filtered) { Lt.g.setAttribute('filter', `url(#loaderGoo${i})`); Lt.filtered = true; }
+        } else if (Lt.filtered) { Lt.g.removeAttribute('filter'); Lt.filtered = false; }
+      });
+
+      const target = exitAt ? 1 : loaded ? clamp(tt / (LEAD + DEFLATE_AT + SHAKE)) : Math.min(0.85, tt / 6);
+      barShown += (target - barShown) * 0.08;
+      bar.style.transform = `scaleX(${barShown.toFixed(4)})`;
       if (isNaN(frozen)) requestAnimationFrame(draw);
     };
-    requestAnimationFrame(draw);
+
+    // Start once the brand font is ready, so the type never flashes in a fallback face (waits at most 0.8s).
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      measureType();
+      layout();
+      requestAnimationFrame((time) => { t0 = time; draw(time); });
+    };
+    if (reduce || !document.fonts || !document.fonts.load) start();
+    else {
+      document.fonts.load(`500 100px ${FAMILY}`, 'JUMPER').then(start, start);
+      setTimeout(start, 800);
+    }
   })();
 </script>

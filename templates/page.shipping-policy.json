@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "main-policy", "settings": { "policy": "shipping_policy", "eyebrow": "Getting it to you" } }
+  },
+  "order": ["main"]
+}

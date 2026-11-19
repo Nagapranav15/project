@@ -1,15 +1,17 @@
-<section class="page-hero scheme-{{ section.settings.scheme }}">
-  <div class="container">
-    <p class="t-label section-head__label"><span class="num">✦</span> {{ shop.name }}</p>
-    <h1 class="t-display page-hero__title">{{ page.title }}</h1>
-  </div>
-</section>
-<section class="section scheme-paper">
-  <div class="container"><div class="prose rte t-body">{{ page.content }}</div></div>
-</section>
+{%- assign title = page.title | escape -%}
+{% render 'page-hero', eyebrow: section.settings.eyebrow, title: title, badge: section.settings.show_badge %}
+{%- if page.content != blank -%}
+  <section class="prose">
+    <div class="wrap"><div class="prose-card rte">{{ page.content }}</div></div>
+  </section>
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Page",
-  "settings": [{ "type": "select", "id": "scheme", "label": "Header ground", "default": "lime", "options": [{ "value": "lime", "label": "Lime" }, { "value": "ink", "label": "Ink" }, { "value": "paper", "label": "Paper" }] }]
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Jumper" },
+    { "type": "checkbox", "id": "show_badge", "label": "Show spinning badge", "default": true }
+  ]
 }
 {% endschema %}

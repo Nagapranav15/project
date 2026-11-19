@@ -1,70 +1,154 @@
-<footer class="footer scheme-ink">
-  <div class="container">
-    <div class="footer__top">
-      <div class="footer__brand">
-        {% render 'logo-icon-j', class: 'footer__icon' %}
-        <p class="t-subhead">{{ section.settings.tagline }}</p>
-        <ul class="footer__social" role="list">
-          {%- if settings.social_instagram != blank -%}<li><a class="icon-btn" href="{{ settings.social_instagram }}" aria-label="Instagram">{% render 'icon', icon: 'instagram' %}</a></li>{%- endif -%}
-          {%- if settings.social_youtube != blank -%}<li><a class="icon-btn" href="{{ settings.social_youtube }}" aria-label="YouTube">{% render 'icon', icon: 'youtube' %}</a></li>{%- endif -%}
-        </ul>
-      </div>
+{%- comment -%}
+  Footer: one big line, clean link columns, and a giant JUMPER whose letters jump
+  (lift toward the cursor, bounce on tap, wave in on scroll). Loud, but only three things.
+{%- endcomment -%}
+{%- liquid
+  assign home = routes.root_url
+  if home == '/'
+    assign home = ''
+  endif
+  assign insta = settings.social_instagram
+  assign yt = settings.social_youtube
+  comment
+    Policies that are not filled in under Settings > Policies have no page (they 404). Shipping and exchanges then
+    point to the FAQ, which answers both; privacy and terms are left out until they exist.
+  endcomment
+  assign faq_url = home | append: '/#faq'
+  assign ship_url = shop.shipping_policy.url | default: faq_url
+  assign refund_url = shop.refund_policy.url | default: faq_url
+  assign size_url = routes.all_products_collection_url | append: '#size-chart'
+  assign about_url = section.settings.about_page.url
+  if section.settings.about_page == blank
+    assign about_url = home | append: '/pages/about'
+  endif
+  assign contact_url = section.settings.contact_page.url
+  if section.settings.contact_page == blank
+    assign contact_url = home | append: '/pages/contact'
+  endif
+-%}
+<footer class="footer ftr" id="help">
+  <div class="wrap ftr-head">
+    <h2 class="ftr-title">{{ section.settings.tagline | escape }}</h2>
+    <nav class="ftr-cols" aria-label="Footer">
       {%- for block in section.blocks -%}
-        <div class="footer__col" {{ block.shopify_attributes }}>
-          <p class="t-label footer__heading">{{ block.settings.heading }}</p>
-          {%- case block.type -%}
-            {%- when 'menu' -%}
-              {%- assign menu = linklists[block.settings.menu] -%}
-              <ul role="list">
-                {%- if menu.links.size > 0 -%}
-                  {%- for link in menu.links -%}<li><a href="{{ link.url }}">{{ link.title }}</a></li>{%- endfor -%}
+        <div class="ftr-col" {{ block.shopify_attributes }}>
+          <h3>{{ block.settings.heading | escape }}</h3>
+          <ul>
+            {%- if block.settings.menu != blank and block.settings.menu.links.size > 0 -%}
+              {%- for link in block.settings.menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {%- endfor -%}
+            {%- else -%}
+              {%- case block.settings.fallback -%}
+                {%- when 'shop' -%}
+                  <li><a href="{{ routes.all_products_collection_url }}">All trunks</a></li>
+                  <li><a href="{{ routes.all_products_collection_url }}">New in</a></li>
+                  <li><a href="{{ home }}/#faq">FAQ</a></li>
+                  <li><a href="{{ size_url }}">Size finder</a></li>
+                {%- when 'help' -%}
+                  <li><a href="{{ ship_url }}">Shipping</a></li>
+                  <li><a href="{{ refund_url }}">Exchanges</a></li>
+                  <li><a href="{{ routes.account_url }}">Track order</a></li>
+                  <li><a href="{{ contact_url }}">Contact us</a></li>
                 {%- else -%}
-                  {%- assign fb = block.settings.fallback | split: ',' -%}
-                  {%- for t in fb -%}<li><a href="{{ routes.all_products_collection_url }}">{{ t | strip }}</a></li>{%- endfor -%}
-                {%- endif -%}
-              </ul>
-            {%- when 'text' -%}
-              <div class="footer__text">{{ block.settings.text }}</div>
-          {%- endcase -%}
+                  <li><a href="{{ about_url }}">About us</a></li>
+                  <li><a href="{{ home }}/#join">Join the crew</a></li>
+                  {%- if insta != blank -%}<li><a href="{{ insta }}" target="_blank" rel="noopener">Instagram</a></li>{%- endif -%}
+                  {%- if yt != blank -%}<li><a href="{{ yt }}" target="_blank" rel="noopener">YouTube</a></li>{%- endif -%}
+                  <li><a href="{{ routes.account_url }}">Account</a></li>
+              {%- endcase -%}
+            {%- endif -%}
+          </ul>
         </div>
       {%- endfor -%}
-    </div>
-
-    <a class="footer__mark" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
-      {% render 'logo-wordmark', class: 'footer__wordmark' %}
-    </a>
-
-    <div class="footer__bottom">
-      <p class="t-label">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }} &middot; {{ powered_by_link }}</p>
-      <p class="t-label footer__sign">{% render 'sparkle', class: 'footer__spark' %} {{ section.settings.signoff }}</p>
-      {%- if section.settings.show_payment -%}
-        <ul class="footer__pay" role="list">
-          {%- for type in shop.enabled_payment_types -%}<li>{{ type | payment_type_svg_tag: class: 'footer__pay-icon' }}</li>{%- endfor -%}
-        </ul>
-      {%- endif -%}
-    </div>
+    </nav>
   </div>
+
+  <div class="wrap ftr-word" data-fword>
+    {% render 'wordmark-letters' %}
+  </div>
+
+  <div class="wrap"><div class="ftr-base">
+    <span class="ftr-copy">&copy; {{ 'now' | date: '%Y' }} {{ shop.name | escape }}</span>
+    <nav class="ftr-policies" aria-label="Policies">
+      <a href="{{ about_url }}">About</a>
+      <a href="{{ contact_url }}">Contact</a>
+      {%- if shop.privacy_policy.url != blank -%}<a href="{{ shop.privacy_policy.url }}">Privacy</a>{%- endif -%}
+      {%- if shop.terms_of_service.url != blank -%}<a href="{{ shop.terms_of_service.url }}">Terms</a>{%- endif -%}
+      <a href="{{ ship_url }}">Shipping</a>
+      <a href="{{ refund_url }}">Exchanges</a>
+    </nav>
+    <button class="ftr-top" type="button" data-to-top>Back to top <span aria-hidden="true">↑</span></button>
+  </div></div>
 </footer>
 
 {% schema %}
 {
   "name": "Footer",
   "settings": [
-    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Underwear with the volume up." },
-    { "type": "text", "id": "signoff", "label": "Sign-off", "default": "Stay cheeky, never crude." },
-    { "type": "checkbox", "id": "show_payment", "label": "Show payment icons", "default": true }
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Big line",
+      "default": "Underwear with the volume up."
+    },
+    {
+      "type": "page",
+      "id": "about_page",
+      "label": "About page",
+      "info": "Defaults to /pages/about. Linked in the bottom row and the Jumper column."
+    },
+    {
+      "type": "page",
+      "id": "contact_page",
+      "label": "Contact page",
+      "info": "Defaults to /pages/contact. Linked in the bottom row and the Help column."
+    }
   ],
+  "max_blocks": 4,
   "blocks": [
-    { "type": "menu", "name": "Menu", "settings": [
-      { "type": "text", "id": "heading", "label": "Heading", "default": "Shop" },
-      { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" },
-      { "type": "text", "id": "fallback", "label": "Placeholder links (shown until a menu is chosen)", "default": "Trunks,Briefs,Prints,Packs" }
-    ]},
-    { "type": "text", "name": "Text", "settings": [
-      { "type": "text", "id": "heading", "label": "Heading", "default": "Help" },
-      { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Free shipping all India. Easy 15-day exchanges on unworn packs.</p>" }
-    ]}
+    {
+      "type": "menu",
+      "name": "Link column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Shop"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        },
+        {
+          "type": "select",
+          "id": "fallback",
+          "label": "Links when no menu is picked",
+          "options": [
+            {
+              "value": "shop",
+              "label": "Shop links"
+            },
+            {
+              "value": "help",
+              "label": "Help links"
+            },
+            {
+              "value": "jumper",
+              "label": "Jumper links"
+            }
+          ],
+          "default": "shop"
+        }
+      ]
+    }
   ],
-  "max_blocks": 4
+  "enabled_on": {
+    "groups": [
+      "footer"
+    ]
+  }
 }
 {% endschema %}

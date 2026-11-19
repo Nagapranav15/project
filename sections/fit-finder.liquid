@@ -1,0 +1,190 @@
+{%- comment -%}
+  Trunk finder: four quick picks (your day, how loud, your waist, how many) and a live result card that names
+  your colour and size, says why, prices it and adds the lot to the bag in one go. Colours are blocks; link each
+  to its product so the bag gets the right variant (without one, the button explains it is a demo).
+{%- endcomment -%}
+{%- assign sizes = section.settings.sizes | split: ',' -%}
+<section class="ff" id="{{ section.settings.anchor | default: 'packs' }}" data-finder
+  data-sizes="{{ section.settings.sizes | escape }}"
+  data-r-gym="{{ section.settings.reason_gym | escape }}" data-r-office="{{ section.settings.reason_office | escape }}"
+  data-r-weekend="{{ section.settings.reason_weekend | escape }}" data-r-all="{{ section.settings.reason_all | escape }}"
+  data-r-quiet="{{ section.settings.reason_quiet | escape }}" data-r-loud="{{ section.settings.reason_loud | escape }}" data-r-max="{{ section.settings.reason_max | escape }}"
+  data-r-size="{{ section.settings.reason_size | escape }}" data-r-none="{{ section.settings.reason_none | escape }}"
+  data-one="{{ section.settings.label_one | escape }}" data-many="{{ section.settings.label_many | escape }}">
+  <script type="application/json" data-finder-data>
+    [{%- for block in section.blocks -%}
+      {%- assign p = block.settings.product -%}
+      {
+        "name": {{ block.settings.name | json }},
+        "hex": {{ block.settings.hex | json }},
+        "day": {{ block.settings.day | json }},
+        "vibe": {{ block.settings.vibe | json }},
+        "img": {% if block.settings.image != blank %}{{ block.settings.image | image_url: width: 900 | json }}{% elsif p != blank and p.featured_image != blank %}{{ p.featured_image | image_url: width: 900 | json }}{% else %}{{ block.settings.fallback | asset_url | json }}{% endif %},
+        "price": {% if p != blank %}{{ p.price }}{% else %}{{ section.settings.demo_price | times: 100 }}{% endif %},
+        "url": {% if p != blank %}{{ p.url | json }}{% else %}{{ routes.all_products_collection_url | json }}{% endif %},
+        "variants": [{%- if p != blank -%}{%- for v in p.variants -%}{ "id": {{ v.id }}, "opts": {{ v.options | json }}, "ok": {{ v.available | json }} }{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}{%- endif -%}]
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}]
+  </script>
+  <div class="wrap ff-grid">
+    <div class="ff-qs">
+      <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.lead != blank -%}<p class="ff-lead">{{ section.settings.lead | escape }}</p>{%- endif -%}
+
+      <fieldset class="ff-q">
+        <legend><span>01</span>{{ section.settings.q_day | escape }}</legend>
+        <div class="ff-days">
+          {%- liquid
+            assign day_keys = 'gym,office,weekend,all' | split: ','
+          -%}
+          {%- for key in day_keys -%}
+            {%- liquid
+              case key
+                when 'gym'
+                  assign label = section.settings.day_gym
+                  assign img = 'cutout-gym.webp'
+                  assign bg = 'var(--pink)'
+                when 'office'
+                  assign label = section.settings.day_office
+                  assign img = 'cutout-office.webp'
+                  assign bg = 'var(--cyan)'
+                when 'weekend'
+                  assign label = section.settings.day_weekend
+                  assign img = 'cutout-pool.webp'
+                  assign bg = 'var(--orange)'
+                else
+                  assign label = section.settings.day_all
+                  assign img = 'jumper-cutout.webp'
+                  assign bg = 'var(--lime)'
+              endcase
+            -%}
+            <button type="button" class="ff-day" data-day="{{ key }}" style="--bg: {{ bg }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
+              <img src="{{ img | asset_url }}" alt="" width="300" height="380" loading="lazy">
+              <span>{{ label | escape }}</span>
+            </button>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+
+      <fieldset class="ff-q">
+        <legend><span>02</span>{{ section.settings.q_vibe | escape }}</legend>
+        <div class="ff-vibes">
+          <button type="button" class="ff-vibe" data-vibe="quiet" aria-pressed="false"><i style="--a: #b9bab5; --b: #22285a; --c: #3b3d3f"></i><b>{{ section.settings.vibe_quiet | escape }}</b></button>
+          <button type="button" class="ff-vibe" data-vibe="loud" aria-pressed="true"><i style="--a: #5a2230; --b: #d9bf2e; --c: #22285a"></i><b>{{ section.settings.vibe_loud | escape }}</b></button>
+          <button type="button" class="ff-vibe" data-vibe="max" aria-pressed="false"><i style="--a: #CEFF05; --b: #FF2E9B; --c: #FE8800"></i><b>{{ section.settings.vibe_max | escape }}</b></button>
+        </div>
+      </fieldset>
+
+      <fieldset class="ff-q">
+        <legend><span>03</span>{{ section.settings.q_waist | escape }} <output data-ff-waist>81 cm</output></legend>
+        <input class="ff-range" type="range" min="60" max="115" value="81" step="1" aria-label="{{ section.settings.q_waist | escape }}" data-ff-range>
+        <div class="ff-scale" aria-hidden="true">{%- for s in sizes -%}<span>{{ s | strip | split: ' ' | first }}</span>{%- endfor -%}</div>
+      </fieldset>
+
+      <fieldset class="ff-q">
+        <legend><span>04</span>{{ section.settings.q_count | escape }}</legend>
+        <div class="ff-counts">
+          <button type="button" data-count="1" aria-pressed="false">{{ section.settings.count_1 | escape }}</button>
+          <button type="button" data-count="3" aria-pressed="true">{{ section.settings.count_3 | escape }}</button>
+          <button type="button" data-count="5" aria-pressed="false">{{ section.settings.count_5 | escape }}</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <aside class="ff-result" aria-live="polite">
+      <div class="ff-photo">
+        <img src="{{ 'trunk-maroon-close.jpg' | asset_url }}" alt="" width="576" height="720" data-ff-img>
+        <span class="ff-size" data-ff-size>M</span>
+        <span class="ff-label">{{ section.settings.match_label | escape }}</span>
+      </div>
+      <div class="ff-body">
+        <h3 data-ff-name>Maroon</h3>
+        <div class="ff-picks" data-ff-picks></div>
+        <ul class="ff-why" data-ff-why></ul>
+        <div class="ff-buy">
+          <div class="ff-price"><b data-ff-price></b><span data-ff-each></span></div>
+          <button type="button" class="btn btn-ink" data-ff-add>{{ section.settings.button | escape }} <span class="arrow">→</span></button>
+        </div>
+        <a class="ff-more" href="{{ routes.all_products_collection_url }}" data-ff-link>{{ section.settings.more_label | escape }} <span class="arrow">→</span></a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Trunk finder",
+  "max_blocks": 10,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "packs" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The matchmaker" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Swipe right on your drawers." },
+    { "type": "textarea", "id": "lead", "label": "Text", "default": "Tell us about your day, your volume and your waist. We will play matchmaker and box a pack if you want one." },
+    { "type": "text", "id": "q_day", "label": "Question 1", "default": "What's your day?" },
+    { "type": "text", "id": "day_gym", "label": "Gym", "default": "Gym" },
+    { "type": "text", "id": "day_office", "label": "Office", "default": "Office" },
+    { "type": "text", "id": "day_weekend", "label": "Weekend", "default": "Weekend" },
+    { "type": "text", "id": "day_all", "label": "All of it", "default": "All of it" },
+    { "type": "text", "id": "q_vibe", "label": "Question 2", "default": "How loud?" },
+    { "type": "text", "id": "vibe_quiet", "label": "Quiet", "default": "Quietly loud" },
+    { "type": "text", "id": "vibe_loud", "label": "Loud", "default": "Loud" },
+    { "type": "text", "id": "vibe_max", "label": "Max", "default": "Volume max" },
+    { "type": "text", "id": "q_waist", "label": "Question 3", "default": "Your waist" },
+    { "type": "text", "id": "sizes", "label": "Sizes by waist (cm)", "default": "S 71-78, M 79-86, L 87-94, XL 95-102", "info": "Size, then waist range in cm. Sizes must match your products' Size option values." },
+    { "type": "text", "id": "q_count", "label": "Question 4", "default": "How many?" },
+    { "type": "text", "id": "count_1", "label": "1 label", "default": "Just one" },
+    { "type": "text", "id": "count_3", "label": "3 label", "default": "3 pack" },
+    { "type": "text", "id": "count_5", "label": "5 label", "default": "5 pack" },
+    { "type": "header", "content": "Result" },
+    { "type": "text", "id": "match_label", "label": "Badge", "default": "Your match" },
+    { "type": "text", "id": "reason_gym", "label": "Why: gym", "default": "4-way stretch that moves with every rep." },
+    { "type": "text", "id": "reason_office", "label": "Why: office", "default": "Smooth under trousers, no lines, no fidgeting." },
+    { "type": "text", "id": "reason_weekend", "label": "Why: weekend", "default": "Soft enough to live in from Friday to Monday." },
+    { "type": "text", "id": "reason_all", "label": "Why: all of it", "default": "Gym, desk, rooftop: one pair does the lot." },
+    { "type": "text", "id": "reason_quiet", "label": "Why: quiet", "default": "Calm colour, loud band. The quiet flex." },
+    { "type": "text", "id": "reason_loud", "label": "Why: loud", "default": "A colour that says something without shouting." },
+    { "type": "text", "id": "reason_max", "label": "Why: max", "default": "Maximum volume. Nobody forgets these." },
+    { "type": "text", "id": "reason_size", "label": "Why: size", "default": "Size [[size]] fits a [[waist]] cm waist." },
+    { "type": "text", "id": "reason_none", "label": "Off the chart", "default": "Off our chart. Write in and we will help." },
+    { "type": "text", "id": "label_one", "label": "Price note for one", "default": "one pair" },
+    { "type": "text", "id": "label_many", "label": "Price note for a pack", "default": "for [[count]], boxed" },
+    { "type": "text", "id": "button", "label": "Button label", "default": "Add to bag" },
+    { "type": "text", "id": "more_label", "label": "Link label", "default": "See it up close" },
+    { "type": "number", "id": "demo_price", "label": "Demo price per pair", "default": 799, "info": "Used only for colours with no product linked yet." }
+  ],
+  "blocks": [
+    {
+      "type": "colour",
+      "name": "Colour",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Maroon" },
+        { "type": "color", "id": "hex", "label": "Swatch", "default": "#5a2230" },
+        { "type": "product", "id": "product", "label": "Product", "info": "Needs a Size option. Without a product the colour is display only." },
+        { "type": "select", "id": "day", "label": "Best for", "default": "all", "options": [
+          { "value": "gym", "label": "Gym" }, { "value": "office", "label": "Office" }, { "value": "weekend", "label": "Weekend" }, { "value": "all", "label": "All of it" }
+        ] },
+        { "type": "select", "id": "vibe", "label": "Volume", "default": "loud", "options": [
+          { "value": "quiet", "label": "Quietly loud" }, { "value": "loud", "label": "Loud" }, { "value": "max", "label": "Volume max" }
+        ] },
+        { "type": "image_picker", "id": "image", "label": "Photo", "info": "Empty uses the product's photo, then the fallback below." },
+        { "type": "select", "id": "fallback", "label": "Fallback photo", "default": "trunk-maroon-close.jpg", "options": [
+          { "value": "trunk-maroon-close.jpg", "label": "Maroon" }, { "value": "trunk-yellow-close.jpg", "label": "Sunshine" },
+          { "value": "trunk-navy-close.jpg", "label": "Navy" }, { "value": "trunk-grey-close.jpg", "label": "Heather" }
+        ] }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trunk finder",
+      "blocks": [
+        { "type": "colour", "settings": { "name": "Maroon", "hex": "#5a2230", "day": "weekend", "vibe": "loud", "fallback": "trunk-maroon-close.jpg" } },
+        { "type": "colour", "settings": { "name": "Sunshine", "hex": "#d9bf2e", "day": "gym", "vibe": "max", "fallback": "trunk-yellow-close.jpg" } },
+        { "type": "colour", "settings": { "name": "Navy", "hex": "#22285a", "day": "office", "vibe": "quiet", "fallback": "trunk-navy-close.jpg" } },
+        { "type": "colour", "settings": { "name": "Heather", "hex": "#b9bab5", "day": "all", "vibe": "quiet", "fallback": "trunk-grey-close.jpg" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

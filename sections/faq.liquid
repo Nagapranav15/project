@@ -1,0 +1,50 @@
+{%- comment -%}
+  Questions and answers as chunky cards that open one at a time.
+{%- endcomment -%}
+<section class="faq" id="{{ section.settings.anchor | default: 'faq' }}">
+  <div class="wrap">
+    <div class="faq-head">
+      <span class="eyebrow"><i></i>{{ section.settings.eyebrow | escape }}</span>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div class="faq-list" data-faq>
+      {%- for block in section.blocks -%}
+        <details class="faq-item" {{ block.shopify_attributes }}>
+          <summary><span>{{ block.settings.question | escape }}</span><i aria-hidden="true"></i></summary>
+          <div class="faq-a rte">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "faq" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Quick answers" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Asked a lot." }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "How do the sizes run?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>True to size. Between two? Size up for room, down for a snug fit.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "question" },
+        { "type": "question", "settings": { "question": "Can I exchange a pack?", "answer": "<p>Yes, within 15 days if the pack is unworn and still sealed.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

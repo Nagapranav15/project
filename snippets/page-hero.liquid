@@ -1,0 +1,24 @@
+{%- comment -%}
+  Lime page header that every inner page shares. Title is split into stacked lines like the home hero.
+  Usage: render 'page-hero', eyebrow: 'Shop', title: collection.title, lede: '...', meta: '...', ink: false, badge: true
+{%- endcomment -%}
+<section class="phero{% if ink %} ink{% endif %}">
+  <div class="wrap">
+    <div>
+      {%- if crumbs -%}<nav class="crumbs" aria-label="Breadcrumb">{{ crumbs }}</nav>{%- endif -%}
+      {%- if eyebrow != blank -%}<span class="eyebrow" style="margin-top:14px"><i></i>{{ eyebrow | escape }}</span>{%- endif -%}
+      <h1>
+        {%- assign words = title | split: ' ' -%}
+        {%- if words.size > 3 -%}
+          {%- assign half = words.size | divided_by: 2 -%}
+          <span class="line"><span>{% for w in words limit: half %}{{ w }}{% unless forloop.last %} {% endunless %}{% endfor %}</span></span><span class="line"><span>{% for w in words offset: half %}{{ w }}{% unless forloop.last %} {% endunless %}{% endfor %}</span></span>
+        {%- else -%}
+          <span class="line"><span>{{ title }}</span></span>
+        {%- endif -%}
+      </h1>
+      {%- if lede != blank -%}<div class="lede rte">{{ lede }}</div>{%- endif -%}
+      {%- if meta != blank -%}<div class="meta">{{ meta }}</div>{%- endif -%}
+    </div>
+    {%- if badge -%}{% render 'badge', id: 'ringPage' %}{%- endif -%}
+  </div>
+</section>
