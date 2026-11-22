@@ -3,7 +3,7 @@
   Pack lines (line item property _pack) are grouped into one row with colour stripes, like the homepage draft.
   The bag data below feeds the packing screen that plays when someone taps Checkout (snippets/packing.liquid).
 {%- endcomment -%}
-<aside class="drawer" id="drawer" aria-label="{{ 'cart.title' | t }}" aria-hidden="true">
+<aside class="drawer" id="drawer" aria-label="{{ 'cart.title' | t }}" aria-hidden="true" data-lenis-prevent>
   <div class="dhead"><h2>{{ 'cart.title' | t }}</h2><button class="menu-close" type="button" id="drawerClose">{{ 'accessibility.close' | t }}</button></div>
   <div class="drawer-body" id="drawerBody" data-count="{{ cart.item_count }}">
     {%- if settings.cart_show_box -%}

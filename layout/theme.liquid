@@ -52,9 +52,6 @@
         --orange: {{ settings.color_orange }};
         --pink: {{ settings.color_pink }};
         --purple: {{ settings.color_purple }};
-        --cur-default: url({{ 'cursor-banana.png' | asset_url }}) 11 4, auto;
-        --cur-link: url({{ 'cursor-banana-hover.png' | asset_url }}) 12 3, pointer;
-        --cur-press: url({{ 'cursor-banana-press.png' | asset_url }}) 14 3, pointer;
         {%- if settings.brand_font_family != blank %}
         --font: {{ settings.brand_font_family }}, "Obv", "Archivo", system-ui, sans-serif;
         {%- endif %}
@@ -62,19 +59,7 @@
     {%- endstyle -%}
 
     <script>
-      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');{% if settings.banana_cursor %}
-      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        document.documentElement.classList.add('banana-cursor');
-        /* sharp cursors on retina screens, only where the browser understands image-set for cursors */
-        (function (r) {
-          var fn = window.CSS && CSS.supports && (CSS.supports('cursor', 'image-set(url("a.png") 1x) 1 1, auto') ? 'image-set' : CSS.supports('cursor', '-webkit-image-set(url("a.png") 1x) 1 1, auto') ? '-webkit-image-set' : '');
-          if (!fn) return;
-          var set = function (v, a, b, x, y, f) { r.style.setProperty(v, fn + '(url("' + a + '") 1x, url("' + b + '") 2x) ' + x + ' ' + y + ', url("' + a + '") ' + x + ' ' + y + ', ' + f); };
-          set('--cur-default', {{ 'cursor-banana.png' | asset_url | json }}, {{ 'cursor-banana-2x.png' | asset_url | json }}, 11, 4, 'auto');
-          set('--cur-link', {{ 'cursor-banana-hover.png' | asset_url | json }}, {{ 'cursor-banana-hover-2x.png' | asset_url | json }}, 12, 3, 'pointer');
-          set('--cur-press', {{ 'cursor-banana-press.png' | asset_url | json }}, {{ 'cursor-banana-press-2x.png' | asset_url | json }}, 14, 3, 'pointer');
-        })(document.documentElement);
-      }{% endif %}
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
       window.Jumper = {
         routes: {
           root: {{ routes.root_url | json }},

@@ -135,13 +135,6 @@
         "label": "Enable smooth scroll and scroll scenes",
         "default": true,
         "info": "Visitors whose device asks for less motion get a one-tap switch."
-      },
-      {
-        "type": "checkbox",
-        "id": "banana_cursor",
-        "label": "Banana cursor",
-        "default": true,
-        "info": "On computers with a mouse, the pointer becomes the Banana Crew character and switches to the jumping pose while you click."
       }
     ]
   },

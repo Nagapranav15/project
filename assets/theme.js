@@ -474,8 +474,12 @@
 
   /* tapes and header */
   var header = $('#header'), lastY = window.scrollY;
-  /* the header tucks away while scrolling down only on computers with a mouse; on phones and tablets it always stays */
-  var headerAutoHide = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  /* the header tucks away while scrolling down only on a desktop: a wide screen, a mouse, and no touch at all.
+     Many phones report a mouse (hover/fine pointer), so touch support and width are checked too, live, so a phone
+     or tablet always keeps the header in view. */
+  var deskMq = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1001px)');
+  var noTouch = !(('ontouchstart' in window) || (navigator.maxTouchPoints || 0) > 0);
+  function headerAutoHide() { return noTouch && deskMq.matches; }
   var tracks = [];
   function collectTracks() {
     tracks = $$('.track');
@@ -511,7 +515,10 @@
     var y = window.scrollY, dy = y - prevY; prevY = y;
     if (dy) dir = dy > 0 ? 1 : -1;
     vel += (Math.abs(dy) - vel) * 0.12;
-    if (header && headerAutoHide && Math.abs(y - lastY) > 8) { header.classList.toggle('hide', y > lastY && y > 400 && !(menu && menu.classList.contains('open'))); lastY = y; }
+    if (header) {
+      if (!headerAutoHide()) { if (header.classList.contains('hide')) header.classList.remove('hide'); lastY = y; }
+      else if (Math.abs(y - lastY) > 8) { header.classList.toggle('hide', y > lastY && y > 400 && !(menu && menu.classList.contains('open'))); lastY = y; }
+    }
     var boost = 1 + Math.min(vel / 5, 7);
     tracks.forEach(function (t) {
       var s = parseFloat(t.dataset.speed) || 0.5;
@@ -593,6 +600,9 @@
       if (!grid || cards.length < 2 || sec._sideways) return; sec._sideways = true;
       gsap.matchMedia().add('(max-width: 560px)', function () {
         sec.classList.add('scenes-pinned');
+        /* the row pins just under the header, so the heading always shows */
+        var hdrEl = $('#header');
+        var hdrH = function () { return hdrEl ? Math.round(hdrEl.getBoundingClientRect().height) : 0; };
         /* travel until the last card sits as far from the right edge as the first one does from the left */
         var dist = function () { var first = cards[0], last = cards[cards.length - 1], pad = parseFloat(getComputedStyle(grid).paddingLeft) || 0; return Math.max(0, (last.offsetLeft + last.offsetWidth - first.offsetLeft) - (grid.clientWidth - 2 * pad)); };
         var stops = function (v) {
@@ -601,7 +611,7 @@
           pts.forEach(function (q) { if (Math.abs(q - v) < Math.abs(best - v)) best = q; });
           return best;
         };
-        gsap.to(grid, { x: function () { return -dist(); }, ease: 'none', scrollTrigger: { trigger: sec, start: 'bottom bottom', end: function () { return '+=' + dist(); }, scrub: 0.6, pin: true, anticipatePin: 1, invalidateOnRefresh: true, refreshPriority: 1, snap: { snapTo: stops, inertia: false, duration: { min: 0.15, max: 0.5 }, delay: 0.1, ease: 'power1.inOut' } } });
+        gsap.to(grid, { x: function () { return -dist(); }, ease: 'none', scrollTrigger: { trigger: sec, start: function () { return 'top ' + hdrH() + 'px'; }, end: function () { return '+=' + dist(); }, scrub: 0.6, pin: true, anticipatePin: 1, invalidateOnRefresh: true, refreshPriority: 1, snap: { snapTo: stops, inertia: false, duration: { min: 0.15, max: 0.5 }, delay: 0.1, ease: 'power1.inOut' } } });
         return function () { sec.classList.remove('scenes-pinned'); gsap.set(grid, { clearProps: 'x' }); };
       });
     });
@@ -901,18 +911,6 @@
   }
 
   /* a cursor blob that names what it is over, on pages that ask for it (fine pointers only) */
-  /* banana cursor: the pointer itself is CSS (see theme.css). While the mouse button is down the cursor swaps to
-     the jumping pose, and swaps back on release. Nothing else appears on the page. */
-  function initBananaCursor() {
-    var html = document.documentElement;
-    if (!html.classList.contains('banana-cursor') || html._banana) return; html._banana = true;
-    document.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button === 0) html.classList.add('is-pressing'); }, true);
-    var up = function () { html.classList.remove('is-pressing'); };
-    document.addEventListener('pointerup', up, true);
-    document.addEventListener('pointercancel', up, true);
-    window.addEventListener('blur', up);
-  }
-
   /* policy pages: contents list from the policy's own headings, active as you read, and a progress bar.
      Store policies often use bold paragraphs as headings, so those count too. */
   function initPolicy(sec) {
@@ -1542,25 +1540,36 @@
     if (root._ab) return; root._ab = true;
     splitReveal(root);
     var box = $('[data-pile-box]', root), srcs = (root.dataset.pile || '').split('|').filter(Boolean); if (!box || !srcs.length) return;
-    var order = [0, 1, 2, 3, 4, 1, 0, 2, 3, 4], rs = [-14, 8, -6, 10, -9, 15, 22, -18, -25, 12];
-    var wide = { xs: [4, 15, 26, 64, 75, 86, 9, 70, 20, 80], ys: [0, 0, 0, 0, 0, 0, 60, 70, 40, 50], n: 10 };
-    var narrow = { xs: [-4, 20, 50, 72, 8, 60], ys: [0, 0, 0, 0, 50, 46], n: 6 };
-    var els = order.map(function (k, i) {
+    /* the photos, none repeated (indexes into data-pile), mixed so neighbours differ in colour and framing */
+    var order = [0, 6, 1, 7, 2, 8, 5, 3, 9, 4, 10, 12, 11, 13];
+    var els = order.map(function (k) {
       var d = document.createElement('div'); d.className = 'pc';
       var im = document.createElement('img'); im.src = srcs[k % srcs.length]; im.alt = ''; im.loading = 'lazy'; d.appendChild(im);
-      d.style.rotate = rs[i] + 'deg'; box.appendChild(d); return d;
+      box.appendChild(d); return d;
     });
-    /* the pile is laid out for the screen it is on, and again if the screen crosses 700px (rotate, resize) */
-    var narrowMq = window.matchMedia('(max-width: 699px)');
+    /* A heap, like trunks tossed down: a front row on the floor and a second row higher up behind it, every photo tilted
+       its own way. Each entry is [photo, left %, lift px, tilt deg]. Photos later in the list land on top. Phones show
+       eight in a tight heap; tablets ten; wide screens all fourteen spread across the full width. */
+    var tiers = {
+      phone: [[0, -4, 0, -14], [1, 20, 0, 8], [2, 50, 0, -6], [3, 72, 0, 10], [4, 8, 50, -9], [5, 60, 46, 15], [6, 34, 56, 7], [7, 84, 52, -12]],
+      tab: [[0, 2, 0, -12], [1, 15, 0, 8], [2, 28, 0, -6], [3, 42, 0, 10], [4, 56, 0, -9], [5, 70, 0, 7], [6, 83, 0, -11], [10, 9, 52, 9], [11, 47, 58, -7], [12, 78, 50, 11]],
+      desk: [[0, 1, 0, -11], [1, 10.5, 0, 7], [2, 20, 0, -6], [3, 29.5, 0, 10], [4, 39, 0, -8], [5, 48.5, 0, 6], [6, 58, 0, -10], [7, 67.5, 0, 8], [8, 77, 0, -5], [9, 86.5, 0, 11],
+             [10, 6, 58, 9], [11, 31, 66, -8], [12, 56, 46, 6], [13, 81, 64, -10]]
+    };
+    var phoneMq = window.matchMedia('(max-width: 699px)'), tabMq = window.matchMedia('(max-width: 1199px)');
     function layout() {
-      var L = narrowMq.matches ? narrow : wide;
-      els.forEach(function (d, i) {
-        var on = i < L.n; d.style.display = on ? '' : 'none';
-        if (on) { d.style.left = L.xs[i] + '%'; d.style.bottom = (L.ys[i] - 20) + 'px'; }
+      var T = phoneMq.matches ? tiers.phone : tabMq.matches ? tiers.tab : tiers.desk, used = {};
+      T.forEach(function (e) {
+        var d = els[e[0]]; used[e[0]] = 1;
+        d.style.display = ''; d.style.left = e[1] + '%'; d.style.bottom = (e[2] - 20) + 'px'; d.style.rotate = e[3] + 'deg';
+        d.style.zIndex = '';
       });
+      els.forEach(function (d, i) { if (!used[i]) d.style.display = 'none'; });
+      /* DOM order decides which photo lands on top, so re-append in the order of this tier's list */
+      T.forEach(function (e) { box.appendChild(els[e[0]]); });
     }
     layout();
-    if (narrowMq.addEventListener) narrowMq.addEventListener('change', layout); else if (narrowMq.addListener) narrowMq.addListener(layout);
+    [phoneMq, tabMq].forEach(function (mq) { if (mq.addEventListener) mq.addEventListener('change', layout); else if (mq.addListener) mq.addListener(layout); });
     if (!hasGsap || reduce) return;
     gsap.set(els, { y: -1200 });
     ScrollTrigger.create({ trigger: root, start: 'top 55%', once: true, onEnter: function () {
@@ -1590,7 +1599,6 @@
     $$('[data-peek]', scope).forEach(initPeek);
     $$('[data-magnetic]', scope).forEach(initMagnetic);
     initCounters(scope);
-    initBananaCursor();
     $$('[data-pack]', scope).forEach(initPack);
     $$('[data-join]', scope).forEach(initJoin);
     $$('[data-move]', scope).forEach(initMove);

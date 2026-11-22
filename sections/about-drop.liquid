@@ -1,7 +1,7 @@
 {%- comment -%}
   Closing call to action: trunk photos drop into a pile when the section scrolls into view.
 {%- endcomment -%}
-{%- capture pile -%}{{ 'about-maroon-close.jpg' | asset_url }}|{{ 'about-yellow-close.jpg' | asset_url }}|{{ 'about-navy-close.jpg' | asset_url }}|{{ 'about-grey-close.jpg' | asset_url }}|{{ 'about-charcoal-close.jpg' | asset_url }}{%- endcapture -%}
+{%- capture pile -%}{{ 'about-maroon-close.jpg' | asset_url }}|{{ 'about-yellow-close.jpg' | asset_url }}|{{ 'about-navy-close.jpg' | asset_url }}|{{ 'about-grey-close.jpg' | asset_url }}|{{ 'about-charcoal-close.jpg' | asset_url }}|{{ 'scene-beach.jpg' | asset_url }}|{{ 'scene-court.jpg' | asset_url }}|{{ 'scene-denim.jpg' | asset_url }}|{{ 'scene-pool.jpg' | asset_url }}|{{ 'about-playloud.jpg' | asset_url }}|{{ 'about-twilight.jpg' | asset_url }}|{{ 'about-hero.jpg' | asset_url }}|{{ 'trunk-yellow-wide.jpg' | asset_url }}|{{ 'trunk-navy-wide.jpg' | asset_url }}{%- endcapture -%}
 <section class="drop" id="{{ section.settings.anchor | default: 'drop' | handleize }}" aria-labelledby="ctaTitle-{{ section.id }}" data-about-drop data-pile="{{ pile | escape }}">
   <div class="pile" data-pile-box aria-hidden="true"></div>
   <div class="wrap drop-in">
